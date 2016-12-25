@@ -3,6 +3,10 @@ import * as path from "path";
 import { Subject } from "rxjs";
 import * as WebSocket from "ws";
 import * as os from "os";
+import * as express from "express";
+import * as http from "http";
+
+export { fs, path, Subject, WebSocket, express, http };
 
 export const hostname = os.hostname();
 
@@ -30,9 +34,12 @@ export type Config = {
         paths: string[];
         filePositionsDataPath: string;
     };
+    gui: {
+        enabled: boolean;
+        port: number;
+        host: string;
+    };
 };
-
-export { fs, path, Subject, WebSocket };
 
 export function statAsync(pathname: string) {
     return new Promise<fs.Stats | undefined>((resolve, reject) => {
