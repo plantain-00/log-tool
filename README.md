@@ -10,7 +10,7 @@
 + transport logs to another log-tool server
 + store logs to local directory
 + transport logs to elastic search server
-+ push new logs a web page, for monitor purpose
++ push new logs to a web page, for monitor purpose
 + on the web page, search old logs
 + operate(filter, parse) logs as custom scripts
 

@@ -17,6 +17,6 @@ libs.logSubject.subscribe(log => {
     console.log(log);
 });
 
-libs.errorSubject.subscribe(log => {
-    console.log(log);
+libs.errorSubject.subscribe(error => {
+    console.log(error);
 });
