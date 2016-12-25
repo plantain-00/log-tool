@@ -1,10 +1,15 @@
 import * as libs from "./libs";
+import * as config from "./config";
 
 let positions: { [filepath: string]: number } = {};
 
-export async function start(paths: string[], filePositionsDataPath: string) {
+export async function start() {
+    if (!config.watcher.enabled) {
+        return;
+    }
+
     // restore positions from file
-    const filePositionData = await libs.readFileAsync(filePositionsDataPath);
+    const filePositionData = await libs.readFileAsync(config.watcher.filePositionsDataPath);
     if (filePositionData) {
         try {
             positions = JSON.parse(filePositionData);
@@ -14,7 +19,7 @@ export async function start(paths: string[], filePositionsDataPath: string) {
     }
 
     // watch all paths
-    for (const pathname of paths) {
+    for (const pathname of config.watcher.paths) {
         // make it clear that it is directory or file
         const stats = await libs.statAsync(pathname);
         if (stats) {
@@ -39,7 +44,7 @@ export async function start(paths: string[], filePositionsDataPath: string) {
 
     // save postions every 1 seconds
     setInterval(() => {
-        libs.fs.writeFile(filePositionsDataPath, JSON.stringify(positions, null, "  "), writeFileError => {
+        libs.fs.writeFile(config.watcher.filePositionsDataPath, JSON.stringify(positions, null, "  "), writeFileError => {
             if (writeFileError) {
                 libs.errorSubject.next(writeFileError);
             }

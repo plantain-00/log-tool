@@ -1,7 +1,12 @@
 import * as libs from "./libs";
+import * as config from "./config";
 
-export function start(url: string) {
-    const ws = new libs.WebSocket(url);
+export function start() {
+    if (!config.outflow.enabled) {
+        return;
+    }
+
+    const ws = new libs.WebSocket(config.outflow.url);
     const subscription = libs.logSubject.bufferTime(1000)
         .filter(s => s.length > 0)
         .subscribe(logs => {

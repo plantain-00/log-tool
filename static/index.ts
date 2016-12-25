@@ -1,5 +1,6 @@
 import * as Vue from "vue";
 import Component from "vue-class-component";
+import * as types from "../src/types";
 
 @Component({
     template: require("raw!./app.html"),
@@ -14,5 +15,6 @@ export const app = new App({
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const ws = new WebSocket(`${wsProtocol}//${location.host}`);
 ws.onmessage = event => {
-    console.log(event.data);
+    const message: types.Message = JSON.parse(event.data);
+    console.log(message);
 };

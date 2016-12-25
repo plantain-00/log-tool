@@ -6,45 +6,14 @@ import * as os from "os";
 import * as express from "express";
 import * as http from "http";
 import fetch from "node-fetch";
+import * as types from "./types";
 
 export { fs, path, Subject, WebSocket, express, http, fetch };
 
 export const hostname = os.hostname();
 
-export const logSubject = new Subject<Log>();
+export const logSubject = new Subject<types.Log>();
 export const errorSubject = new Subject<Error>();
-
-export type Log = {
-    content: string;
-    filepath: string;
-    hostname: string;
-};
-
-export type Config = {
-    inflow: {
-        enabled: boolean;
-        port: number;
-        host: string;
-    };
-    outflow: {
-        enabled: boolean;
-        url: string;
-    };
-    watcher: {
-        enabled: boolean;
-        paths: string[];
-        filePositionsDataPath: string;
-    };
-    gui: {
-        enabled: boolean;
-        port: number;
-        host: string;
-    };
-    elastic: {
-        enabled: false;
-        url: string;
-    };
-};
 
 export function statAsync(pathname: string) {
     return new Promise<fs.Stats | undefined>((resolve, reject) => {
