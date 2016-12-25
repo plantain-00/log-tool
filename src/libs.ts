@@ -5,8 +5,9 @@ import * as WebSocket from "ws";
 import * as os from "os";
 import * as express from "express";
 import * as http from "http";
+import fetch from "node-fetch";
 
-export { fs, path, Subject, WebSocket, express, http };
+export { fs, path, Subject, WebSocket, express, http, fetch };
 
 export const hostname = os.hostname();
 
@@ -38,6 +39,10 @@ export type Config = {
         enabled: boolean;
         port: number;
         host: string;
+    };
+    elastic: {
+        enabled: false;
+        url: string;
     };
 };
 

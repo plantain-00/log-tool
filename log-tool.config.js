@@ -20,4 +20,8 @@ exports.config = {
         port: 8000,
         host: "localhost",
     },
+    elastic: {
+        enabled: false,
+        url: "http://localhost:9200/tool/logs",
+    },
 };
