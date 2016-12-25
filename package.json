@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p src",
-    "build-static": "tsc -p static && npm run minifier-template && webpack --display-modules && rev-static",
+    "build-static": "tsc -p static && npm run minifier-template && webpack --display-modules && npm run clean && rev-static",
     "lint": "tslint \"src/*.ts\" \"static/*.ts\"",
-    "minifier-template": "html-minifier --collapse-whitespace --case-sensitive static/app.template.html -o static/app.html"
+    "minifier-template": "html-minifier --collapse-whitespace --case-sensitive static/app.template.html -o static/app.html",
+    "clean": "rm -f static/vendor.bundle-*.js vendor.bundle-*.css index.bundle-*.js index.bundle-*.css"
   },
   "repository": {
     "type": "git",
