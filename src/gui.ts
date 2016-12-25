@@ -5,10 +5,17 @@ export function start(port: number, host: string) {
     const wss = new libs.WebSocket.Server({ server });
     const app = libs.express();
 
-    app.use(libs.express.static(__dirname + "/static"));
+    app.use(libs.express.static(libs.path.resolve(__dirname, "../static")));
 
     wss.on("connection", ws => {
-        ws.send("hello");
+        const subscription = libs.logSubject.bufferTime(1000)
+            .filter(s => s.length > 0)
+            .subscribe(logs => {
+                ws.send(JSON.stringify(logs));
+            });
+        ws.on("close", (code, name) => {
+            subscription.unsubscribe();
+        });
     });
 
     server.on("request", app);

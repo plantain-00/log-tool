@@ -19,7 +19,7 @@ export async function start(paths: string[], filePositionsDataPath: string) {
         const stats = await libs.statAsync(pathname);
         if (stats) {
             // for every file, if no position in positions, read all file
-            if (stats.isDirectory) {
+            if (stats.isDirectory()) {
                 const files = await libs.readDirAsync(pathname);
                 if (files) {
                     for (const file of files) {
@@ -29,12 +29,11 @@ export async function start(paths: string[], filePositionsDataPath: string) {
                             readNewlyAddedLogsThenPublish(filepath, fileStats.size);
                         }
                     }
-                    watch(pathname, true);
                 }
             } else {
                 readNewlyAddedLogsThenPublish(pathname, stats.size);
-                watch(pathname, false);
             }
+            watch(pathname, stats.isDirectory());
         }
     }
 

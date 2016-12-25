@@ -10,9 +10,6 @@ module.exports = {
         path: path.join(__dirname, "static"),
         filename: "[name].bundle.js"
     },
-    externals: {
-        "vue": "Vue"
-    },
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
@@ -35,8 +32,7 @@ module.exports = {
     ],
     resolve: {
         alias: {
-            "vue$": "vue/dist/vue.js",
-            "markdown-it": "markdown-it/dist/markdown-it.min.js"
+            "vue$": "vue/dist/vue.js"
         }
     }
 };
