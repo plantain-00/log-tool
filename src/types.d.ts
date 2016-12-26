@@ -4,7 +4,7 @@ export type Log = {
     hostname: string;
 };
 
-export type Message = PushLogsMessage | PushErrorsMessage | SearchLogsMessage;
+export type Message = PushLogsMessage | PushErrorsMessage | SearchLogsMessage | SearchLogsResultMessage;
 
 export type PushLogsMessage = {
     kind: "push logs";

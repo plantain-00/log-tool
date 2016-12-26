@@ -2,13 +2,30 @@ import * as Vue from "vue";
 import Component from "vue-class-component";
 import * as types from "../src/types";
 
+let ws: WebSocket | undefined;
+
 @Component({
     template: require("raw!./app.html"),
 })
 class App extends Vue {
+    tabIndex = 0;
+    logsSearchResult: string[] = [];
+    logsSearchResultCount = 0;
+    q = "*";
+    tab(tabIndex: number) {
+        this.tabIndex = tabIndex;
+    }
+    search() {
+        if (ws) {
+            ws.send(JSON.stringify({
+                kind: "search logs",
+                q: this.q,
+            } as types.SearchLogsMessage));
+        }
+    }
 }
 
-export const app = new App({
+const app = new App({
     el: "#body",
 });
 
@@ -45,10 +62,13 @@ class Reconnector {
 
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const reconnector = new Reconnector(() => {
-    const ws = new WebSocket(`${wsProtocol}//${location.host}`);
+    ws = new WebSocket(`${wsProtocol}//${location.host}`);
     ws.onmessage = event => {
         const message: types.Message = JSON.parse(event.data);
-        console.log(message);
+        if (message.kind === "search logs result") {
+            app.logsSearchResult = message.result.hits.hits.map(h => JSON.stringify(h._source, null, "  "));
+            app.logsSearchResultCount = message.result.hits.total;
+        }
     };
     ws.onclose = () => {
         reconnector.reconnect();

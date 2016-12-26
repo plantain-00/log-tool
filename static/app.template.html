@@ -3,5 +3,39 @@
         <div class="col-md-12">
             <h4>Log Tool</h4>
         </div>
+        <div class="col-md-12">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" :class="tabIndex === 0 ? 'active' : ''" @click="tab(0)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Search Logs</a></li>
+                <li role="presentation" :class="tabIndex === 1 ? 'active' : ''" @click="tab(1)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Realtime Logs</a></li>
+                <li role="presentation" :class="tabIndex === 2 ? 'active' : ''" @click="tab(2)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Realtime Errors</a></li>
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <div class="tab-content">
+                <div role="tabpanel" :class="tabIndex === 0 ? 'tab-pane active' : 'tab-pane'">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <input class="form-control" v-model="q">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary btn-sm" @click="search()" :disabled="!q">search</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <ul class="col-md-12">
+                                    <li v-for="(log, index) in logsSearchResult">
+                                        <pre>{{log}}</pre>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" :class="tabIndex === 1 ? 'tab-pane active' : 'tab-pane'"></div>
+                <div role="tabpanel" :class="tabIndex === 2 ? 'tab-pane active' : 'tab-pane'"></div>
+            </div>
+        </div>
     </div>
 </div>
