@@ -25,4 +25,4 @@ type Config = {
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-export const {elastic, gui, inflow, outflow, watcher}: Config = require(configurationFilePath).config;
+export const {elastic, gui, inflow, outflow, watcher}: Config = require(configurationFilePath);

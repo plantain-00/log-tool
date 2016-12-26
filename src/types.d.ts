@@ -1,5 +1,5 @@
 export type Log = {
-    content: string;
+    content: any;
     filepath: string;
     hostname: string;
 };

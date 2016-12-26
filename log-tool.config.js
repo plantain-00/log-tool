@@ -1,4 +1,4 @@
-exports.config = {
+module.exports = {
     // transport logs from another log-tool server.
     inflow: {
         enabled: false,
