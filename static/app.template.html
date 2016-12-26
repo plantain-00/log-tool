@@ -26,7 +26,8 @@
                             <div class="row">
                                 <ul class="col-md-12">
                                     <li v-for="(log, index) in logsSearchResult">
-                                        <pre>{{log}}</pre>
+                                        <pre v-if="log.content">{{log.content}}</pre>
+                                        <pre v-if="log.formattedContent">{{log.formattedContent}}</pre>
                                     </li>
                                 </ul>
                             </div>

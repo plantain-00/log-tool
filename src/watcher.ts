@@ -80,14 +80,8 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
             const lines = content.match(/[^\r\n]+/g);
             if (lines) {
                 for (const line of lines) {
-                    let jsonOrString: any;
-                    try {
-                        jsonOrString = JSON.parse(line);
-                    } catch (error) {
-                        jsonOrString = line;
-                    }
                     libs.logSubject.next({
-                        content: jsonOrString,
+                        content: line,
                         filepath,
                         hostname: libs.hostname,
                     });

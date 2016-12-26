@@ -4,12 +4,16 @@ import * as types from "../src/types";
 
 let ws: WebSocket | undefined;
 
+type Log = types.Log & {
+    formattedContent?: string;
+};
+
 @Component({
     template: require("raw!./app.html"),
 })
 class App extends Vue {
     tabIndex = 0;
-    logsSearchResult: string[] = [];
+    logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     q = "*";
     tab(tabIndex: number) {
@@ -66,7 +70,19 @@ const reconnector = new Reconnector(() => {
     ws.onmessage = event => {
         const message: types.Message = JSON.parse(event.data);
         if (message.kind === "search logs result") {
-            app.logsSearchResult = message.result.hits.hits.map(h => JSON.stringify(h._source, null, "  "));
+            app.logsSearchResult = message.result.hits.hits.map(h => {
+                const log: Log = {
+                    content: h._source.content,
+                    filepath: h._source.filepath,
+                    hostname: h._source.hostname,
+                };
+                try {
+                    log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
+                } catch (error) {
+                    console.log(error);
+                }
+                return log;
+            });
             app.logsSearchResultCount = message.result.hits.total;
         }
     };
