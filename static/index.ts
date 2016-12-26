@@ -15,6 +15,8 @@ class App extends Vue {
     tabIndex = 0;
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
+    logsPush: Log[] = [];
+    errorsPush: Error[] = [];
     q = "*";
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
@@ -33,11 +35,32 @@ const app = new App({
     el: "#body",
 });
 
+interface ReconnectorOption {
+    startTimeout: number;
+    increaseRate: number;
+    endTimeout: number;
+}
+
 class Reconnector {
     private eventTarget = document.createElement("div");
     private timeout: number;
-    constructor(action: () => void, private startTimeout: number = 3000, private increaseRate = 1.5, private endTimeout = 30000) {
-        this.timeout = startTimeout;
+    private startTimeout = 3000;
+    private increaseRate = 1.5;
+    private endTimeout = 30000;
+    constructor(action: () => void, options?: Partial<ReconnectorOption>) {
+        if (options) {
+            if (typeof options.startTimeout === "number") {
+                this.startTimeout = options.startTimeout;
+            }
+            if (typeof options.increaseRate === "number") {
+                this.increaseRate = options.increaseRate;
+            }
+            if (typeof options.endTimeout === "number") {
+                this.endTimeout = options.endTimeout;
+            }
+        }
+
+        this.timeout = this.startTimeout;
         this.eventTarget.addEventListener("reconnect", () => {
             action();
         });
@@ -84,6 +107,20 @@ const reconnector = new Reconnector(() => {
                 return log;
             });
             app.logsSearchResultCount = message.result.hits.total;
+        } else if (message.kind === "push logs") {
+            app.logsPush = message.logs.map(h => {
+                const log: Log = {
+                    content: h.content,
+                    filepath: h.filepath,
+                    hostname: h.hostname,
+                };
+                try {
+                    log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                } catch (error) {
+                    console.log(error);
+                }
+                return log;
+            });
         }
     };
     ws.onclose = () => {
