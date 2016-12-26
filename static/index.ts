@@ -14,24 +14,32 @@ export const app = new App({
 
 class Reconnector {
     private eventTarget = document.createElement("div");
-    constructor(action: () => void) {
+    private timeout: number;
+    constructor(action: () => void, private startTimeout: number = 3000, private increaseRate = 1.5, private endTimeout = 30000) {
+        this.timeout = startTimeout;
         this.eventTarget.addEventListener("reconnect", () => {
             action();
         });
-        this.connect();
+        action();
     }
-    reconnect(timeout: number = 2000) {
+    reconnect() {
+        console.log(this.timeout);
         setTimeout(() => {
-            this.connect();
-        }, timeout);
+            if (this.timeout > this.endTimeout) {
+                this.timeout = this.endTimeout;
+            } else if (this.timeout < this.endTimeout) {
+                this.timeout = Math.min(this.timeout * this.increaseRate, this.endTimeout);
+            }
+            this.eventTarget.dispatchEvent(this.generateEvent("reconnect"));
+        }, this.timeout);
+    }
+    resetTimeout() {
+        this.timeout = this.startTimeout;
     }
     private generateEvent(typeArg: string) {
         const event = document.createEvent("CustomEvent");
         event.initCustomEvent(typeArg, false, false, undefined);
         return event;
-    }
-    private connect() {
-        this.eventTarget.dispatchEvent(this.generateEvent("reconnect"));
     }
 }
 
@@ -43,7 +51,9 @@ const reconnector = new Reconnector(() => {
         console.log(message);
     };
     ws.onclose = () => {
-        console.log(ws);
         reconnector.reconnect();
+    };
+    ws.onopen = () => {
+        reconnector.resetTimeout();
     };
 });
