@@ -19,6 +19,8 @@ export type PushErrorsMessage = {
 export type SearchLogsMessage = {
     kind: "search logs";
     q: string;
+    from: number;
+    size: number;
 };
 
 export type SearchLogsResultMessage = {

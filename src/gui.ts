@@ -18,18 +18,20 @@ export function start() {
         const logSubscription = libs.logSubject.bufferTime(1000)
             .filter(s => s.length > 0)
             .subscribe(logs => {
-                ws.send(JSON.stringify({
+                const message: types.PushLogsMessage = {
                     kind: "push logs",
                     logs,
-                } as types.PushLogsMessage));
+                };
+                ws.send(JSON.stringify(message));
             });
         const errorSubscription = libs.errorSubject.bufferTime(1000)
             .filter(s => s.length > 0)
             .subscribe(errors => {
-                ws.send(JSON.stringify({
+                const message: types.PushErrorsMessage = {
                     kind: "push error",
-                    errors: errors.map(e => e.stack),
-                } as types.PushErrorsMessage));
+                    errors: errors.map(e => e.stack || e.message),
+                };
+                ws.send(JSON.stringify(message));
             });
         ws.on("close", (code, name) => {
             logSubscription.unsubscribe();
@@ -40,11 +42,12 @@ export function start() {
                 try {
                     const message: types.Message = JSON.parse(data);
                     if (message.kind === "search logs") {
-                        search(config.elastic.url, message.q).then(result => {
-                            ws.send(JSON.stringify({
+                        search(message.q, message.from, message.size).then(result => {
+                            const resultMessage: types.SearchLogsResultMessage = {
                                 kind: "search logs result",
                                 result,
-                            } as types.SearchLogsResultMessage));
+                            };
+                            ws.send(JSON.stringify(resultMessage));
                         }, error => {
                             libs.errorSubject.next(error);
                         });
