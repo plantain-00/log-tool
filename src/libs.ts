@@ -7,8 +7,9 @@ import * as express from "express";
 import * as http from "http";
 import fetch from "node-fetch";
 import * as types from "./types";
+import { Reconnector } from "reconnection/browser";
 
-export { fs, path, Subject, WebSocket, express, http, fetch };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector };
 
 export const hostname = os.hostname();
 

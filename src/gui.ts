@@ -28,7 +28,7 @@ export function start() {
             .subscribe(errors => {
                 ws.send(JSON.stringify({
                     kind: "push error",
-                    errors,
+                    errors: errors.map(e => e.stack),
                 } as types.PushErrorsMessage));
             });
         ws.on("close", (code, name) => {

@@ -48,7 +48,19 @@
                         </div>
                     </div>
                 </div>
-                <div role="tabpanel" :class="tabIndex === 2 ? 'tab-pane active' : 'tab-pane'"></div>
+                <div role="tabpanel" :class="tabIndex === 2 ? 'tab-pane active' : 'tab-pane'">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <ul class="col-md-12">
+                                    <li v-for="(error, index) in errorsPush">
+                                        <pre>{{error}}</pre>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

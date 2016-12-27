@@ -13,7 +13,7 @@ export type PushLogsMessage = {
 
 export type PushErrorsMessage = {
     kind: "push error";
-    errors: Error[];
+    errors: string[];
 };
 
 export type SearchLogsMessage = {
