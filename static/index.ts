@@ -7,6 +7,9 @@ let ws: WebSocket | undefined;
 type Log = types.Log & {
     formattedContent?: string;
 };
+type ErrorPush = Error & {
+    formattedError?: string;
+};
 
 @Component({
     template: require("raw!./app.html"),
@@ -16,7 +19,7 @@ class App extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
-    errorsPush: Error[] = [];
+    errorsPush: ErrorPush[] = [];
     q = "*";
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
@@ -94,11 +97,7 @@ const reconnector = new Reconnector(() => {
         const message: types.Message = JSON.parse(event.data);
         if (message.kind === "search logs result") {
             app.logsSearchResult = message.result.hits.hits.map(h => {
-                const log: Log = {
-                    content: h._source.content,
-                    filepath: h._source.filepath,
-                    hostname: h._source.hostname,
-                };
+                const log: Log = h._source;
                 try {
                     log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
                 } catch (error) {
@@ -108,19 +107,25 @@ const reconnector = new Reconnector(() => {
             });
             app.logsSearchResultCount = message.result.hits.total;
         } else if (message.kind === "push logs") {
-            app.logsPush = message.logs.map(h => {
-                const log: Log = {
-                    content: h.content,
-                    filepath: h.filepath,
-                    hostname: h.hostname,
-                };
+            for (const l of message.logs) {
+                const log: Log = l;
                 try {
                     log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                 } catch (error) {
                     console.log(error);
                 }
-                return log;
-            });
+                app.logsPush.push(log);
+            }
+        } else if (message.kind === "push error") {
+            for (const e of message.errors) {
+                const error: ErrorPush = e;
+                try {
+                    error.formattedError = JSON.stringify(error, null, "  ");
+                } catch (error) {
+                    console.log(error);
+                }
+                app.errorsPush.unshift(error);
+            }
         }
     };
     ws.onclose = () => {
