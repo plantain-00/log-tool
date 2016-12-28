@@ -9,7 +9,10 @@ type Log = types.Log & {
     formattedContent?: string;
 };
 
-const initialQuery = `time:["1970-01-01 00:00:00" TO *] AND *`;
+const initialQuery = `time:["1970-01-01 00:00:00" TO *]
+AND filepath:*
+AND hostname:*
+AND *`;
 
 @Component({
     template: require("raw!./app.html"),
