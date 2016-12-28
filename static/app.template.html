@@ -5,9 +5,21 @@
         </div>
         <div class="col-md-12">
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" :class="tabIndex === 0 ? 'active' : ''" @click="tab(0)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Search Logs</a></li>
-                <li role="presentation" :class="tabIndex === 1 ? 'active' : ''" @click="tab(1)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Realtime Logs</a></li>
-                <li role="presentation" :class="tabIndex === 2 ? 'active' : ''" @click="tab(2)"><a href="javascript:void(0)" role="tab" data-toggle="tab">Realtime Errors</a></li>
+                <li role="presentation" :class="tabIndex === 0 ? 'active' : ''" @click="tab(0)">
+                    <a href="javascript:void(0)" role="tab" data-toggle="tab">Search Logs</a>
+                </li>
+                <li role="presentation" :class="tabIndex === 1 ? 'active' : ''" @click="tab(1)">
+                    <a href="javascript:void(0)" role="tab" data-toggle="tab">
+                        Realtime Logs
+                        <span class="badge" v-if="newLogsCount > 0">{{newLogsCount}}</span>
+                    </a>
+                </li>
+                <li role="presentation" :class="tabIndex === 2 ? 'active' : ''" @click="tab(2)">
+                    <a href="javascript:void(0)" role="tab" data-toggle="tab">
+                        Realtime Errors
+                        <span class="badge" v-if="newErrorsCount > 0">{{newErrorsCount}}</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="col-md-12">
@@ -17,7 +29,7 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-10">
-                                    <input class="form-control" v-model="q">
+                                    <input class="form-control" v-model="q" @keyup.enter="search(true)">
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-primary" @click="search(true)" :disabled="!q">search</button>
@@ -26,9 +38,10 @@
                             <div class="row">
                                 <ul class="col-md-12">
                                     <li v-if="logsSearchResult.length === 0">
-                                        <pre>not found</pre>
+                                        <pre>not started or nothing found.</pre>
                                     </li>
                                     <li v-for="(log, index) in logsSearchResult">
+                                        <span class="label label-default">{{log.time}}</span>
                                         <pre v-if="log.content">{{log.content}}</pre>
                                         <pre v-if="log.formattedContent">{{log.formattedContent}}</pre>
                                     </li>
@@ -51,6 +64,7 @@
                             <div class="row">
                                 <ul class="col-md-12">
                                     <li v-for="(log, index) in logsPush">
+                                        <span class="label label-default">{{log.time}}</span>
                                         <pre v-if="log.content">{{log.content}}</pre>
                                         <pre v-if="log.formattedContent">{{log.formattedContent}}</pre>
                                     </li>
@@ -65,7 +79,8 @@
                             <div class="row">
                                 <ul class="col-md-12">
                                     <li v-for="(error, index) in errorsPush">
-                                        <pre>{{error}}</pre>
+                                        <span class="label label-default">{{error.time}}</span>
+                                        <pre>{{error.error}}</pre>
                                     </li>
                                 </ul>
                             </div>

@@ -1,4 +1,5 @@
 export type Log = {
+    time: string;
     content: string;
     filepath: string;
     hostname: string;
@@ -11,9 +12,14 @@ export type PushLogsMessage = {
     logs: Log[];
 };
 
+export type ErrorPush = {
+    time: string;
+    error: string;
+};
+
 export type PushErrorsMessage = {
     kind: "push error";
-    errors: string[];
+    errors: ErrorPush[];
 };
 
 export type SearchLogsMessage = {

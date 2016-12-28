@@ -29,7 +29,12 @@ export function start() {
             .subscribe(errors => {
                 const message: types.PushErrorsMessage = {
                     kind: "push error",
-                    errors: errors.map(e => e.stack || e.message),
+                    errors: errors.map(e => {
+                        return {
+                            time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
+                            error: e.stack || e.message,
+                        };
+                    }),
                 };
                 ws.send(JSON.stringify(message));
             });

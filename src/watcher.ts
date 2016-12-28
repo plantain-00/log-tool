@@ -81,6 +81,7 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
             if (lines) {
                 for (const line of lines) {
                     libs.logSubject.next({
+                        time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
                         content: line,
                         filepath,
                         hostname: libs.hostname,

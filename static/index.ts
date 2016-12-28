@@ -17,15 +17,22 @@ class App extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
-    errorsPush: string[] = [];
+    errorsPush: types.ErrorPush[] = [];
     q = "*";
     from = 0;
-    size = 2;
+    size = 10;
+    newLogsCount = 0;
+    newErrorsCount = 0;
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
+        if (this.tabIndex === 1) {
+            this.newLogsCount = 0;
+        } else if (this.tabIndex === 2) {
+            this.newLogsCount = 0;
+        }
     }
     search(freshStart: boolean) {
         if (freshStart) {
@@ -77,10 +84,12 @@ const reconnector = new Reconnector(() => {
                 }
                 app.logsPush.unshift(log);
             }
+            app.newLogsCount += message.logs.length;
         } else if (message.kind === "push error") {
             for (const error of message.errors) {
                 app.errorsPush.unshift(error);
             }
+            app.newErrorsCount += message.errors.length;
         }
     };
     ws.onclose = () => {
