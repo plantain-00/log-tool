@@ -76,16 +76,27 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
             start,
             end,
             encoding: "utf8",
-        }).on("data", (content: string) => {
-            const lines = content.match(/[^\r\n]+/g);
+        }).on("data", (fileContentChanged: string) => {
+            const lines = fileContentChanged.match(/[^\r\n]+/g);
             if (lines) {
                 for (const line of lines) {
-                    libs.logSubject.next({
-                        time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
-                        content: line,
-                        filepath,
-                        hostname: libs.hostname,
-                    });
+                    try {
+                        const {time, content} = config.watcher.parseLine(line, libs.moment);
+                        libs.logSubject.next({
+                            time,
+                            content,
+                            filepath,
+                            hostname: libs.hostname,
+                        });
+                    } catch (error) {
+                        libs.errorSubject.next(error);
+                        libs.logSubject.next({
+                            time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
+                            content: line,
+                            filepath,
+                            hostname: libs.hostname,
+                        });
+                    }
                 }
             }
         });

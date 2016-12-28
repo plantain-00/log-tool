@@ -1,3 +1,5 @@
+import * as libs from "./libs";
+
 type Config = {
     inflow: {
         enabled: boolean;
@@ -12,6 +14,10 @@ type Config = {
         enabled: boolean;
         paths: string[];
         filePositionsDataPath: string;
+        parseLine: (line: string, moment: typeof libs.moment) => {
+            time: string;
+            content: string;
+        };
     };
     gui: {
         enabled: boolean;

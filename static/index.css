@@ -1,0 +1,33 @@
+* {
+    font-family: "Lucida Grande", Lucida Sans Unicode, Hiragino Sans GB, WenQuanYi Micro Hei, Verdana, Aril, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+input, textarea {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+pre {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
+li {
+    margin-top: 10px;
+}
+
+.btn {
+    width: 100%;
+}
+
+ul {
+    list-style: none;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+}
