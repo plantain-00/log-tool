@@ -9,6 +9,8 @@ type Log = types.Log & {
     formattedContent?: string;
 };
 
+const initialQuery = `time:["1970-01-01 00:00:00" TO *] AND *`;
+
 @Component({
     template: require("raw!./app.html"),
 })
@@ -18,7 +20,7 @@ class App extends Vue {
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
     errorsPush: types.ErrorPush[] = [];
-    q = "*";
+    q = initialQuery;
     from = 0;
     size = 10;
     newLogsCount = 0;

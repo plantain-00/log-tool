@@ -5,11 +5,12 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc -p src",
-    "build-static": "tsc -p static && npm run minifier-template && webpack --display-modules -p && npm run bundle-vendor-css && npm run clean && rev-static",
+    "build-static": "tsc -p static && npm run minifier-template && webpack --display-modules -p && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static",
     "lint": "tslint \"src/*.ts\" \"static/*.ts\"",
     "minifier-template": "html-minifier --collapse-whitespace --case-sensitive static/app.template.html -o static/app.html",
     "clean": "rm -f static/vendor.bundle-*.js static/index.bundle-*.js",
-    "bundle-vendor-css": "cleancss ./node_modules/bootstrap/dist/css/bootstrap.min.css ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css -o ./static/vendor.bundle.css"
+    "bundle-vendor-css": "cleancss ./node_modules/bootstrap/dist/css/bootstrap.min.css ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css -o ./static/vendor.bundle.css",
+    "bundle-css": "cleancss ./static/index.css -o ./static/index.bundle.css"
   },
   "repository": {
     "type": "git",
