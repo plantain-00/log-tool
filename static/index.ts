@@ -31,7 +31,7 @@ class App extends Vue {
         if (this.tabIndex === 1) {
             this.newLogsCount = 0;
         } else if (this.tabIndex === 2) {
-            this.newLogsCount = 0;
+            this.newErrorsCount = 0;
         }
     }
     search(freshStart: boolean) {
@@ -64,16 +64,20 @@ const reconnector = new Reconnector(() => {
     ws.onmessage = event => {
         const message: types.Message = JSON.parse(event.data);
         if (message.kind === "search logs result") {
-            for (const h of message.result.hits.hits) {
-                const log: Log = h._source;
-                try {
-                    log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
-                } catch (error) {
-                    console.log(error);
+            if (message.result.hits) {
+                for (const h of message.result.hits.hits) {
+                    const log: Log = h._source;
+                    try {
+                        log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    app.logsSearchResult.push(log);
                 }
-                app.logsSearchResult.push(log);
+                app.logsSearchResultCount = message.result.hits.total;
+            } else {
+                app.logsSearchResultCount = 0;
             }
-            app.logsSearchResultCount = message.result.hits.total;
         } else if (message.kind === "push logs") {
             for (const l of message.logs) {
                 const log: Log = l;

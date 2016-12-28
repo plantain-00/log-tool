@@ -42,7 +42,7 @@ export type SearchLogsResult = {
         successful: number;
         failed: number;
     };
-    hits: {
+    hits?: {
         total: number;
         max_score: number;
         hits: {

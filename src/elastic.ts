@@ -19,6 +19,6 @@ export function start() {
 }
 
 export async function search(q: string, from: number, size: number): Promise<types.SearchLogsResult> {
-    const response = await libs.fetch(`${config.elastic.url}/_search?q=${q}&from=${from}&size=${size}`);
+    const response = await libs.fetch(`${config.elastic.url}/_search?q=${q}&from=${from}&size=${size}&sort=time:desc`);
     return await response.json();
 }
