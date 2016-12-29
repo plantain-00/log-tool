@@ -9,8 +9,9 @@ import fetch from "node-fetch";
 import * as types from "./types";
 import { Reconnector } from "reconnection/browser";
 import * as moment from "moment";
+import { Server as WebSocketServer } from "uws";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer };
 
 export const hostname = os.hostname();
 

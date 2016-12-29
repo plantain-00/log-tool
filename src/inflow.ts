@@ -7,7 +7,7 @@ export function start() {
         return;
     }
 
-    const wss = new libs.WebSocket.Server({
+    const wss = new libs.WebSocketServer({
         port: config.inflow.port,
         host: config.inflow.host,
     });
