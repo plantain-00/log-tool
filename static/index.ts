@@ -10,9 +10,14 @@ type Log = types.Log & {
 };
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
-AND filepath:*
 AND hostname:*
+AND filepath:*
 AND *`;
+
+const maxCount = 50;
+function trimHistory<T>(array: T[]) {
+    array.splice(0, array.length - maxCount);
+}
 
 @Component({
     template: require("raw!./app.html"),
@@ -38,6 +43,15 @@ class App extends Vue {
         } else if (this.tabIndex === 2) {
             this.newErrorsCount = 0;
         }
+    }
+    clearLogsSearchResult() {
+        this.logsSearchResult = [];
+    }
+    clearLogsPush() {
+        this.logsPush = [];
+    }
+    clearErrorsPush() {
+        this.errorsPush = [];
     }
     search(freshStart: boolean) {
         if (freshStart) {
@@ -93,10 +107,16 @@ const reconnector = new Reconnector(() => {
                 }
                 app.logsPush.unshift(log);
             }
+            if (app.logsPush.length > maxCount) {
+                trimHistory(app.logsPush);
+            }
             app.newLogsCount += message.logs.length;
         } else if (message.kind === "push error") {
             for (const error of message.errors) {
                 app.errorsPush.unshift(error);
+            }
+            if (app.errorsPush.length > maxCount) {
+                trimHistory(app.errorsPush);
             }
             app.newErrorsCount += message.errors.length;
         }

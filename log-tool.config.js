@@ -36,8 +36,9 @@ module.exports = {
          */
         parseLine: (line, moment) => {
             return {
+                skip: false, // if true, just skip this line of log
                 time: moment().format("YYYY-MM-DD HH:mm:ss"),
-                content: line,
+                content: line, // the string that not include time, better be a json string
             };
         },
     },

@@ -15,6 +15,7 @@ type Config = {
         paths: string[];
         filePositionsDataPath: string;
         parseLine: (line: string, moment: typeof libs.moment) => {
+            skip: boolean;
             time: string;
             content: string;
         };

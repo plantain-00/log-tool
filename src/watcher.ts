@@ -81,13 +81,15 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
             if (lines) {
                 for (const line of lines) {
                     try {
-                        const {time, content} = config.watcher.parseLine(line, libs.moment);
-                        libs.logSubject.next({
-                            time,
-                            content,
-                            filepath,
-                            hostname: libs.hostname,
-                        });
+                        const {skip, time, content} = config.watcher.parseLine(line, libs.moment);
+                        if (!skip) {
+                            libs.logSubject.next({
+                                time,
+                                content,
+                                filepath,
+                                hostname: libs.hostname,
+                            });
+                        }
                     } catch (error) {
                         libs.errorSubject.next(error);
                         libs.logSubject.next({

@@ -5,6 +5,7 @@
 
 input, textarea {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    margin-bottom: 10px;
 }
 
 pre {
@@ -19,7 +20,7 @@ li {
     margin-top: 10px;
 }
 
-.btn {
+.primary-button {
     width: 100%;
 }
 
