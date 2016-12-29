@@ -14,7 +14,7 @@ type Config = {
         enabled: boolean;
         paths: string[];
         filePositionsDataPath: string;
-        parseLine: (line: string, moment: typeof libs.moment) => {
+        parseLine: (line: string, moment: typeof libs.moment, filepath: string) => {
             skip: boolean;
             time: string;
             content: string;

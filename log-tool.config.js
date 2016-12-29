@@ -33,8 +33,9 @@ module.exports = {
          * parse a line of log string to get time and other valid information.
          * line: string, the log line,
          * moment: Object, the object from moment.js
+         * filepath: string, the path of the log file
          */
-        parseLine: (line, moment) => {
+        parseLine: (line, moment, filepath) => {
             return {
                 skip: false, // if true, just skip this line of log
                 time: moment().format("YYYY-MM-DD HH:mm:ss"),

@@ -38,6 +38,14 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <button class="btn btn-default btn-sm" @click="clearLogsSearchResult()" :disabled="logsSearchResult.length === 0">clear</button>
+                                    <label>
+                                        <input type="checkbox" v-model="showRaw">
+                                        show raw data
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" v-model="showFormatted">
+                                        show formatted data
+                                    </label>
                                 </div>
                             </div>
                             <div class="row">
@@ -49,8 +57,8 @@
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
-                                        <pre v-if="log.content">{{log.content}}</pre>
-                                        <pre v-if="log.formattedContent">{{log.formattedContent}}</pre>
+                                        <pre v-if="log.content && showRaw">{{log.content}}</pre>
+                                        <pre v-if="log.formattedContent && showFormatted">{{log.formattedContent}}</pre>
                                     </li>
                                 </ul>
                             </div>
