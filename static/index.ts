@@ -33,8 +33,10 @@ class App extends Vue {
     size = 10;
     newLogsCount = 0;
     newErrorsCount = 0;
-    showRaw = false;
-    showFormatted = true;
+    showRawLogResult = false;
+    showFormattedLogResult = true;
+    showRawLogPush = false;
+    showFormattedLogPush = true;
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
