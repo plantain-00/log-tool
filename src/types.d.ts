@@ -67,7 +67,11 @@ export type Inflow =
     |
     {
         kind: "sample";
-        hostname: string;
-        port: number;
-        sample: { [name: string]: number };
+        sample: Sample;
     };
+
+export type Sample = {
+    hostname: string;
+    port: number;
+    values: { [name: string]: number };
+};

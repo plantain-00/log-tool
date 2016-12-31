@@ -52,9 +52,9 @@ curl -XPUT http://localhost:9200/tool -d '
 }'
 ```
 
-#### inflow protocol
+#### inflow and outflow protocol
 
-The inflow message should be a string from `JSON.stringify`:
+The inflow message should be a string from `JSON.stringify` array of:
 
 ```json
 {
@@ -85,8 +85,10 @@ or
 ```json
 {
     kind: "sample";
-    hostname: string;
-    port: number;
-    sample: { [name: string]: number };
+    sample: {
+        hostname: string;
+        port: number;
+        values: { [name: string]: number };
+    }
 }
 ```

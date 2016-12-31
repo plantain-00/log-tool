@@ -21,7 +21,7 @@ export function start() {
                     } else if (inflow.kind === "error") {
                         libs.errorSubject.next(inflow.error);
                     } else if (inflow.kind === "sample") {
-                        // todo
+                        libs.sampleSubject.next(inflow.sample);
                     }
                 }
             } catch (error) {

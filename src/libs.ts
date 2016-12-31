@@ -17,6 +17,7 @@ export const hostname = os.hostname();
 
 export const logSubject = new Subject<types.Log>();
 export const errorSubject = new Subject<types.ErrorWithTime>();
+export const sampleSubject = new Subject<types.Sample>();
 
 export function getNow() {
     return moment().format("YYYY-MM-DD HH:mm:ss");

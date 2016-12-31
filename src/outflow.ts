@@ -8,10 +8,11 @@ export function start() {
 
     const reconnector = new libs.Reconnector(() => {
         const ws = new libs.WebSocket(config.outflow.url);
-        const subscription = libs.logSubject.bufferTime(1000)
+        const subscription = libs.Subject.merge(libs.logSubject, libs.errorSubject, libs.sampleSubject)
+            .bufferTime(1000)
             .filter(s => s.length > 0)
-            .subscribe(logs => {
-                ws.send(JSON.stringify(logs));
+            .subscribe(outflows => {
+                ws.send(JSON.stringify(outflows));
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();
