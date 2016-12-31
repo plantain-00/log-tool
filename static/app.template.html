@@ -20,6 +20,9 @@
                         <span class="badge" v-if="newErrorsCount > 0">{{newErrorsCount}}</span>
                     </a>
                 </li>
+                <li role="presentation" :class="tabIndex === 3 ? 'active' : ''" @click="tab(3)">
+                    <a href="javascript:void(0)" role="tab" data-toggle="tab">Samples</a>
+                </li>
             </ul>
         </div>
         <div class="col-md-12">
@@ -114,6 +117,23 @@
                                         <pre>{{error.error}}</pre>
                                     </li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" :class="tabIndex === 3 ? 'tab-pane active' : 'tab-pane'">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <ul class="menu list-unstyled">
+                                <li v-for="chart in charts">
+                                    <a :href="'#' + chart.id" class="btn btn-link">{{chart.title}}</a>
+                                </li>
+                            </ul>
+                            <div class="row" v-for="chart in charts">
+                                <div class="col-md-12">
+                                    <h4 :id="chart.id" style="padding-top: 10px;">{{chart.title}}{{chart.unit}}{{chart.sum >= 0 ? (" " + chart.sum) : ""}}</h4>
+                                    <canvas :id="'current-' + chart.id" class="graph" width="1000" height="200"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>

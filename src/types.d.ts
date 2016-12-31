@@ -48,7 +48,8 @@ export type Flow =
     };
 
 export type Protocol = {
-    kind: "flows" | "search" | "search result",
+    kind: "flows" | "search" | "search result" | "history samples",
+    serverTime?: string;
     flows?: Flow[],
     search?: {
         q: string;
@@ -56,10 +57,16 @@ export type Protocol = {
         size: number;
     };
     searchResult?: SearchLogsResult;
+    historySamples?: SampleFrame[];
 };
 
 export type Sample = {
     hostname: string;
     port: number;
     values: { [name: string]: number };
+};
+
+export type SampleFrame = {
+    time: string;
+    samples: Sample[];
 };

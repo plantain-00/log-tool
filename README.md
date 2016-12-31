@@ -58,7 +58,8 @@ The message should be a string from `JSON.stringify(protocol)`, the protocol's t
 
 ```ts
 type Protocol = {
-    kind: "flows" | "search" | "search result",
+    kind: "flows" | "search" | "search result" | "history samples",
+    serverTime?: string;
     flows?: Flow[],
     search?: {
         q: string;
@@ -66,6 +67,14 @@ type Protocol = {
         size: number;
     };
     searchResult?: SearchLogsResult;
+    historySamples?: {
+        time: string;
+        samples: {
+            hostname: string;
+            port: number;
+            values: { [name: string]: number };
+        }[];
+    }[];
 };
 
 type SearchLogsResult = {

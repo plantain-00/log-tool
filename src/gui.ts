@@ -21,6 +21,7 @@ export function start() {
             .subscribe(flows => {
                 const protocol: types.Protocol = {
                     kind: "flows",
+                    serverTime: libs.getNow(),
                     flows,
                 };
                 ws.send(JSON.stringify(protocol));
@@ -34,11 +35,11 @@ export function start() {
                     const protocol: types.Protocol = JSON.parse(data);
                     if (protocol.kind === "search") {
                         search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
-                            const resultMessage: types.Protocol = {
+                            const searchResult: types.Protocol = {
                                 kind: "search result",
                                 searchResult: result,
                             };
-                            ws.send(JSON.stringify(resultMessage));
+                            ws.send(JSON.stringify(searchResult));
                         }, error => {
                             libs.errorSubject.next(error);
                         });
@@ -53,6 +54,11 @@ export function start() {
                 }
             });
         }
+        const protocol: types.Protocol = {
+            kind: "history samples",
+            historySamples: [],
+        };
+        ws.send(JSON.stringify(protocol));
     });
 
     server.on("request", app);
