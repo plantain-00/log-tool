@@ -46,7 +46,7 @@ export async function start() {
     setInterval(() => {
         libs.fs.writeFile(config.watcher.filePositionsDataPath, JSON.stringify(positions, null, "  "), writeFileError => {
             if (writeFileError) {
-                libs.errorSubject.next(writeFileError);
+                libs.errorSubject.next(libs.getErrorWithTime(writeFileError));
             }
         });
     }, 1000);
@@ -58,7 +58,7 @@ function watch(pathname: string, isDirectory: boolean) {
         libs.fs.stat(filepath, (fileError, fileStats) => {
             if (fileError) {
                 // the file is deleted
-                libs.errorSubject.next(fileError);
+                libs.errorSubject.next(libs.getErrorWithTime(fileError));
                 delete positions[filepath];
             } else {
                 // the file is updated or a new file
@@ -93,7 +93,7 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
                     } catch (error) {
                         libs.errorSubject.next(error);
                         libs.logSubject.next({
-                            time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
+                            time: libs.getNow(),
                             content: line,
                             filepath,
                             hostname: libs.hostname,

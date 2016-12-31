@@ -12,11 +12,17 @@ export function start() {
         host: config.inflow.host,
     });
     wss.on("connection", ws => {
-        ws.on("message", (logString: string, flag) => {
+        ws.on("message", (inflowString: string, flag) => {
             try {
-                const logs: types.Log[] = JSON.parse(logString);
-                for (const log of logs) {
-                    libs.logSubject.next(log);
+                const inflows: types.Inflow[] = JSON.parse(inflowString);
+                for (const inflow of inflows) {
+                    if (inflow.kind === "log") {
+                        libs.logSubject.next(inflow.log);
+                    } else if (inflow.kind === "error") {
+                        libs.errorSubject.next(inflow.error);
+                    } else if (inflow.kind === "sample") {
+                        // todo
+                    }
                 }
             } catch (error) {
                 libs.errorSubject.next(error);

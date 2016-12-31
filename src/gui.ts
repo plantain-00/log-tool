@@ -18,7 +18,7 @@ export function start() {
         const logSubscription = libs.logSubject.bufferTime(1000)
             .filter(s => s.length > 0)
             .subscribe(logs => {
-                const message: types.PushLogsMessage = {
+                const message: types.Message = {
                     kind: "push logs",
                     logs,
                 };
@@ -27,14 +27,9 @@ export function start() {
         const errorSubscription = libs.errorSubject.bufferTime(1000)
             .filter(s => s.length > 0)
             .subscribe(errors => {
-                const message: types.PushErrorsMessage = {
+                const message: types.Message = {
                     kind: "push error",
-                    errors: errors.map(e => {
-                        return {
-                            time: libs.moment().format("YYYY-MM-DD HH:mm:ss"),
-                            error: e.stack || e.message,
-                        };
-                    }),
+                    errors,
                 };
                 ws.send(JSON.stringify(message));
             });
@@ -48,7 +43,7 @@ export function start() {
                     const message: types.Message = JSON.parse(data);
                     if (message.kind === "search logs") {
                         search(message.q, message.from, message.size).then(result => {
-                            const resultMessage: types.SearchLogsResultMessage = {
+                            const resultMessage: types.Message = {
                                 kind: "search logs result",
                                 result,
                             };
@@ -57,7 +52,10 @@ export function start() {
                             libs.errorSubject.next(error);
                         });
                     } else {
-                        libs.errorSubject.next(new Error(`message kind ${message.kind} is not recognized.`));
+                        libs.errorSubject.next({
+                            time: libs.getNow(),
+                            error: `message kind ${message.kind} is not recognized.`,
+                        });
                     }
                 } catch (error) {
                     libs.errorSubject.next(error);

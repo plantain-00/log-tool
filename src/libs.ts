@@ -16,13 +16,24 @@ export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment
 export const hostname = os.hostname();
 
 export const logSubject = new Subject<types.Log>();
-export const errorSubject = new Subject<Error>();
+export const errorSubject = new Subject<types.ErrorWithTime>();
+
+export function getNow() {
+    return moment().format("YYYY-MM-DD HH:mm:ss");
+}
+
+export function getErrorWithTime(error: Error) {
+    return {
+        time: getNow(),
+        error: error.stack || error.message,
+    };
+}
 
 export function statAsync(pathname: string) {
     return new Promise<fs.Stats | undefined>((resolve, reject) => {
         fs.stat(pathname, (error, stats) => {
             if (error) {
-                errorSubject.next(error);
+                errorSubject.next(getErrorWithTime(error));
             }
             resolve(stats);
         });
@@ -33,7 +44,7 @@ export function readFileAsync(filepath: string) {
     return new Promise<string | undefined>((resolve, reject) => {
         fs.readFile(filepath, "utf8", (error, data) => {
             if (error) {
-                errorSubject.next(error);
+                errorSubject.next(getErrorWithTime(error));
             }
             resolve(data);
         });
@@ -44,7 +55,7 @@ export function readDirAsync(filepath: string) {
     return new Promise<string[] | undefined>((resolve, reject) => {
         fs.readdir(filepath, (error, files) => {
             if (error) {
-                errorSubject.next(error);
+                errorSubject.next(getErrorWithTime(error));
             }
             resolve(files);
         });

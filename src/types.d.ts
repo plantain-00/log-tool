@@ -5,34 +5,33 @@ export type Log = {
     hostname: string;
 };
 
-export type Message = PushLogsMessage | PushErrorsMessage | SearchLogsMessage | SearchLogsResultMessage;
-
-export type PushLogsMessage = {
-    kind: "push logs";
-    logs: Log[];
-};
-
-export type ErrorPush = {
+type ErrorWithTime = {
     time: string;
     error: string;
 };
 
-export type PushErrorsMessage = {
-    kind: "push error";
-    errors: ErrorPush[];
-};
-
-export type SearchLogsMessage = {
-    kind: "search logs";
-    q: string;
-    from: number;
-    size: number;
-};
-
-export type SearchLogsResultMessage = {
-    kind: "search logs result";
-    result: SearchLogsResult;
-};
+export type Message =
+    {
+        kind: "push logs";
+        logs: Log[];
+    }
+    |
+    {
+        kind: "push error";
+        errors: ErrorWithTime[];
+    }
+    |
+    {
+        kind: "search logs";
+        q: string;
+        from: number;
+        size: number;
+    }
+    |
+    {
+        kind: "search logs result";
+        result: SearchLogsResult;
+    };
 
 export type SearchLogsResult = {
     took: number;
@@ -54,3 +53,21 @@ export type SearchLogsResult = {
         }[];
     };
 };
+
+export type Inflow =
+    {
+        kind: "log";
+        log: Log;
+    }
+    |
+    {
+        kind: "error";
+        error: ErrorWithTime;
+    }
+    |
+    {
+        kind: "sample";
+        hostname: string;
+        port: number;
+        sample: { [name: string]: number };
+    };

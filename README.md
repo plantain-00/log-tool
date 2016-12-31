@@ -51,3 +51,42 @@ curl -XPUT http://localhost:9200/tool -d '
     }
 }'
 ```
+
+#### inflow protocol
+
+The inflow message should be a string from `JSON.stringify`:
+
+```json
+{
+    kind: "log";
+    log: {
+        time: string;
+        content: string;
+        filepath: string;
+        hostname: string;
+    };
+}
+```
+
+or
+
+```json
+{
+    kind: "error";
+    error: {
+        time: string;
+        error: string;
+    };
+}
+```
+
+or
+
+```json
+{
+    kind: "sample";
+    hostname: string;
+    port: number;
+    sample: { [name: string]: number };
+}
+```
