@@ -10,29 +10,6 @@ type ErrorWithTime = {
     error: string;
 };
 
-export type Message =
-    {
-        kind: "push logs";
-        logs: Log[];
-    }
-    |
-    {
-        kind: "push error";
-        errors: ErrorWithTime[];
-    }
-    |
-    {
-        kind: "search logs";
-        q: string;
-        from: number;
-        size: number;
-    }
-    |
-    {
-        kind: "search logs result";
-        result: SearchLogsResult;
-    };
-
 export type SearchLogsResult = {
     took: number;
     timed_out: boolean;
@@ -54,7 +31,7 @@ export type SearchLogsResult = {
     };
 };
 
-export type Inflow =
+export type Flow =
     {
         kind: "log";
         log: Log;
@@ -69,6 +46,17 @@ export type Inflow =
         kind: "sample";
         sample: Sample;
     };
+
+export type Protocol = {
+    kind: "flows" | "search" | "search result",
+    flows?: Flow[],
+    search?: {
+        q: string;
+        from: number;
+        size: number;
+    };
+    searchResult?: SearchLogsResult;
+};
 
 export type Sample = {
     hostname: string;

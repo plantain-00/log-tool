@@ -15,46 +15,37 @@ export function start() {
     app.use(libs.express.static(libs.path.resolve(__dirname, "../static")));
 
     wss.on("connection", ws => {
-        const logSubscription = libs.logSubject.bufferTime(1000)
+        const subscription = libs.flowObservable
+            .bufferTime(1000)
             .filter(s => s.length > 0)
-            .subscribe(logs => {
-                const message: types.Message = {
-                    kind: "push logs",
-                    logs,
+            .subscribe(flows => {
+                const protocol: types.Protocol = {
+                    kind: "flows",
+                    flows,
                 };
-                ws.send(JSON.stringify(message));
-            });
-        const errorSubscription = libs.errorSubject.bufferTime(1000)
-            .filter(s => s.length > 0)
-            .subscribe(errors => {
-                const message: types.Message = {
-                    kind: "push error",
-                    errors,
-                };
-                ws.send(JSON.stringify(message));
+                ws.send(JSON.stringify(protocol));
             });
         ws.on("close", (code, name) => {
-            logSubscription.unsubscribe();
-            errorSubscription.unsubscribe();
+            subscription.unsubscribe();
         });
         if (config.elastic.enabled) {
             ws.on("message", (data: string, flag) => {
                 try {
-                    const message: types.Message = JSON.parse(data);
-                    if (message.kind === "search logs") {
-                        search(message.q, message.from, message.size).then(result => {
-                            const resultMessage: types.Message = {
-                                kind: "search logs result",
-                                result,
+                    const protocol: types.Protocol = JSON.parse(data);
+                    if (protocol.kind === "search") {
+                        search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
+                            const resultMessage: types.Protocol = {
+                                kind: "search result",
+                                searchResult: result,
                             };
                             ws.send(JSON.stringify(resultMessage));
                         }, error => {
                             libs.errorSubject.next(error);
                         });
                     } else {
-                        libs.errorSubject.next({
+                        libs.errorWithTimeSubject.next({
                             time: libs.getNow(),
-                            error: `message kind ${message.kind} is not recognized.`,
+                            error: `protocol kind ${protocol.kind} is not recognized.`,
                         });
                     }
                 } catch (error) {

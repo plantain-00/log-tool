@@ -27,7 +27,7 @@ class App extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
-    errorsPush: types.ErrorPush[] = [];
+    errorsPush: types.ErrorWithTime[] = [];
     q = initialQuery;
     from = 0;
     size = 10;
@@ -66,11 +66,13 @@ class App extends Vue {
             this.from += this.size;
         }
         if (ws) {
-            const message: types.SearchLogsMessage = {
-                kind: "search logs",
-                q: this.q,
-                from: this.from,
-                size: this.size,
+            const message: types.Protocol = {
+                kind: "search",
+                search: {
+                    q: this.q,
+                    from: this.from,
+                    size: this.size,
+                },
             };
             ws.send(JSON.stringify(message));
         }
@@ -85,10 +87,11 @@ const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const reconnector = new Reconnector(() => {
     ws = new WebSocket(`${wsProtocol}//${location.host}`);
     ws.onmessage = event => {
-        const message: types.Message = JSON.parse(event.data);
-        if (message.kind === "search logs result") {
-            if (message.result.hits) {
-                for (const h of message.result.hits.hits) {
+        const protocol: types.Protocol = JSON.parse(event.data);
+        if (protocol.kind === "search result") {
+            const hits = protocol.searchResult!.hits;
+            if (hits) {
+                for (const h of hits.hits) {
                     const log: Log = h._source;
                     try {
                         log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
@@ -97,32 +100,33 @@ const reconnector = new Reconnector(() => {
                     }
                     app.logsSearchResult.push(log);
                 }
-                app.logsSearchResultCount = message.result.hits.total;
+                app.logsSearchResultCount = hits.total;
             } else {
                 app.logsSearchResultCount = 0;
             }
-        } else if (message.kind === "push logs") {
-            for (const l of message.logs) {
-                const log: Log = l;
-                try {
-                    log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
-                } catch (error) {
-                    console.log(error);
+        } else if (protocol.kind === "flows") {
+            for (const flow of protocol.flows!) {
+                if (flow.kind === "log") {
+                    const log: Log = flow.log;
+                    try {
+                        log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    app.logsPush.unshift(log);
+                    app.newLogsCount++;
+                } else if (flow.kind === "error") {
+                    app.errorsPush.unshift(flow.error);
+                    app.newErrorsCount++;
                 }
-                app.logsPush.unshift(log);
             }
+
             if (app.logsPush.length > maxCount) {
                 trimHistory(app.logsPush);
-            }
-            app.newLogsCount += message.logs.length;
-        } else if (message.kind === "push error") {
-            for (const error of message.errors) {
-                app.errorsPush.unshift(error);
             }
             if (app.errorsPush.length > maxCount) {
                 trimHistory(app.errorsPush);
             }
-            app.newErrorsCount += message.errors.length;
         }
     };
     ws.onclose = () => {

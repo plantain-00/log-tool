@@ -1,5 +1,6 @@
 import * as libs from "./libs";
 import * as config from "./config";
+import * as types from "./types";
 
 export function start() {
     if (!config.outflow.enabled) {
@@ -8,11 +9,15 @@ export function start() {
 
     const reconnector = new libs.Reconnector(() => {
         const ws = new libs.WebSocket(config.outflow.url);
-        const subscription = libs.Subject.merge(libs.logSubject, libs.errorSubject, libs.sampleSubject)
+        const subscription = libs.flowObservable
             .bufferTime(1000)
             .filter(s => s.length > 0)
-            .subscribe(outflows => {
-                ws.send(JSON.stringify(outflows));
+            .subscribe(flows => {
+                const protocol: types.Protocol = {
+                    kind: "flows",
+                    flows,
+                };
+                ws.send(JSON.stringify(protocol));
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();

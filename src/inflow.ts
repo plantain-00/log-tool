@@ -14,14 +14,14 @@ export function start() {
     wss.on("connection", ws => {
         ws.on("message", (inflowString: string, flag) => {
             try {
-                const inflows: types.Inflow[] = JSON.parse(inflowString);
-                for (const inflow of inflows) {
-                    if (inflow.kind === "log") {
-                        libs.logSubject.next(inflow.log);
-                    } else if (inflow.kind === "error") {
-                        libs.errorSubject.next(inflow.error);
-                    } else if (inflow.kind === "sample") {
-                        libs.sampleSubject.next(inflow.sample);
+                const flows: types.Flow[] = JSON.parse(inflowString);
+                for (const flow of flows) {
+                    if (flow.kind === "log") {
+                        libs.logSubject.next(flow.log);
+                    } else if (flow.kind === "error") {
+                        libs.errorWithTimeSubject.next(flow.error);
+                    } else if (flow.kind === "sample") {
+                        libs.sampleSubject.next(flow.sample);
                     }
                 }
             } catch (error) {

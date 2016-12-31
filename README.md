@@ -52,12 +52,44 @@ curl -XPUT http://localhost:9200/tool -d '
 }'
 ```
 
-#### inflow and outflow protocol
+#### protocol
 
-The inflow message should be a string from `JSON.stringify` array of:
+The message should be a string from `JSON.stringify(protocol)`, the protocol's type is:
 
-```json
-{
+```ts
+type Protocol = {
+    kind: "flows" | "search" | "search result",
+    flows?: Flow[],
+    search?: {
+        q: string;
+        from: number;
+        size: number;
+    };
+    searchResult?: SearchLogsResult;
+};
+
+type SearchLogsResult = {
+    took: number;
+    timed_out: boolean;
+    _shards: {
+        total: number;
+        successful: number;
+        failed: number;
+    };
+    hits?: {
+        total: number;
+        max_score: number;
+        hits: {
+            _index: string;
+            _type: string;
+            _id: string;
+            _score: number;
+            _source: Log;
+        }[];
+    };
+};
+
+type Flow = {
     kind: "log";
     log: {
         time: string;
@@ -66,11 +98,7 @@ The inflow message should be a string from `JSON.stringify` array of:
         hostname: string;
     };
 }
-```
-
-or
-
-```json
+|
 {
     kind: "error";
     error: {
@@ -78,11 +106,7 @@ or
         error: string;
     };
 }
-```
-
-or
-
-```json
+|
 {
     kind: "sample";
     sample: {
@@ -90,5 +114,5 @@ or
         port: number;
         values: { [name: string]: number };
     }
-}
+};
 ```
