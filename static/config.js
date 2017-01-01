@@ -1,4 +1,4 @@
-var sources = [
+var configs = [
     {
         name: "httpAverageResponsesTime", // the unique name
         description: "HTTP响应平均耗时",
