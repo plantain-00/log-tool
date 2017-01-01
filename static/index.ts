@@ -122,7 +122,10 @@ const reconnector = new Reconnector(() => {
             }
 
             if (samples.length > 0) {
-                addNewSamples(protocol.serverTime!, samples);
+                addNewSamples({
+                    time: protocol.serverTime!,
+                    samples,
+                });
             }
 
             trimHistory(app.logsPush);

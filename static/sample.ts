@@ -1,23 +1,28 @@
 import { getColor } from "./color";
 import * as types from "../src/types";
 
-// declared in config.js
-declare const configs: {
+type Config = {
     name: string;
     description: string;
     willSum: boolean;
     compute?: (array: { [name: string]: number }) => number;
     unit?: string;
-}[];
+};
 
-const chartDatas: LinearChartData[] = [];
-let currentAreaIndexMouseOver = -1;
+// declared in config.js
+declare const configs: Config[];
+
+const chartDatas: { [name: string]: LinearChartData } = {};
+let mouseOverChartName: string | undefined = undefined;
 export const charts = [] as {
     title: string,
     id: string,
     unit: string,
     sum: number,
 }[];
+const allCharts: { [name: string]: Chart } = {};
+const allChartElements: { [name: string]: HTMLCanvasElement } = {};
+const maxCount = 300;
 
 // initialize charts and charts' datas
 for (let i = 0; i < configs.length; i++) {
@@ -28,10 +33,10 @@ for (let i = 0; i < configs.length; i++) {
         unit: config.unit ? `(${config.unit})` : "",
         sum: -1,
     });
-    chartDatas.push({
+    chartDatas[config.name] = {
         labels: [],
         datasets: [],
-    });
+    };
 }
 
 /**
@@ -46,12 +51,12 @@ function find<T>(array: T[], condition: (element: T) => boolean): T | undefined 
     return undefined;
 }
 
-function sum(i: number) {
-    if (!configs[i].willSum) {
+function sum(config: Config) {
+    if (!config.willSum) {
         return -1;
     }
     let result = 0;
-    for (const dataset of chartDatas[i].datasets!) {
+    for (const dataset of chartDatas[config.name].datasets!) {
         for (const data of dataset.data!) {
             result += (data as number);
         }
@@ -59,46 +64,45 @@ function sum(i: number) {
     return result;
 }
 
-const maxCount = 300;
 export function trimHistory<T>(array: T[]) {
     if (array.length > maxCount) {
         array.splice(0, array.length - maxCount);
     }
 }
 
-function appendChartData(nodeInfo: types.SampleFrame) {
-    const time = nodeInfo.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
-    const isOverCount = chartDatas[0].labels!.length >= maxCount;
+function appendChartData(sampleFrame: types.SampleFrame) {
+    const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
+    const isOverCount = chartDatas[configs[0].name].labels!.length >= maxCount;
 
     for (let i = 0; i < configs.length; i++) {
         const config = configs[i];
-        const willTrimHistory = isOverCount && currentAreaIndexMouseOver !== i;
-        chartDatas[i].labels!.push(time);
+        const willTrimHistory = isOverCount && mouseOverChartName !== config.name;
+        chartDatas[config.name].labels!.push(time);
         if (willTrimHistory) {
-            trimHistory(chartDatas[i].labels!);
+            trimHistory(chartDatas[config.name].labels!);
         }
 
-        for (const node of nodeInfo.samples) {
-            const nodeName = `${node.hostname}:${node.port}`;
-            const count = config.compute ? config.compute(node.values) : node.values[config.name];
+        for (const sample of sampleFrame.samples) {
+            const seriesName = `${sample.hostname}:${sample.port}`;
+            const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
 
-            const dataset = find(chartDatas[i].datasets!, d => d.label === nodeName);
+            const dataset = find(chartDatas[config.name].datasets!, d => d.label === seriesName);
             if (dataset) {
                 (dataset.data as number[]).push(count);
                 if (willTrimHistory) {
                     trimHistory(dataset.data as number[]);
                 }
             } else {
-                let color = getColor(nodeName);
+                let color = getColor(seriesName);
 
-                const length = chartDatas[i].labels!.length - 1;
+                const length = chartDatas[config.name].labels!.length - 1;
                 const data: number[] = [];
                 for (let j = 0; j < length; j++) {
                     data.push(0);
                 }
                 data.push(count);
-                chartDatas[i].datasets!.push({
-                    label: nodeName,
+                chartDatas[config.name].datasets!.push({
+                    label: seriesName,
                     data,
                     borderColor: color,
                     backgroundColor: color,
@@ -106,20 +110,17 @@ function appendChartData(nodeInfo: types.SampleFrame) {
             }
         }
 
-        for (const dataset of chartDatas[i].datasets!) {
-            const node = find(nodeInfo.samples, n => `${n.hostname}:${n.port}` === dataset.label);
+        for (const dataset of chartDatas[config.name].datasets!) {
+            const node = find(sampleFrame.samples, sample => `${sample.hostname}:${sample.port}` === dataset.label);
             if (!node) {
                 (dataset.data as number[]).push(0);
                 trimHistory(dataset.data as number[]);
             }
         }
 
-        charts[i].sum = sum(i);
+        charts[i].sum = sum(config);
     }
 }
-
-const currentCharts: Chart[] = [];
-const currentElements: HTMLCanvasElement[] = [];
 
 // function isElementInViewport(element: HTMLElement) {
 //     const rect = element.getBoundingClientRect();
@@ -129,31 +130,36 @@ const currentElements: HTMLCanvasElement[] = [];
 //         && rect.top < (window.innerHeight || document.documentElement.clientHeight);
 // }
 
-export function addNewSamples(time: string, samples: types.Sample[]) {
-    appendChartData({
-        time,
-        samples,
-    });
+export function addNewSamples(sampleFrame: types.SampleFrame) {
+    appendChartData(sampleFrame);
 
-    for (let i = 0; i < configs.length; i++) {
-        // const isInViewport = isElementInViewport(currentElements[i]);
-        // if (isInViewport && currentAreaIndexMouseOver !== i) {
-        currentCharts[i].update();
+    for (const config of configs) {
+        // const isInViewport = isElementInViewport(allChartElements[config.name]);
+        // if (isInViewport && mouseOverChartName !== config.name) {
+        allCharts[config.name].update();
         // }
     }
 }
 
-export function addHistorySamples(historySamples: types.SampleFrame[]) {
-    for (const sample of historySamples!) {
-        appendChartData(sample);
+export function addHistorySamples(historySampleFrames: types.SampleFrame[]) {
+    for (const sampleFrame of historySampleFrames!) {
+        appendChartData(sampleFrame);
     }
 
-    for (let i = 0; i < configs.length; i++) {
-        const element = document.getElementById("current-" + configs[i].name) as HTMLCanvasElement;
+    for (const config of configs) {
+        const element = document.getElementById("current-" + config.name) as HTMLCanvasElement;
+        element.onmouseover = () => {
+            mouseOverChartName = config.name;
+        };
+        element.onmouseout = () => {
+            mouseOverChartName = undefined;
+        };
+        allChartElements[config.name] = element;
+
         const ctx = element.getContext("2d");
-        currentCharts.push(new Chart(ctx!, {
+        allCharts[config.name] = new Chart(ctx!, {
             type: "line",
-            data: chartDatas[i],
+            data: chartDatas[config.name],
             options: {
                 responsive: false,
                 animation: {
@@ -187,13 +193,6 @@ export function addHistorySamples(historySamples: types.SampleFrame[]) {
                     }],
                 },
             },
-        }));
-        currentElements.push(element);
-        element.onmouseover = () => {
-            currentAreaIndexMouseOver = i;
-        };
-        element.onmouseout = () => {
-            currentAreaIndexMouseOver = -1;
-        };
+        });
     }
 }
