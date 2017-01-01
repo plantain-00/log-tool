@@ -22,13 +22,13 @@ for (const config of chartConfigs) {
     };
 }
 
-function findIndex<T>(array: T[], condition: (element: T) => boolean): number {
-    for (let i = 0; i < array.length; i++) {
-        if (condition(array[i])) {
-            return i;
+function find<T>(array: T[], condition: (element: T) => boolean): T | undefined {
+    for (const element of array) {
+        if (condition(element)) {
+            return element;
         }
     }
-    return -1;
+    return undefined;
 }
 
 function calculateSum(config: types.ChartConfig) {
@@ -61,10 +61,10 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
             const seriesName = `${sample.hostname}:${sample.port}`;
             const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
 
-            const index = findIndex(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
-            if (index !== -1) {
+            const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
+            if (tempChartDataset) {
                 // found it in tempChartDatas, so just push the number to tempChartDatas
-                (tempChartDatas[config.name].datasets![index].data as number[]).push(count);
+                (tempChartDataset.data as number[]).push(count);
             } else {
                 // can not find it, create a new series, and push:0,0,0,0...,0,0,count
                 const length = chartDatas[config.name].labels!.length + tempChartDatas[config.name].labels!.length - 1;
@@ -84,8 +84,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
         }
 
         for (const dataset of tempChartDatas[config.name].datasets!) {
-            let index = findIndex(sampleFrame.samples, sample => `${sample.hostname}:${sample.port}` === dataset.label);
-            if (index === -1) {
+            if (sampleFrame.samples.every(s => `${s.hostname}:${s.port}` !== dataset.label)) {
                 (dataset.data as number[]).push(0);
             }
         }

@@ -60,3 +60,19 @@ canvas:hover {
     -webkit-box-shadow: 0 0 10px gray;
     box-shadow: 0 0 10px gray;
 }
+
+.hide-button-container {
+    position: relative;
+}
+
+.hide-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.hide-button-fixed {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}

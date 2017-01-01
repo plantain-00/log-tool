@@ -54,12 +54,13 @@
                                     <li v-if="logsSearchResult.length === 0">
                                         <pre>not started or nothing found.</pre>
                                     </li>
-                                    <li v-for="(log, index) in logsSearchResult">
+                                    <li class="hide-button-container" v-for="(log, index) in logsSearchResult">
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
                                         <pre v-if="log.content && showRawLogResult">{{log.content}}</pre>
-                                        <pre v-if="log.formattedContent && showFormattedLogResult">{{log.formattedContent}}</pre>
+                                        <pre v-if="log.formattedContent && showFormattedLogResult && log.visible">{{log.formattedContent}}</pre>
+                                        <button v-if="log.visible" class="btn btn-default btn-sm hide-button" @click="hide(log)">hide</button>
                                     </li>
                                 </ul>
                             </div>

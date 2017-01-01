@@ -8,6 +8,7 @@ let ws: WebSocket | undefined;
 
 type Log = types.Log & {
     formattedContent?: string;
+    visible?: boolean;
 };
 declare const chartConfigs: types.ChartConfig[];
 for (const config of chartConfigs) {
@@ -78,6 +79,9 @@ class App extends Vue {
             ws.send(JSON.stringify(message));
         }
     }
+    hide(log: Log) {
+        log.visible = false;
+    }
 }
 
 const app = new App({
@@ -95,6 +99,7 @@ const reconnector = new Reconnector(() => {
                 for (const h of hits.hits) {
                     const log: Log = h._source;
                     try {
+                        log.visible = true;
                         log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
                     } catch (error) {
                         console.log(error);
@@ -111,6 +116,7 @@ const reconnector = new Reconnector(() => {
                 if (flow.kind === "log") {
                     const log: Log = flow.log;
                     try {
+                        log.visible = true;
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
                         console.log(error);
