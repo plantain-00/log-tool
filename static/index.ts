@@ -208,14 +208,13 @@ function appendChartData(nodeInfo: types.SampleFrame) {
 const currentCharts: any[] = [];
 const currentElements: HTMLCanvasElement[] = [];
 
-function isElementInViewport(element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
-
-    return rect.bottom > 0
-        && rect.right > 0
-        && rect.left < (window.innerWidth || document.documentElement.clientWidth)
-        && rect.top < (window.innerHeight || document.documentElement.clientHeight);
-}
+// function isElementInViewport(element: HTMLElement) {
+//     const rect = element.getBoundingClientRect();
+//     return rect.bottom > 0
+//         && rect.right > 0
+//         && rect.left < (window.innerWidth || document.documentElement.clientWidth)
+//         && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+// }
 
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const reconnector = new Reconnector(() => {
@@ -265,10 +264,10 @@ const reconnector = new Reconnector(() => {
                 });
 
                 for (let i = 0; i < sources.length; i++) {
-                    const isInViewport = isElementInViewport(currentElements[i]);
-                    if (isInViewport && app.currentAreaIndexMouseOver !== i) {
-                        currentCharts[i].update();
-                    }
+                    // const isInViewport = isElementInViewport(currentElements[i]);
+                    // if (isInViewport && app.currentAreaIndexMouseOver !== i) {
+                    currentCharts[i].update();
+                    // }
                 }
             }
 
@@ -311,7 +310,7 @@ const reconnector = new Reconnector(() => {
                                 },
                                 scaleLabel: {
                                     display: true,
-                                    labelString: "Date",
+                                    labelString: "time",
                                 },
                             }],
                             yAxes: [{

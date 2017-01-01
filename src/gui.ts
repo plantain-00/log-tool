@@ -3,6 +3,9 @@ import * as types from "./types";
 import * as config from "./config";
 import { search } from "./elastic";
 
+const historySamples: types.SampleFrame[] = [];
+const maxHistorySampleCount = 300;
+
 export function start() {
     if (!config.gui.enabled) {
         return;
@@ -13,6 +16,18 @@ export function start() {
     const app = libs.express();
 
     app.use(libs.express.static(libs.path.resolve(__dirname, "../static")));
+
+    libs.sampleSubject.bufferTime(1000)
+        .filter(s => s.length > 0)
+        .subscribe(samples => {
+            historySamples.push({
+                time: libs.getNow(),
+                samples,
+            });
+            if (historySamples.length > maxHistorySampleCount) {
+                historySamples.splice(0, historySamples.length - maxHistorySampleCount);
+            }
+        });
 
     wss.on("connection", ws => {
         const subscription = libs.flowObservable
@@ -56,7 +71,7 @@ export function start() {
         }
         const protocol: types.Protocol = {
             kind: "history samples",
-            historySamples: [],
+            historySamples,
         };
         ws.send(JSON.stringify(protocol));
     });

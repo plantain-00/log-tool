@@ -25,41 +25,45 @@ libs.errorWithTimeSubject.subscribe(error => {
     console.log(error);
 });
 
-function randomInteger(min: number, range: number) {
-    return Math.floor(Math.random() * range) + min;
-}
+// error test
+// setInterval(() => {
+//     libs.errorWithTimeSubject.next({
+//         time: libs.getNow(),
+//         error: "test error",
+//     });
+// }, 2000);
 
-setInterval(() => {
-    libs.sampleSubject.next({
-        hostname: "#1",
-        port: 9000,
-        values: {
-            httpRequestCount: randomInteger(10, 20),
-            httpResponseTime: randomInteger(100, 200),
-        },
-    });
-    libs.sampleSubject.next({
-        hostname: "#1",
-        port: 9001,
-        values: {
-            httpRequestCount: randomInteger(10, 20),
-            httpResponseTime: randomInteger(100, 200),
-        },
-    });
-    libs.sampleSubject.next({
-        hostname: "#2",
-        port: 9000,
-        values: {
-            httpRequestCount: randomInteger(10, 20),
-            httpResponseTime: randomInteger(100, 200),
-        },
-    });
-    libs.sampleSubject.next({
-        hostname: "#2",
-        port: 9001,
-        values: {
-            httpRequestCount: randomInteger(10, 20),
-            httpResponseTime: randomInteger(100, 200),
-        },
-    });
-}, 1000);
+// sample test
+// function randomInteger(min: number, range: number) {
+//     return Math.floor(Math.random() * range) + min;
+// }
+
+// function getRandomValues() {
+//     return {
+//         httpRequestCount: randomInteger(10, 20),
+//         httpResponseTime: randomInteger(1000, 2000),
+//     };
+// }
+
+// setInterval(() => {
+//     libs.sampleSubject.next({
+//         hostname: "#1",
+//         port: 9000,
+//         values: getRandomValues(),
+//     });
+//     libs.sampleSubject.next({
+//         hostname: "#1",
+//         port: 9001,
+//         values: getRandomValues(),
+//     });
+//     libs.sampleSubject.next({
+//         hostname: "#2",
+//         port: 9000,
+//         values: getRandomValues(),
+//     });
+//     libs.sampleSubject.next({
+//         hostname: "#2",
+//         port: 9001,
+//         values: getRandomValues(),
+//     });
+// }, 1000);
