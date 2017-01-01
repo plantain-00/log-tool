@@ -9,6 +9,7 @@ let ws: WebSocket | undefined;
 type Log = types.Log & {
     formattedContent?: string;
     visible?: boolean;
+    visibilityButtonExtraButtom?: number;
 };
 declare const chartConfigs: types.ChartConfig[];
 for (const config of chartConfigs) {
@@ -39,8 +40,22 @@ class App extends Vue {
     showRawLogPush = false;
     showFormattedLogPush = true;
     chartConfigs = chartConfigs;
+    chartWidth = 0;
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
+    }
+    visibilityButtonStyle(log: Log, visible: boolean) {
+        return {
+            position: "absolute",
+            bottom: (visible ? (10 + log.visibilityButtonExtraButtom) : 0) + "px",
+            right: 10 + "px",
+        };
+    }
+    logSearchResultId(index: number) {
+        return `log-search-result-${index}`;
+    }
+    logPushId(index: number) {
+        return `log-push-${index}`;
     }
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
@@ -79,8 +94,8 @@ class App extends Vue {
             ws.send(JSON.stringify(message));
         }
     }
-    hide(log: Log) {
-        log.visible = false;
+    toggleVisibility(log: Log, visible: boolean) {
+        log.visible = visible;
     }
 }
 
@@ -100,6 +115,7 @@ const reconnector = new Reconnector(() => {
                     const log: Log = h._source;
                     try {
                         log.visible = true;
+                        log.visibilityButtonExtraButtom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
                     } catch (error) {
                         console.log(error);
@@ -117,6 +133,7 @@ const reconnector = new Reconnector(() => {
                     const log: Log = flow.log;
                     try {
                         log.visible = true;
+                        log.visibilityButtonExtraButtom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
                         console.log(error);
@@ -156,3 +173,27 @@ const reconnector = new Reconnector(() => {
         reconnector.reset();
     };
 });
+
+window.onscroll = () => {
+    const innerHeight = (window.innerHeight || document.documentElement.clientHeight);
+    for (let i = 0; i < app.logsSearchResult.length; i++) {
+        const log = app.logsSearchResult[i];
+        const element = document.getElementById(app.logSearchResultId(i));
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            log.visibilityButtonExtraButtom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
+                ? (rect.top + rect.height - innerHeight) : 0;
+        }
+    }
+    for (let i = 0; i < app.logsPush.length; i++) {
+        const log = app.logsPush[i];
+        const element = document.getElementById(app.logPushId(i));
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            log.visibilityButtonExtraButtom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
+                ? (rect.top + rect.height - innerHeight) : 0;
+        }
+    }
+};
+
+app.chartWidth = document.getElementById("tab-content") !.getBoundingClientRect().width - 30;

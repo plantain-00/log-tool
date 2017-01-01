@@ -64,15 +64,3 @@ canvas:hover {
 .hide-button-container {
     position: relative;
 }
-
-.hide-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-}
-
-.hide-button-fixed {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-}
