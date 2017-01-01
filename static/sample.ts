@@ -1,38 +1,16 @@
 import { getColor } from "./color";
 import * as types from "../src/types";
 
-type Config = {
-    name: string;
-    description: string;
-    willSum: boolean;
-    compute?: (array: { [name: string]: number }) => number;
-    unit?: string;
-};
-
 // declared in config.js
-declare const configs: Config[];
-
+declare const chartConfigs: types.ChartConfig[];
 const chartDatas: { [name: string]: LinearChartData } = {};
 let mouseOverChartName: string | undefined = undefined;
-export const charts = [] as {
-    title: string,
-    id: string,
-    unit: string,
-    sum: number,
-}[];
 const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
 const maxCount = 300;
 
 // initialize charts and charts' datas
-for (let i = 0; i < configs.length; i++) {
-    const config = configs[i];
-    charts.push({
-        title: `${i + 1}. ${config.description}`,
-        id: config.name,
-        unit: config.unit ? `(${config.unit})` : "",
-        sum: -1,
-    });
+for (const config of chartConfigs) {
     chartDatas[config.name] = {
         labels: [],
         datasets: [],
@@ -51,17 +29,18 @@ function find<T>(array: T[], condition: (element: T) => boolean): T | undefined 
     return undefined;
 }
 
-function sum(config: Config) {
+function calculateSum(config: types.ChartConfig) {
     if (!config.willSum) {
-        return -1;
-    }
-    let result = 0;
-    for (const dataset of chartDatas[config.name].datasets!) {
-        for (const data of dataset.data!) {
-            result += (data as number);
+        config.sum = undefined;
+    } else {
+        let result = 0;
+        for (const dataset of chartDatas[config.name].datasets!) {
+            for (const data of dataset.data!) {
+                result += (data as number);
+            }
         }
+        config.sum = result;
     }
-    return result;
 }
 
 export function trimHistory<T>(array: T[]) {
@@ -70,12 +49,11 @@ export function trimHistory<T>(array: T[]) {
     }
 }
 
-function appendChartData(sampleFrame: types.SampleFrame) {
+export function appendChartData(sampleFrame: types.SampleFrame) {
     const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
-    const isOverCount = chartDatas[configs[0].name].labels!.length >= maxCount;
+    const isOverCount = chartDatas[chartConfigs[0].name].labels!.length >= maxCount;
 
-    for (let i = 0; i < configs.length; i++) {
-        const config = configs[i];
+    for (const config of chartConfigs) {
         const willTrimHistory = isOverCount && mouseOverChartName !== config.name;
         chartDatas[config.name].labels!.push(time);
         if (willTrimHistory) {
@@ -118,7 +96,7 @@ function appendChartData(sampleFrame: types.SampleFrame) {
             }
         }
 
-        charts[i].sum = sum(config);
+        calculateSum(config);
     }
 }
 
@@ -130,10 +108,8 @@ function appendChartData(sampleFrame: types.SampleFrame) {
 //         && rect.top < (window.innerHeight || document.documentElement.clientHeight);
 // }
 
-export function addNewSamples(sampleFrame: types.SampleFrame) {
-    appendChartData(sampleFrame);
-
-    for (const config of configs) {
+export function updateCharts() {
+    for (const config of chartConfigs) {
         // const isInViewport = isElementInViewport(allChartElements[config.name]);
         // if (isInViewport && mouseOverChartName !== config.name) {
         allCharts[config.name].update();
@@ -141,12 +117,8 @@ export function addNewSamples(sampleFrame: types.SampleFrame) {
     }
 }
 
-export function addHistorySamples(historySampleFrames: types.SampleFrame[]) {
-    for (const sampleFrame of historySampleFrames!) {
-        appendChartData(sampleFrame);
-    }
-
-    for (const config of configs) {
+export function initializeCharts() {
+    for (const config of chartConfigs) {
         const element = document.getElementById("current-" + config.name) as HTMLCanvasElement;
         element.onmouseover = () => {
             mouseOverChartName = config.name;

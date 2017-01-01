@@ -70,3 +70,12 @@ export type SampleFrame = {
     time: string;
     samples: Sample[];
 };
+
+export type ChartConfig = {
+    name: string;
+    description: string;
+    willSum: boolean;
+    compute?: (array: { [name: string]: number }) => number;
+    unit?: string;
+    sum?: number;
+};

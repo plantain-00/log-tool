@@ -2,13 +2,17 @@ import * as Vue from "vue";
 import Component from "vue-class-component";
 import * as types from "../src/types";
 import { Reconnector } from "reconnection/browser";
-import { addNewSamples, trimHistory, addHistorySamples, charts } from "./sample";
+import { appendChartData, trimHistory, initializeCharts, updateCharts } from "./sample";
 
 let ws: WebSocket | undefined;
 
 type Log = types.Log & {
     formattedContent?: string;
 };
+declare const chartConfigs: types.ChartConfig[];
+for (const config of chartConfigs) {
+    config.sum = undefined;
+}
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*
@@ -33,7 +37,7 @@ class App extends Vue {
     showFormattedLogResult = true;
     showRawLogPush = false;
     showFormattedLogPush = true;
-    charts = charts;
+    chartConfigs = chartConfigs;
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
@@ -122,16 +126,21 @@ const reconnector = new Reconnector(() => {
             }
 
             if (samples.length > 0) {
-                addNewSamples({
+                appendChartData({
                     time: protocol.serverTime!,
                     samples,
                 });
+                updateCharts();
             }
 
             trimHistory(app.logsPush);
             trimHistory(app.errorsPush);
         } else if (protocol.kind === "history samples") {
-            addHistorySamples(protocol.historySamples!);
+            initializeCharts();
+            for (const sampleFrame of protocol.historySamples!) {
+                appendChartData(sampleFrame);
+            }
+            updateCharts();
         }
     };
     ws.onclose = () => {

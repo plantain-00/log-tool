@@ -125,14 +125,18 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <ul class="menu list-unstyled">
-                                <li v-for="chart in charts">
-                                    <a :href="'#' + chart.id" class="btn btn-link">{{chart.title}}</a>
+                                <li v-for="(config, index) in chartConfigs">
+                                    <a :href="'#' + config.name" class="btn btn-link">{{index + 1}}. {{config.description}}</a>
                                 </li>
                             </ul>
-                            <div class="row" v-for="chart in charts">
+                            <div class="row" v-for="(config, index) in chartConfigs">
                                 <div class="col-md-12">
-                                    <h4 :id="chart.id" style="padding-top: 10px;">{{chart.title}}{{chart.unit}}{{chart.sum >= 0 ? (" " + chart.sum) : ""}}</h4>
-                                    <canvas :id="'current-' + chart.id" class="graph" width="1000" height="200"></canvas>
+                                    <h4 :id="config.name" style="padding-top: 10px;">
+                                        {{index + 1}}. {{config.description}}
+                                        {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
+                                        {{config.sum !== undefined ? (" " + config.sum) : ""}}
+                                    </h4>
+                                    <canvas :id="'current-' + config.name" class="graph" width="1000" height="200"></canvas>
                                 </div>
                             </div>
                         </div>
