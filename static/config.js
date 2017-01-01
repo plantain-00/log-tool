@@ -1,9 +1,21 @@
 var chartConfigs = [
     {
-        name: "httpAverageResponsesTime", // the unique name
+        /**
+         * be unique
+         */
+        name: "httpAverageResponsesTime",
+        /**
+         * be short and readable
+         */
         description: "HTTP响应平均耗时",
-        unit: "ms", // the unit of the sumed value or computed value
-        willSum: false, // if true, will sum the value up, or use `compute` to get the value displayed
+        unit: "ms",
+        /**
+         * if true, will sum the values up
+         */
+        willSum: false,
+        /**
+         * if set, the value is not from sample data, but is computed from sample data
+         */
         compute: sample => sample["httpRequestCount"] === 0
             ? 0
             : Math.round(sample["httpResponseTime"] / sample["httpRequestCount"]),

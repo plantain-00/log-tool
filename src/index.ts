@@ -37,25 +37,29 @@ libs.errorWithTimeSubject.subscribe(error => {
 // function randomInteger(min: number, range: number) {
 //     return Math.floor(Math.random() * range) + min;
 // }
-
 // function getRandomValues() {
 //     return {
 //         httpRequestCount: randomInteger(10, 20),
 //         httpResponseTime: randomInteger(1000, 2000),
 //     };
 // }
-
+// let i = 0;
 // setInterval(() => {
-//     libs.sampleSubject.next({
-//         hostname: "#1",
-//         port: 9000,
-//         values: getRandomValues(),
-//     });
-//     libs.sampleSubject.next({
-//         hostname: "#1",
-//         port: 9001,
-//         values: getRandomValues(),
-//     });
+//     i++;
+//     if (i < 10 || i > 20) {
+//         libs.sampleSubject.next({
+//             hostname: "#1",
+//             port: 9000,
+//             values: getRandomValues(),
+//         });
+//     }
+//     if (i > 5) {
+//         libs.sampleSubject.next({
+//             hostname: "#1",
+//             port: 9001,
+//             values: getRandomValues(),
+//         });
+//     }
 //     libs.sampleSubject.next({
 //         hostname: "#2",
 //         port: 9000,

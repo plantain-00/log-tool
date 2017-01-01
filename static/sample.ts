@@ -4,6 +4,7 @@ import * as types from "../src/types";
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
 const chartDatas: { [name: string]: LinearChartData } = {};
+const tempChartDatas: { [name: string]: LinearChartData } = {};
 let mouseOverChartName: string | undefined = undefined;
 const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
@@ -15,18 +16,19 @@ for (const config of chartConfigs) {
         labels: [],
         datasets: [],
     };
+    tempChartDatas[config.name] = {
+        labels: [],
+        datasets: [],
+    };
 }
 
-/**
- * same as array.find
- */
-function find<T>(array: T[], condition: (element: T) => boolean): T | undefined {
-    for (const element of array) {
-        if (condition(element)) {
-            return element;
+function findIndex<T>(array: T[], condition: (element: T) => boolean): number {
+    for (let i = 0; i < array.length; i++) {
+        if (condition(array[i])) {
+            return i;
         }
     }
-    return undefined;
+    return -1;
 }
 
 function calculateSum(config: types.ChartConfig) {
@@ -51,35 +53,28 @@ export function trimHistory<T>(array: T[]) {
 
 export function appendChartData(sampleFrame: types.SampleFrame) {
     const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
-    const isOverCount = chartDatas[chartConfigs[0].name].labels!.length >= maxCount;
 
     for (const config of chartConfigs) {
-        const willTrimHistory = isOverCount && mouseOverChartName !== config.name;
-        chartDatas[config.name].labels!.push(time);
-        if (willTrimHistory) {
-            trimHistory(chartDatas[config.name].labels!);
-        }
+        tempChartDatas[config.name].labels!.push(time);
 
         for (const sample of sampleFrame.samples) {
             const seriesName = `${sample.hostname}:${sample.port}`;
             const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
 
-            const dataset = find(chartDatas[config.name].datasets!, d => d.label === seriesName);
-            if (dataset) {
-                (dataset.data as number[]).push(count);
-                if (willTrimHistory) {
-                    trimHistory(dataset.data as number[]);
-                }
+            const index = findIndex(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
+            if (index !== -1) {
+                // found it in tempChartDatas, so just push the number to tempChartDatas
+                (tempChartDatas[config.name].datasets![index].data as number[]).push(count);
             } else {
-                let color = getColor(seriesName);
-
-                const length = chartDatas[config.name].labels!.length - 1;
+                // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+                const length = chartDatas[config.name].labels!.length + tempChartDatas[config.name].labels!.length - 1;
                 const data: number[] = [];
                 for (let j = 0; j < length; j++) {
                     data.push(0);
                 }
                 data.push(count);
-                chartDatas[config.name].datasets!.push({
+                const color = getColor(seriesName);
+                tempChartDatas[config.name].datasets!.push({
                     label: seriesName,
                     data,
                     borderColor: color,
@@ -88,32 +83,54 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
             }
         }
 
-        for (const dataset of chartDatas[config.name].datasets!) {
-            const node = find(sampleFrame.samples, sample => `${sample.hostname}:${sample.port}` === dataset.label);
-            if (!node) {
+        for (const dataset of tempChartDatas[config.name].datasets!) {
+            let index = findIndex(sampleFrame.samples, sample => `${sample.hostname}:${sample.port}` === dataset.label);
+            if (index === -1) {
                 (dataset.data as number[]).push(0);
-                trimHistory(dataset.data as number[]);
             }
         }
 
-        calculateSum(config);
+        trimHistory(tempChartDatas[config.name].labels!);
+        for (const dataset of tempChartDatas[config.name].datasets!) {
+            trimHistory(dataset.data as number[]);
+        }
     }
 }
 
-// function isElementInViewport(element: HTMLElement) {
-//     const rect = element.getBoundingClientRect();
-//     return rect.bottom > 0
-//         && rect.right > 0
-//         && rect.left < (window.innerWidth || document.documentElement.clientWidth)
-//         && rect.top < (window.innerHeight || document.documentElement.clientHeight);
-// }
+function isElementInViewport(element: HTMLElement) {
+    const rect = element.getBoundingClientRect();
+    return rect.bottom > 0
+        && rect.right > 0
+        && rect.left < (window.innerWidth || document.documentElement.clientWidth)
+        && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+}
 
 export function updateCharts() {
     for (const config of chartConfigs) {
-        // const isInViewport = isElementInViewport(allChartElements[config.name]);
-        // if (isInViewport && mouseOverChartName !== config.name) {
-        allCharts[config.name].update();
-        // }
+        const isInViewport = isElementInViewport(allChartElements[config.name]);
+        if (isInViewport && mouseOverChartName !== config.name) {
+            if (tempChartDatas[config.name].labels!.length > 0) {
+                chartDatas[config.name].labels!.push(...tempChartDatas[config.name].labels!);
+                tempChartDatas[config.name].labels = [];
+
+                const tempChartDatasets = tempChartDatas[config.name].datasets!;
+                for (let index = 0; index < tempChartDatasets.length; index++) {
+                    if (index >= chartDatas[config.name].datasets!.length) {
+                        chartDatas[config.name].datasets!.push(JSON.parse(JSON.stringify(tempChartDatasets[index])));
+                    } else {
+                        (chartDatas[config.name].datasets![index].data as number[]).push(...(tempChartDatasets[index].data as number[]));
+                    }
+                    tempChartDatasets[index].data = [];
+                }
+            }
+
+            calculateSum(config);
+            trimHistory(chartDatas[config.name].labels!);
+            for (const dataset of chartDatas[config.name].datasets!) {
+                trimHistory(dataset.data as number[]);
+            }
+            allCharts[config.name].update();
+        }
     }
 }
 
