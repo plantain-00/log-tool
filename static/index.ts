@@ -81,11 +81,11 @@ const app = new App({
 });
 
 type Source = {
-    name: string; // the unique name
-    description: string; // the description part
-    willSum: boolean; // if true, will sum the value up, or use `compute` to get the value displayed
+    name: string;
+    description: string;
+    willSum: boolean;
     compute?: (array: { [name: string]: number }) => number;
-    unit?: string; // the unit of the sumed value or computed value
+    unit?: string;
 };
 type Colors = { [name: string]: string };
 type VueChart = {
@@ -95,11 +95,7 @@ type VueChart = {
     sum: number,
 };
 
-const sources: Source[] = [
-    { name: "httpAverageResponsesTime", description: "HTTP响应平均耗时", willSum: false, unit: "ms", compute: sample => sample["httpRequestCount"] === 0 ? 0 : Math.round(sample["httpResponseTime"] / sample["httpRequestCount"]) },
-    { name: "httpRequestCount", description: "HTTP请求数", willSum: true },
-    { name: "httpResponseTime", description: "HTTP响应耗时", willSum: true, unit: "ms" },
-];
+declare const sources: Source[];
 
 const chartDatas: LinearChartData[] = [];
 
