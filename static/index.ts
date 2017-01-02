@@ -164,7 +164,6 @@ function handleMessage(protocol: types.Protocol) {
                 time: protocol.serverTime!,
                 samples,
             });
-            updateCharts();
         }
 
         trimHistory(app.logsPush);
@@ -177,7 +176,6 @@ function handleMessage(protocol: types.Protocol) {
         for (const sampleFrame of protocol.historySamples!) {
             appendChartData(sampleFrame);
         }
-        updateCharts();
     }
 }
 
@@ -227,3 +225,7 @@ window.onscroll = () => {
 };
 
 app.chartWidth = document.getElementById("tab-content") !.getBoundingClientRect().width - 30;
+
+setInterval(() => {
+    updateCharts();
+}, 1000);

@@ -108,7 +108,8 @@ export function updateCharts() {
     for (const config of chartConfigs) {
         const isInViewport = isElementInViewport(allChartElements[config.name]);
         if (isInViewport && mouseOverChartName !== config.name) {
-            if (tempChartDatas[config.name].labels!.length > 0) {
+            const hasNewData = tempChartDatas[config.name].labels!.length > 0;
+            if (hasNewData) {
                 chartDatas[config.name].labels!.push(...tempChartDatas[config.name].labels!);
                 tempChartDatas[config.name].labels = [];
 
@@ -123,12 +124,14 @@ export function updateCharts() {
                 }
             }
 
-            calculateSum(config);
             trimHistory(chartDatas[config.name].labels!);
             for (const dataset of chartDatas[config.name].datasets!) {
                 trimHistory(dataset.data as number[]);
             }
-            allCharts[config.name].update();
+            calculateSum(config);
+            if (hasNewData) {
+                allCharts[config.name].update();
+            }
         }
     }
 }

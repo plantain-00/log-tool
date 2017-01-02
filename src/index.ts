@@ -52,11 +52,11 @@ libs.errorWithTimeSubject.subscribe(error => {
 // function getRandomValues() {
 //     return {
 //         httpRequestCount: randomInteger(10, 20),
-//         httpResponseTime: randomInteger(1000, 2000),
+//         httpResponseTime: randomInteger(500, 1000),
 //     };
 // }
 // let i = 0;
-// libs.Observable.interval(2000).subscribe(() => {
+// libs.Observable.interval(1000).subscribe(() => {
 //     i++;
 //     if (i < 10 || i > 20) {
 //         libs.sampleSubject.next({
