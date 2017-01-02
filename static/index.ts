@@ -9,7 +9,11 @@ let ws: WebSocket | undefined;
 type Log = types.Log & {
     formattedContent?: string;
     visible?: boolean;
-    visibilityButtonExtraButtom?: number;
+    visibilityButtonExtraBottom?: number;
+};
+type ErrorWithTime = types.ErrorWithTime & {
+    visible?: boolean;
+    visibilityButtonExtraBottom?: number;
 };
 declare const chartConfigs: types.ChartConfig[];
 for (const config of chartConfigs) {
@@ -29,7 +33,7 @@ class App extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
-    errorsPush: types.ErrorWithTime[] = [];
+    errorsPush: ErrorWithTime[] = [];
     q = initialQuery;
     from = 0;
     size = 10;
@@ -44,10 +48,10 @@ class App extends Vue {
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
-    visibilityButtonStyle(log: Log, visible: boolean) {
+    visibilityButtonStyle(log: Log | ErrorWithTime) {
         return {
             position: "absolute",
-            bottom: (visible ? (10 + log.visibilityButtonExtraButtom) : 0) + "px",
+            bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom) : 0) + "px",
             right: 10 + "px",
         };
     }
@@ -56,6 +60,9 @@ class App extends Vue {
     }
     logPushId(index: number) {
         return `log-push-${index}`;
+    }
+    errorPushId(index: number) {
+        return `error-push-${index}`;
     }
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
@@ -94,8 +101,8 @@ class App extends Vue {
             ws.send(JSON.stringify(message));
         }
     }
-    toggleVisibility(log: Log, visible: boolean) {
-        log.visible = visible;
+    toggleVisibility(log: Log | ErrorWithTime) {
+        log.visible = !log.visible;
     }
 }
 
@@ -115,7 +122,7 @@ const reconnector = new Reconnector(() => {
                     const log: Log = h._source;
                     try {
                         log.visible = true;
-                        log.visibilityButtonExtraButtom = 0;
+                        log.visibilityButtonExtraBottom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
                     } catch (error) {
                         console.log(error);
@@ -133,7 +140,7 @@ const reconnector = new Reconnector(() => {
                     const log: Log = flow.log;
                     try {
                         log.visible = true;
-                        log.visibilityButtonExtraButtom = 0;
+                        log.visibilityButtonExtraBottom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
                         console.log(error);
@@ -141,6 +148,9 @@ const reconnector = new Reconnector(() => {
                     app.logsPush.unshift(log);
                     app.newLogsCount++;
                 } else if (flow.kind === "error") {
+                    const error: ErrorWithTime = flow.error;
+                    error.visible = true;
+                    error.visibilityButtonExtraBottom = 0;
                     app.errorsPush.unshift(flow.error);
                     app.newErrorsCount++;
                 } else if (flow.kind === "sample") {
@@ -174,25 +184,30 @@ const reconnector = new Reconnector(() => {
     };
 });
 
+function handleButtonVisibility(element: HTMLElement | null, log: Log | ErrorWithTime, innerHeight: number) {
+    if (element) {
+        const rect = element.getBoundingClientRect();
+        log.visibilityButtonExtraBottom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
+            ? (rect.top + rect.height - innerHeight) : 0;
+    }
+}
+
 window.onscroll = () => {
     const innerHeight = (window.innerHeight || document.documentElement.clientHeight);
     for (let i = 0; i < app.logsSearchResult.length; i++) {
         const log = app.logsSearchResult[i];
         const element = document.getElementById(app.logSearchResultId(i));
-        if (element) {
-            const rect = element.getBoundingClientRect();
-            log.visibilityButtonExtraButtom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
-                ? (rect.top + rect.height - innerHeight) : 0;
-        }
+        handleButtonVisibility(element, log, innerHeight);
     }
     for (let i = 0; i < app.logsPush.length; i++) {
         const log = app.logsPush[i];
         const element = document.getElementById(app.logPushId(i));
-        if (element) {
-            const rect = element.getBoundingClientRect();
-            log.visibilityButtonExtraButtom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
-                ? (rect.top + rect.height - innerHeight) : 0;
-        }
+        handleButtonVisibility(element, log, innerHeight);
+    }
+    for (let i = 0; i < app.errorsPush.length; i++) {
+        const error = app.errorsPush[i];
+        const element = document.getElementById(app.errorPushId(i));
+        handleButtonVisibility(element, error, innerHeight);
     }
 };
 

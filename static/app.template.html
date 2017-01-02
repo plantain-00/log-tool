@@ -58,10 +58,9 @@
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
-                                        <button v-if="!log.visible" class="btn btn-default btn-sm" :style="visibilityButtonStyle(log, false)" @click="toggleVisibility(log, true)">show</button>
                                         <pre v-if="log.content && showRawLogResult">{{log.content}}</pre>
                                         <pre :id="logSearchResultId(index)" v-if="log.formattedContent && showFormattedLogResult && log.visible">{{log.formattedContent}}</pre>
-                                        <button v-if="log.visible" class="btn btn-default btn-sm" :style="visibilityButtonStyle(log, true)" @click="toggleVisibility(log, false)">hide</button>
+                                        <button class="btn btn-default btn-sm" :style="visibilityButtonStyle(log)" @click="toggleVisibility(log)">{{ log.visible ? "hide" : "show" }}</button>
                                     </li>
                                 </ul>
                             </div>
@@ -96,10 +95,9 @@
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
-                                        <button v-if="!log.visible" class="btn btn-default btn-sm" :style="visibilityButtonStyle(log, false)" @click="toggleVisibility(log, true)">show</button>
                                         <pre v-if="log.content && showRawLogPush">{{log.content}}</pre>
                                         <pre :id="logPushId(index)" v-if="log.formattedContent && showFormattedLogPush && log.visible">{{log.formattedContent}}</pre>
-                                        <button v-if="log.visible" class="btn btn-default btn-sm" :style="visibilityButtonStyle(log, true)" @click="toggleVisibility(log, false)">hide</button>
+                                        <button class="btn btn-default btn-sm" :style="visibilityButtonStyle(log)" @click="toggleVisibility(log)">{{ log.visible ? "hide" : "show" }}</button>
                                     </li>
                                 </ul>
                             </div>
@@ -116,9 +114,10 @@
                             </div>
                             <div class="row">
                                 <ul class="col-md-12">
-                                    <li v-for="(error, index) in errorsPush">
+                                    <li class="hide-button-container" v-for="(error, index) in errorsPush">
                                         <span class="label label-default">{{error.time}}</span>
-                                        <pre>{{error.error}}</pre>
+                                        <pre :id="errorPushId(index)" v-if="error.visible">{{error.error}}</pre>
+                                        <button class="btn btn-default btn-sm" :style="visibilityButtonStyle(error)" @click="toggleVisibility(error)">{{ error.visible ? "hide" : "show" }}</button>
                                     </li>
                                 </ul>
                             </div>
