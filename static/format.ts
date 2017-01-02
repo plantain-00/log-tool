@@ -2,18 +2,8 @@ import * as protobuf from "protobufjs";
 import * as types from "../src/types";
 declare const protobufConfig: { enabled: boolean };
 
-let protocolType: protobuf.Type;
-
-export function loadProtobuf(next: () => void) {
-    protobuf.load("./protocol.proto", (error: Error, root: protobuf.Root) => {
-        if (error) {
-            console.log(error);
-        } else {
-            protocolType = root.lookup("protocolPackage.Protocol") as protobuf.Type;
-        }
-        next();
-    });
-};
+const protofile: string = require("raw!./protocol.proto");
+const protocolType = protobuf.parse(protofile).root.lookup("protocolPackage.Protocol") as protobuf.Type;
 
 export function encode(protocol: types.Protocol) {
     if (protobufConfig.enabled) {

@@ -111,91 +111,81 @@ const app = new App({
     el: "#body",
 });
 
-format.loadProtobuf(() => {
-    connect();
-});
-
-function handleMessage(protocol: types.Protocol) {
-    if (protocol.kind === "search result") {
-        if (protocol.searchResult && protocol.searchResult.logs) {
-            for (const h of protocol.searchResult.logs) {
-                const log: Log = h;
-                try {
-                    log.visible = true;
-                    log.visibilityButtonExtraBottom = 0;
-                    log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
-                } catch (error) {
-                    console.log(error);
-                }
-                app.logsSearchResult.push(log);
-            }
-            app.logsSearchResultCount = protocol.searchResult.total;
-        } else {
-            app.logsSearchResult = [];
-            app.logsSearchResultCount = 0;
-        }
-    } else if (protocol.kind === "flows") {
-        const samples: types.Sample[] = [];
-        for (const flow of protocol.flows!) {
-            if (flow.kind === "log") {
-                const log: Log = flow.log;
-                try {
-                    log.visible = true;
-                    log.visibilityButtonExtraBottom = 0;
-                    log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
-                } catch (error) {
-                    console.log(error);
-                }
-                app.logsPush.unshift(log);
-                app.newLogsCount++;
-            } else if (flow.kind === "error") {
-                const error: ErrorWithTime = flow.error;
-                error.visible = true;
-                error.visibilityButtonExtraBottom = 0;
-                app.errorsPush.unshift(flow.error);
-                app.newErrorsCount++;
-            } else if (flow.kind === "sample") {
-                samples.push(flow.sample);
-            }
-        }
-
-        if (samples.length > 0) {
-            appendChartData({
-                time: protocol.serverTime!,
-                samples,
-            });
-        }
-
-        trimHistory(app.logsPush);
-        trimHistory(app.errorsPush);
-    } else if (protocol.kind === "history samples") {
-        if (protocol.historySamples === undefined) {
-            protocol.historySamples = [];
-        }
-        initializeCharts();
-        for (const sampleFrame of protocol.historySamples!) {
-            appendChartData(sampleFrame);
-        }
-    }
-}
-
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-function connect() {
-    const reconnector = new Reconnector(() => {
-        ws = new WebSocket(`${wsProtocol}//${location.host}`);
-        ws.onmessage = event => {
-            format.decode(event.data, protocol => {
-                handleMessage(protocol);
-            });
-        };
-        ws.onclose = () => {
-            reconnector.reconnect();
-        };
-        ws.onopen = () => {
-            reconnector.reset();
-        };
-    });
-}
+const reconnector = new Reconnector(() => {
+    ws = new WebSocket(`${wsProtocol}//${location.host}`);
+    ws.onmessage = event => {
+        format.decode(event.data, protocol => {
+            if (protocol.kind === "search result") {
+                if (protocol.searchResult && protocol.searchResult.logs) {
+                    for (const h of protocol.searchResult.logs) {
+                        const log: Log = h;
+                        try {
+                            log.visible = true;
+                            log.visibilityButtonExtraBottom = 0;
+                            log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        app.logsSearchResult.push(log);
+                    }
+                    app.logsSearchResultCount = protocol.searchResult.total;
+                } else {
+                    app.logsSearchResult = [];
+                    app.logsSearchResultCount = 0;
+                }
+            } else if (protocol.kind === "flows") {
+                const samples: types.Sample[] = [];
+                for (const flow of protocol.flows!) {
+                    if (flow.kind === "log") {
+                        const log: Log = flow.log;
+                        try {
+                            log.visible = true;
+                            log.visibilityButtonExtraBottom = 0;
+                            log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        app.logsPush.unshift(log);
+                        app.newLogsCount++;
+                    } else if (flow.kind === "error") {
+                        const error: ErrorWithTime = flow.error;
+                        error.visible = true;
+                        error.visibilityButtonExtraBottom = 0;
+                        app.errorsPush.unshift(flow.error);
+                        app.newErrorsCount++;
+                    } else if (flow.kind === "sample") {
+                        samples.push(flow.sample);
+                    }
+                }
+
+                if (samples.length > 0) {
+                    appendChartData({
+                        time: protocol.serverTime!,
+                        samples,
+                    });
+                }
+
+                trimHistory(app.logsPush);
+                trimHistory(app.errorsPush);
+            } else if (protocol.kind === "history samples") {
+                if (protocol.historySamples === undefined) {
+                    protocol.historySamples = [];
+                }
+                initializeCharts();
+                for (const sampleFrame of protocol.historySamples!) {
+                    appendChartData(sampleFrame);
+                }
+            }
+        });
+    };
+    ws.onclose = () => {
+        reconnector.reconnect();
+    };
+    ws.onopen = () => {
+        reconnector.reset();
+    };
+});
 
 function handleButtonVisibility(element: HTMLElement | null, log: Log | ErrorWithTime, innerHeight: number) {
     if (element) {
