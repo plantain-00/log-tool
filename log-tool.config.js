@@ -59,4 +59,10 @@ module.exports = {
         // `tool` is the index name, `logs` is the type name, they are all needed.
         url: "http://localhost:9200/tool/logs",
     },
+    /**
+     * transport data by protobuf binary, rather than json string.
+     */
+    protobuf: {
+        enabled: true,
+    },
 };

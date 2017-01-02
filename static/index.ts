@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import * as types from "../src/types";
 import { Reconnector } from "reconnection/browser";
 import { appendChartData, trimHistory, initializeCharts, updateCharts } from "./sample";
+import * as format from "./format";
 
 let ws: WebSocket | undefined;
 
@@ -98,7 +99,7 @@ class App extends Vue {
                     size: this.size,
                 },
             };
-            ws.send(JSON.stringify(message));
+            ws.send(format.encode(message));
         }
     }
     toggleVisibility(log: Log | ErrorWithTime) {
@@ -110,79 +111,93 @@ const app = new App({
     el: "#body",
 });
 
-const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-const reconnector = new Reconnector(() => {
-    ws = new WebSocket(`${wsProtocol}//${location.host}`);
-    ws.onmessage = event => {
-        const protocol: types.Protocol = JSON.parse(event.data);
-        if (protocol.kind === "search result") {
-            const hits = protocol.searchResult!.hits;
-            if (hits) {
-                for (const h of hits.hits) {
-                    const log: Log = h._source;
-                    try {
-                        log.visible = true;
-                        log.visibilityButtonExtraBottom = 0;
-                        log.formattedContent = JSON.stringify(JSON.parse(h._source.content), null, "  ");
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    app.logsSearchResult.push(log);
-                }
-                app.logsSearchResultCount = hits.total;
-            } else {
-                app.logsSearchResultCount = 0;
-            }
-        } else if (protocol.kind === "flows") {
-            const samples: types.Sample[] = [];
-            for (const flow of protocol.flows!) {
-                if (flow.kind === "log") {
-                    const log: Log = flow.log;
-                    try {
-                        log.visible = true;
-                        log.visibilityButtonExtraBottom = 0;
-                        log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    app.logsPush.unshift(log);
-                    app.newLogsCount++;
-                } else if (flow.kind === "error") {
-                    const error: ErrorWithTime = flow.error;
-                    error.visible = true;
-                    error.visibilityButtonExtraBottom = 0;
-                    app.errorsPush.unshift(flow.error);
-                    app.newErrorsCount++;
-                } else if (flow.kind === "sample") {
-                    samples.push(flow.sample);
-                }
-            }
+format.loadProtobuf(() => {
+    connect();
+});
 
-            if (samples.length > 0) {
-                appendChartData({
-                    time: protocol.serverTime!,
-                    samples,
-                });
-                updateCharts();
+function handleMessage(protocol: types.Protocol) {
+    if (protocol.kind === "search result") {
+        if (protocol.searchResult) {
+            for (const h of protocol.searchResult.logs) {
+                const log: Log = h;
+                try {
+                    log.visible = true;
+                    log.visibilityButtonExtraBottom = 0;
+                    log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
+                } catch (error) {
+                    console.log(error);
+                }
+                app.logsSearchResult.push(log);
             }
+            app.logsSearchResultCount = protocol.searchResult.total;
+        } else {
+            app.logsSearchResult = [];
+            app.logsSearchResultCount = 0;
+        }
+    } else if (protocol.kind === "flows") {
+        const samples: types.Sample[] = [];
+        for (const flow of protocol.flows!) {
+            if (flow.kind === "log") {
+                const log: Log = flow.log;
+                try {
+                    log.visible = true;
+                    log.visibilityButtonExtraBottom = 0;
+                    log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                } catch (error) {
+                    console.log(error);
+                }
+                app.logsPush.unshift(log);
+                app.newLogsCount++;
+            } else if (flow.kind === "error") {
+                const error: ErrorWithTime = flow.error;
+                error.visible = true;
+                error.visibilityButtonExtraBottom = 0;
+                app.errorsPush.unshift(flow.error);
+                app.newErrorsCount++;
+            } else if (flow.kind === "sample") {
+                samples.push(flow.sample);
+            }
+        }
 
-            trimHistory(app.logsPush);
-            trimHistory(app.errorsPush);
-        } else if (protocol.kind === "history samples") {
-            initializeCharts();
-            for (const sampleFrame of protocol.historySamples!) {
-                appendChartData(sampleFrame);
-            }
+        if (samples.length > 0) {
+            appendChartData({
+                time: protocol.serverTime!,
+                samples,
+            });
             updateCharts();
         }
-    };
-    ws.onclose = () => {
-        reconnector.reconnect();
-    };
-    ws.onopen = () => {
-        reconnector.reset();
-    };
-});
+
+        trimHistory(app.logsPush);
+        trimHistory(app.errorsPush);
+    } else if (protocol.kind === "history samples") {
+        if (protocol.historySamples === undefined) {
+            protocol.historySamples = [];
+        }
+        initializeCharts();
+        for (const sampleFrame of protocol.historySamples!) {
+            appendChartData(sampleFrame);
+        }
+        updateCharts();
+    }
+}
+
+const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+function connect() {
+    const reconnector = new Reconnector(() => {
+        ws = new WebSocket(`${wsProtocol}//${location.host}`);
+        ws.onmessage = event => {
+            format.decode(event.data, protocol => {
+                handleMessage(protocol);
+            });
+        };
+        ws.onclose = () => {
+            reconnector.reconnect();
+        };
+        ws.onopen = () => {
+            reconnector.reset();
+        };
+    });
+}
 
 function handleButtonVisibility(element: HTMLElement | null, log: Log | ErrorWithTime, innerHeight: number) {
     if (element) {

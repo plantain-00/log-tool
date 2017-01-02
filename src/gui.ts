@@ -2,6 +2,7 @@ import * as libs from "./libs";
 import * as types from "./types";
 import * as config from "./config";
 import { search } from "./elastic";
+import * as format from "./format";
 
 const historySamples: types.SampleFrame[] = [];
 const maxHistorySampleCount = 300;
@@ -39,7 +40,7 @@ export function start() {
                     serverTime: libs.getNow(),
                     flows,
                 };
-                ws.send(JSON.stringify(protocol));
+                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();
@@ -47,14 +48,14 @@ export function start() {
         if (config.elastic.enabled) {
             ws.on("message", (data: string, flag) => {
                 try {
-                    const protocol: types.Protocol = JSON.parse(data);
+                    const protocol: types.Protocol = format.decode(data);
                     if (protocol.kind === "search") {
                         search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
                             const searchResult: types.Protocol = {
                                 kind: "search result",
                                 searchResult: result,
                             };
-                            ws.send(JSON.stringify(searchResult));
+                            ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
                         }, error => {
                             libs.errorSubject.next(error);
                         });
@@ -73,7 +74,7 @@ export function start() {
             kind: "history samples",
             historySamples,
         };
-        ws.send(JSON.stringify(protocol));
+        ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
     });
 
     server.on("request", app);

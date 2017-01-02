@@ -26,10 +26,13 @@ type Config = {
         host: string;
     };
     elastic: {
-        enabled: false;
+        enabled: boolean;
         url: string;
+    };
+    protobuf: {
+        enabled: boolean;
     };
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-export const {elastic, gui, inflow, outflow, watcher}: Config = require(configurationFilePath);
+export const {elastic, gui, inflow, outflow, watcher, protobuf}: Config = require(configurationFilePath);

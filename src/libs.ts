@@ -10,8 +10,9 @@ import * as types from "./types";
 import { Reconnector } from "reconnection/browser";
 import * as moment from "moment";
 import { Server as WebSocketServer } from "uws";
+import * as protobuf from "protobufjs";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf };
 
 export const hostname = os.hostname();
 

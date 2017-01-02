@@ -54,7 +54,7 @@ curl -XPUT http://localhost:9200/tool -d '
 
 #### protocol
 
-The message should be a string from `JSON.stringify(protocol)`, the protocol's type is:
+The message should be a string from `JSON.stringify(protocol)` or a protobuf encoded binary, the protocol's type is:
 
 ```ts
 type Protocol = {
@@ -66,7 +66,15 @@ type Protocol = {
         from: number;
         size: number;
     };
-    searchResult?: SearchLogsResult;
+    searchResult?: {
+        total: number;
+        logs: {
+            time: string;
+            content: string;
+            filepath: string;
+            hostname: string;
+        }[];
+    };
     historySamples?: {
         time: string;
         samples: {
@@ -75,27 +83,6 @@ type Protocol = {
             values: { [name: string]: number };
         }[];
     }[];
-};
-
-type SearchLogsResult = {
-    took: number;
-    timed_out: boolean;
-    _shards: {
-        total: number;
-        successful: number;
-        failed: number;
-    };
-    hits?: {
-        total: number;
-        max_score: number;
-        hits: {
-            _index: string;
-            _type: string;
-            _id: string;
-            _score: number;
-            _source: Log;
-        }[];
-    };
 };
 
 type Flow = {

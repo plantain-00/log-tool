@@ -1,0 +1,53 @@
+package protocolPackage;
+
+syntax = "proto3";
+
+message Protocol {
+    required string kind = 1;
+    optional string serverTime = 2;
+    repeated Flow flows = 3;
+    optional Search search = 4;
+    optional SearchLogsResult searchResult = 5;
+    repeated SampleFrame historySamples = 6;
+}
+
+message Flow {
+    required string kind = 1;
+    optional Log log = 2;
+    optional ErrorWithTime error = 3;
+    optional Sample sample = 4;
+}
+
+message Log {
+    required string time = 1;
+    required string content = 2;
+    required string filepath = 3;
+    required string hostname = 4;
+}
+
+message ErrorWithTime {
+    required string time = 1;
+    required string error = 2;
+}
+
+message Sample {
+    required string hostname = 1;
+    required int32 port = 2;
+    map<string, int32> values = 3;
+}
+
+message Search {
+    required string q = 1;
+    required int32 from = 2;
+    required int32 size = 3;
+}
+
+message SearchLogsResult {
+    required int32 total = 1;
+    repeated Log logs = 2;
+}
+
+message SampleFrame {
+    required string time = 1;
+    repeated Sample samples = 2;
+}

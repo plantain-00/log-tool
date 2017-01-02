@@ -1,6 +1,7 @@
 import * as libs from "./libs";
 import * as config from "./config";
 import * as types from "./types";
+import * as format from "./format";
 
 export function start() {
     if (!config.outflow.enabled) {
@@ -17,7 +18,7 @@ export function start() {
                     kind: "flows",
                     flows,
                 };
-                ws.send(JSON.stringify(protocol));
+                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();

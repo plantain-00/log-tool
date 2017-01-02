@@ -35,3 +35,7 @@ var chartConfigs = [
         compute: undefined,
     },
 ];
+
+var protobufConfig = {
+    enabled: true,
+};
