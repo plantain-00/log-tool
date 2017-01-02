@@ -16,10 +16,6 @@ pre {
     word-wrap: break-word;
 }
 
-li {
-    margin-top: 10px;
-}
-
 .primary-button {
     width: 100%;
 }
@@ -44,6 +40,19 @@ ul {
     z-index: 1;
 }
 
+.menu > li > a {
+    display: block;
+    padding: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+}
+
+.menu > li > a:hover {
+    color: #555;
+    text-decoration: none;
+}
+
 .btn-link {
     white-space: normal;
     display: inline;
@@ -63,4 +72,8 @@ canvas:hover {
 
 .hide-button-container {
     position: relative;
+}
+
+.li-result-item {
+    margin-top: 10px;
 }

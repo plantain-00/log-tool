@@ -117,7 +117,7 @@ format.loadProtobuf(() => {
 
 function handleMessage(protocol: types.Protocol) {
     if (protocol.kind === "search result") {
-        if (protocol.searchResult) {
+        if (protocol.searchResult && protocol.searchResult.logs) {
             for (const h of protocol.searchResult.logs) {
                 const log: Log = h;
                 try {

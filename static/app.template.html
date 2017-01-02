@@ -51,10 +51,10 @@
                             </div>
                             <div class="row">
                                 <ul class="col-md-12">
-                                    <li v-if="logsSearchResult.length === 0">
+                                    <li class="li-result-item" v-if="logsSearchResult.length === 0">
                                         <pre>not started or nothing found.</pre>
                                     </li>
-                                    <li class="hide-button-container" v-for="(log, index) in logsSearchResult">
+                                    <li class="hide-button-container li-result-item" v-for="(log, index) in logsSearchResult">
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
@@ -91,7 +91,7 @@
                             </div>
                             <div class="row">
                                 <ul class="col-md-12">
-                                    <li class="hide-button-container" v-for="(log, index) in logsPush">
+                                    <li class="hide-button-container li-result-item" v-for="(log, index) in logsPush">
                                         <span class="label label-primary">{{log.time}}</span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
@@ -114,7 +114,7 @@
                             </div>
                             <div class="row">
                                 <ul class="col-md-12">
-                                    <li class="hide-button-container" v-for="(error, index) in errorsPush">
+                                    <li class="hide-button-container li-result-item" v-for="(error, index) in errorsPush">
                                         <span class="label label-default">{{error.time}}</span>
                                         <pre :id="errorPushId(index)" v-if="error.visible">{{error.error}}</pre>
                                         <button class="btn btn-default btn-sm" :style="visibilityButtonStyle(error)" @click="toggleVisibility(error)">{{ error.visible ? "hide" : "show" }}</button>
@@ -129,13 +129,13 @@
                         <div class="panel-body">
                             <ul class="menu list-unstyled">
                                 <li v-for="(config, index) in chartConfigs">
-                                    <a :href="'#' + config.name" class="btn btn-link">{{index + 1}}. {{config.description}}</a>
+                                    <a :href="'#' + config.name">{{config.description}}</a>
                                 </li>
                             </ul>
                             <div class="row" v-for="(config, index) in chartConfigs">
                                 <div class="col-md-12">
                                     <h4 :id="config.name" style="padding-top: 10px;">
-                                        {{index + 1}}. {{config.description}}
+                                        {{config.description}}
                                         {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
                                         {{config.sum !== undefined ? (" " + config.sum) : ""}}
                                     </h4>
