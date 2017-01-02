@@ -12,7 +12,7 @@ export function start() {
     });
 }
 
-export function encode(protocol: types.Protocol) {
+export function encode(protocol: types.Protocol): string | Uint8Array {
     if (config.protobuf.enabled) {
         return protocolType.encode(protocol).finish();
     }

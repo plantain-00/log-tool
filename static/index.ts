@@ -114,6 +114,7 @@ const app = new App({
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const reconnector = new Reconnector(() => {
     ws = new WebSocket(`${wsProtocol}//${location.host}`);
+    ws.binaryType = "arraybuffer";
     ws.onmessage = event => {
         format.decode(event.data, protocol => {
             if (protocol.kind === "search result") {
