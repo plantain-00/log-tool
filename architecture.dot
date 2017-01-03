@@ -1,0 +1,18 @@
+digraph architecture {
+    log_files_1 -> log_tool_1 [taillabel="watcher"]
+    log_files_2 -> log_tool_2 [taillabel="watcher"]
+    log_tool_1 -> log_tool_0 [taillabel="outflow"]
+    log_tool_2 -> log_tool_0 [taillabel="outflow"]
+    other_systems -> log_tool_0 [taillabel="outflow"]
+    log_tool_0 -> elasticsearch [taillabel="store/search"]
+    log_tool_0 -> user [taillabel="GUI"]
+
+    log_files_1[color = lightgreen, style = filled]
+    log_files_2[color = lightgreen, style = filled]
+    elasticsearch[color = lightgreen, style = filled]
+    user[color = lightgreen, style = filled]
+    other_systems[color = lightgreen, style = filled]
+    log_tool_1[shape = box, color = lightblue, style = filled]
+    log_tool_2[shape = box, color = lightblue, style = filled]
+    log_tool_0[shape = box, color = lightblue, style = filled]
+}
