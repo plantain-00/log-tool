@@ -11,7 +11,7 @@
     "clean": "rm -f static/vendor.bundle-*.js static/index.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css",
     "bundle-vendor-css": "cleancss ./node_modules/bootstrap/dist/css/bootstrap.min.css ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css -o ./static/vendor.bundle.css",
     "bundle-css": "cleancss ./static/index.css -o ./static/index.bundle.css",
-    "doc": "dot -Tsvg architecture.dot > architecture.svg"
+    "doc": "dot -Tpng architecture.dot > architecture.png"
   },
   "repository": {
     "type": "git",
