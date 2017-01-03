@@ -13,6 +13,8 @@
 + on the web page, search old logs
 + operate(filter, parse) logs as custom scripts
 
+[](./architecture.svg)
+
 #### usage
 
 ```bash
@@ -23,33 +25,6 @@ or
 
 ```bash
 node dist/index.js the-path-to-the-configuration-file
-```
-
-#### create index for elastic
-
-```bash
-curl -XPUT http://localhost:9200/tool -d '
-{
-    "mappings" : {
-        "logs" : {
-            "properties" : {
-                "time": {
-                    "type": "date", 
-                    "format": "yyyy-MM-dd HH:mm:ss"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "filepath": {
-                    "type": "string"
-                },
-                "hostname": {
-                    "type": "string"
-                }
-            }
-        }
-    }
-}'
 ```
 
 #### protocol
@@ -103,4 +78,37 @@ type Flow = {
         values: { [name: string]: number };
     }
 };
+```
+
+#### clean elastic
+
+```bash
+curl -ZDELETE http://localhost:9200/tool
+```
+
+#### create index for elastic
+
+```bash
+curl -XPUT http://localhost:9200/tool -d '
+{
+    "mappings" : {
+        "logs" : {
+            "properties" : {
+                "time": {
+                    "type": "date", 
+                    "format": "yyyy-MM-dd HH:mm:ss"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "filepath": {
+                    "type": "string"
+                },
+                "hostname": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}'
 ```

@@ -74,6 +74,16 @@ export function start() {
         ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
     });
 
+    libs.logSubject.bufferTime(1000).subscribe(logs => {
+        libs.sampleSubject.next({
+            hostname: libs.hostname,
+            port: config.gui.port,
+            values: {
+                logCount: logs.length,
+            },
+        });
+    });
+
     server.on("request", app);
     server.listen(config.gui.port, config.gui.host);
 }
