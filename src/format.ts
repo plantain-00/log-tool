@@ -8,7 +8,7 @@ export function start() {
     (libs.protobuf.load("./static/protocol.proto") as Promise<libs.protobuf.Root>).then(root => {
         protocolType = root.lookup("protocolPackage.Protocol") as libs.protobuf.Type;
     }, error => {
-        libs.errorSubject.next(error);
+        libs.publishError(error);
     });
 }
 

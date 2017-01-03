@@ -10,6 +10,7 @@ export function start() {
 
     const reconnector = new libs.Reconnector(() => {
         const ws = new libs.WebSocket(config.outflow.url);
+        const sender = new libs.Sender(ws);
         const subscription = libs.flowObservable
             .bufferTime(1000)
             .filter(s => s.length > 0)
@@ -18,9 +19,10 @@ export function start() {
                     kind: "flows",
                     flows,
                 };
-                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
+                sender.send(format.encode(protocol), { binary: config.protobuf.enabled });
             });
-        ws.on("close", (code, name) => {
+        ws.on("close", (code, message) => {
+            libs.publishErrorMessage(`outflow connection closed with code: ${code} and message: ${message}`);
             subscription.unsubscribe();
             reconnector.reconnect();
         });

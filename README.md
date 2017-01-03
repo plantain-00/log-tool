@@ -96,14 +96,6 @@ type Flow = {
 }
 |
 {
-    kind: "error";
-    error: {
-        time: string;
-        error: string;
-    };
-}
-|
-{
     kind: "sample";
     sample: {
         hostname: string;

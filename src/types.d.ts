@@ -5,11 +5,6 @@ export type Log = {
     hostname: string;
 };
 
-type ErrorWithTime = {
-    time: string;
-    error: string;
-};
-
 export type SearchLogsResult = {
     total: number;
     logs: Log[];
@@ -19,11 +14,6 @@ export type Flow =
     {
         kind: "log";
         log: Log;
-    }
-    |
-    {
-        kind: "error";
-        error: ErrorWithTime;
     }
     |
     {

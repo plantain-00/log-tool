@@ -57,16 +57,13 @@ export function start() {
                             };
                             ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
                         }, error => {
-                            libs.errorSubject.next(error);
+                            libs.publishError(error);
                         });
                     } else {
-                        libs.errorWithTimeSubject.next({
-                            time: libs.getNow(),
-                            error: `protocol kind ${protocol.kind} is not recognized.`,
-                        });
+                        libs.publishErrorMessage(`protocol kind ${protocol.kind} is not recognized.`);
                     }
                 } catch (error) {
-                    libs.errorSubject.next(error);
+                    libs.publishError(error);
                 }
             });
         }

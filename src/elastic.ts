@@ -13,7 +13,7 @@ export function start() {
             body: JSON.stringify(log),
             headers: { "Content-Type": "application/json" },
         }).catch(error => {
-            libs.errorSubject.next(error);
+            libs.publishError(error);
         });
     });
 }

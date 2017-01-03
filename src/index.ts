@@ -19,19 +19,9 @@ libs.logSubject.subscribe(log => {
     console.log(log);
 });
 
-libs.errorSubject.subscribe(error => {
-    console.log(error);
-});
-
-libs.errorWithTimeSubject.subscribe(error => {
-    console.log(error);
-});
-
 // error test
 // libs.Observable.interval(2000).filter((v, i) => i < 3).subscribe(() => {
-//     libs.errorWithTimeSubject.next({
-//         time: libs.getNow(),
-//         error: `Failed to execute phase [query], all shards failed
+//     libs.publishErrorMessage(`Failed to execute phase [query], all shards failed
 // 	at org.elasticsearch.action.search.AbstractSearchAsyncAction.onFirstPhaseResult(AbstractSearchAsyncAction.java:206)
 // 	at org.elasticsearch.action.search.AbstractSearchAsyncAction$1.onFailure(AbstractSearchAsyncAction.java:152)
 // 	at org.elasticsearch.action.ActionListenerResponseHandler.handleException(ActionListenerResponseHandler.java:46)
@@ -41,8 +31,7 @@ libs.errorWithTimeSubject.subscribe(error => {
 // 	at org.elasticsearch.common.util.concurrent.AbstractRunnable.run(AbstractRunnable.java:39)
 // 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 // 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-// 	at java.lang.Thread.run(Thread.java:745)`,
-//     });
+// 	at java.lang.Thread.run(Thread.java:745)`);
 // });
 
 // sample test

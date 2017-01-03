@@ -14,7 +14,6 @@ message Protocol {
 message Flow {
     required string kind = 1;
     optional Log log = 2;
-    optional ErrorWithTime error = 3;
     optional Sample sample = 4;
 }
 
@@ -23,11 +22,6 @@ message Log {
     required string content = 2;
     required string filepath = 3;
     required string hostname = 4;
-}
-
-message ErrorWithTime {
-    required string time = 1;
-    required string error = 2;
 }
 
 message Sample {

@@ -19,15 +19,13 @@ export function start() {
                     for (const flow of protocol.flows) {
                         if (flow.kind === "log") {
                             libs.logSubject.next(flow.log);
-                        } else if (flow.kind === "error") {
-                            libs.errorWithTimeSubject.next(flow.error);
                         } else if (flow.kind === "sample") {
                             libs.sampleSubject.next(flow.sample);
                         }
                     }
                 }
             } catch (error) {
-                libs.errorSubject.next(error);
+                libs.publishError(error);
             }
         });
     });

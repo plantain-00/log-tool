@@ -12,10 +12,6 @@ type Log = types.Log & {
     visible?: boolean;
     visibilityButtonExtraBottom?: number;
 };
-type ErrorWithTime = types.ErrorWithTime & {
-    visible?: boolean;
-    visibilityButtonExtraBottom?: number;
-};
 declare const chartConfigs: types.ChartConfig[];
 for (const config of chartConfigs) {
     config.sum = undefined;
@@ -34,12 +30,10 @@ class App extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
     logsPush: Log[] = [];
-    errorsPush: ErrorWithTime[] = [];
     q = initialQuery;
     from = 0;
     size = 10;
     newLogsCount = 0;
-    newErrorsCount = 0;
     showRawLogResult = false;
     showFormattedLogResult = true;
     showRawLogPush = false;
@@ -49,7 +43,7 @@ class App extends Vue {
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
-    visibilityButtonStyle(log: Log | ErrorWithTime) {
+    visibilityButtonStyle(log: Log) {
         return {
             position: "absolute",
             bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom) : 0) + "px",
@@ -62,15 +56,10 @@ class App extends Vue {
     logPushId(index: number) {
         return `log-push-${index}`;
     }
-    errorPushId(index: number) {
-        return `error-push-${index}`;
-    }
     tab(tabIndex: number) {
         this.tabIndex = tabIndex;
         if (this.tabIndex === 1) {
             this.newLogsCount = 0;
-        } else if (this.tabIndex === 2) {
-            this.newErrorsCount = 0;
         }
     }
     clearLogsSearchResult() {
@@ -78,9 +67,6 @@ class App extends Vue {
     }
     clearLogsPush() {
         this.logsPush = [];
-    }
-    clearErrorsPush() {
-        this.errorsPush = [];
     }
     search(freshStart: boolean) {
         if (freshStart) {
@@ -102,7 +88,7 @@ class App extends Vue {
             ws.send(format.encode(message));
         }
     }
-    toggleVisibility(log: Log | ErrorWithTime) {
+    toggleVisibility(log: Log) {
         log.visible = !log.visible;
     }
 }
@@ -149,12 +135,6 @@ const reconnector = new Reconnector(() => {
                         }
                         app.logsPush.unshift(log);
                         app.newLogsCount++;
-                    } else if (flow.kind === "error") {
-                        const error: ErrorWithTime = flow.error;
-                        error.visible = true;
-                        error.visibilityButtonExtraBottom = 0;
-                        app.errorsPush.unshift(flow.error);
-                        app.newErrorsCount++;
                     } else if (flow.kind === "sample") {
                         samples.push(flow.sample);
                     }
@@ -168,7 +148,6 @@ const reconnector = new Reconnector(() => {
                 }
 
                 trimHistory(app.logsPush);
-                trimHistory(app.errorsPush);
             } else if (protocol.kind === "history samples") {
                 if (protocol.historySamples === undefined) {
                     protocol.historySamples = [];
@@ -188,7 +167,7 @@ const reconnector = new Reconnector(() => {
     };
 });
 
-function handleButtonVisibility(element: HTMLElement | null, log: Log | ErrorWithTime, innerHeight: number) {
+function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeight: number) {
     if (element) {
         const rect = element.getBoundingClientRect();
         log.visibilityButtonExtraBottom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
@@ -207,11 +186,6 @@ window.onscroll = () => {
         const log = app.logsPush[i];
         const element = document.getElementById(app.logPushId(i));
         handleButtonVisibility(element, log, innerHeight);
-    }
-    for (let i = 0; i < app.errorsPush.length; i++) {
-        const error = app.errorsPush[i];
-        const element = document.getElementById(app.errorPushId(i));
-        handleButtonVisibility(element, error, innerHeight);
     }
 };
 
