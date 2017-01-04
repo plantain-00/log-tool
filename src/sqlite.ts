@@ -102,6 +102,14 @@ export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string 
     });
 }
 
+export function deleteSuccessfulOutflowLog(rowid: number) {
+    db.run("DELETE FROM outflow_logs WHERE ROWID = ?", [rowid], error => {
+        if (error) {
+            libs.publishError(error);
+        }
+    });
+}
+
 export function saveElasticLog(log: types.Log) {
     db.run("INSERT INTO elastic_logs (value) values (?)", [JSON.stringify(log)], error => {
         if (error) {
@@ -110,12 +118,20 @@ export function saveElasticLog(log: types.Log) {
     });
 }
 
-export function queryAllElasticLogs(next: (rows: { ROWID: number, value: types.Log }[]) => void) {
+export function queryAllElasticLogs(next: (rows: { ROWID: number, value: string }[]) => void) {
     db.all("SELECT ROWID, value from elastic_logs", [], (error, rows) => {
         if (error) {
             libs.publishError(error);
         } else {
-            next(rows.map(r => JSON.parse(r)));
+            next(rows);
+        }
+    });
+}
+
+export function deleteSuccessfulElasticLog(rowid: number) {
+    db.run("DELETE FROM elastic_logs WHERE ROWID = ?", [rowid], error => {
+        if (error) {
+            libs.publishError(error);
         }
     });
 }

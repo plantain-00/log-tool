@@ -90,7 +90,7 @@ export function readDirAsync(filepath: string) {
 export class Sender {
     private timeout = 3000;
     constructor(private ws: WebSocket) { }
-    send(message: any, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: () => void) {
+    send(message: string | Uint8Array, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: (isSuccess: boolean) => void) {
         this.ws.send(message, options, error1 => {
             if (error1) {
                 publishError(error1);
@@ -102,13 +102,19 @@ export class Sender {
                                 this.ws.send(message, options, error3 => {
                                     if (error3) {
                                         publishError(error3);
-                                        next();
+                                        next(false);
+                                    } else {
+                                        next(true);
                                     }
                                 });
                             }, this.timeout);
+                        } else {
+                            next(true);
                         }
                     });
                 }, this.timeout);
+            } else {
+                next(true);
             }
         });
     }

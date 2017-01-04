@@ -2,7 +2,7 @@ import * as libs from "./libs";
 import * as config from "./config";
 import * as types from "./types";
 import * as format from "./format";
-import { saveOutflowLog } from "./sqlite";
+import * as sqlite from "./sqlite";
 
 export function start() {
     if (!config.outflow.enabled) {
@@ -21,11 +21,13 @@ export function start() {
             };
             const message = format.encode(protocol);
             if (ws && ws.readyState === ws.OPEN && sender) {
-                sender.send(message, { binary: config.protobuf.enabled }, () => {
-                    saveOutflowLog(message);
+                sender.send(message, { binary: config.protobuf.enabled, mask: true }, isSuccess => {
+                    if (!isSuccess) {
+                        sqlite.saveOutflowLog(message);
+                    }
                 });
             } else {
-                saveOutflowLog(message);
+                sqlite.saveOutflowLog(message);
             }
         });
     const reconnector = new libs.Reconnector(() => {
@@ -39,6 +41,16 @@ export function start() {
         });
         ws.on("open", () => {
             reconnector.reset();
+
+            sqlite.queryAllOutflowLogs(rows => {
+                for (const row of rows) {
+                    sender.send(row.value, { binary: config.protobuf.enabled, mask: true }, isSuccess => {
+                        if (isSuccess) {
+                            sqlite.deleteSuccessfulOutflowLog(row.ROWID);
+                        }
+                    });
+                }
+            });
         });
     });
 }

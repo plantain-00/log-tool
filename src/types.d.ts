@@ -1,13 +1,14 @@
-export type Log = {
-    time: string;
-    content: string;
-    filepath: string;
-    hostname: string;
-};
-
-export type SearchLogsResult = {
-    total: number;
-    logs: Log[];
+export type Protocol = {
+    kind: "flows" | "search" | "search result" | "history samples" | "resave failed logs",
+    serverTime?: string;
+    flows?: Flow[],
+    search?: {
+        q: string;
+        from: number;
+        size: number;
+    };
+    searchResult?: SearchLogsResult;
+    historySamples?: SampleFrame[];
 };
 
 export type Flow =
@@ -21,17 +22,16 @@ export type Flow =
         sample: Sample;
     };
 
-export type Protocol = {
-    kind: "flows" | "search" | "search result" | "history samples",
-    serverTime?: string;
-    flows?: Flow[],
-    search?: {
-        q: string;
-        from: number;
-        size: number;
-    };
-    searchResult?: SearchLogsResult;
-    historySamples?: SampleFrame[];
+export type Log = {
+    time: string;
+    content: string;
+    filepath: string;
+    hostname: string;
+};
+
+export type SearchLogsResult = {
+    total: number;
+    logs: Log[];
 };
 
 export type Sample = {

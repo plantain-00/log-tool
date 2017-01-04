@@ -19,7 +19,6 @@ for (const config of chartConfigs) {
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*
-AND filepath:*
 AND *`;
 
 @Component({
@@ -84,6 +83,14 @@ class App extends Vue {
                     from: this.from,
                     size: this.size,
                 },
+            };
+            ws.send(format.encode(message));
+        }
+    }
+    resaveFailedLogs() {
+        if (ws) {
+            const message: types.Protocol = {
+                kind: "resave failed logs",
             };
             ws.send(format.encode(message));
         }

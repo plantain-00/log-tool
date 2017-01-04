@@ -20,6 +20,9 @@
                 <li role="presentation" :class="tabIndex === 3 ? 'active' : ''" @click="tab(3)">
                     <a href="javascript:void(0)" role="tab" data-toggle="tab">Samples</a>
                 </li>
+                <li role="presentation" :class="tabIndex === 4 ? 'active' : ''" @click="tab(4)">
+                    <a href="javascript:void(0)" role="tab" data-toggle="tab">Others</a>
+                </li>
             </ul>
         </div>
         <div class="col-md-12">
@@ -118,6 +121,15 @@
                                     </h4>
                                     <canvas :id="'current-' + config.name" class="graph" :width="chartWidth" height="300"></canvas>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" :class="tabIndex === 4 ? 'tab-pane active' : 'tab-pane'">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <button class="btn btn-primary" @click="resaveFailedLogs()">resave failed logs</button>
                             </div>
                         </div>
                     </div>

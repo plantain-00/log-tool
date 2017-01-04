@@ -1,7 +1,7 @@
 import * as libs from "./libs";
 import * as config from "./config";
 import * as types from "./types";
-import { saveElasticLog } from "./sqlite";
+import * as sqlite from "./sqlite";
 
 export function start() {
     if (!config.elastic.enabled) {
@@ -15,7 +15,7 @@ export function start() {
             headers: { "Content-Type": "application/json" },
         }).catch(error => {
             libs.publishError(error);
-            saveElasticLog(log);
+            sqlite.saveElasticLog(log);
         });
     });
 }
@@ -32,4 +32,20 @@ export async function search(q: string, from: number, size: number): Promise<typ
         total: json.hits.total,
         logs: json.hits.hits.map(s => s._source),
     };
+}
+
+export function resaveFailedLogs() {
+    sqlite.queryAllElasticLogs(rows => {
+        for (const row of rows) {
+            libs.fetch(config.elastic.url, {
+                method: "POST",
+                body: row.value,
+                headers: { "Content-Type": "application/json" },
+            }).then(response => {
+                sqlite.deleteSuccessfulElasticLog(row.ROWID);
+            }, error => {
+                libs.publishError(error);
+            });
+        }
+    });
 }

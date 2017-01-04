@@ -1,7 +1,7 @@
 import * as libs from "./libs";
 import * as types from "./types";
 import * as config from "./config";
-import { search } from "./elastic";
+import * as elastic from "./elastic";
 import * as format from "./format";
 
 const historySamples: types.SampleFrame[] = [];
@@ -40,7 +40,7 @@ export function start() {
                     serverTime: libs.getNow(),
                     flows,
                 };
-                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
+                ws.send(format.encode(protocol), { binary: config.protobuf.enabled, mask: true });
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();
@@ -50,15 +50,17 @@ export function start() {
                 try {
                     const protocol: types.Protocol = format.decode(data);
                     if (protocol.kind === "search") {
-                        search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
+                        elastic.search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
                             const searchResult: types.Protocol = {
                                 kind: "search result",
                                 searchResult: result,
                             };
-                            ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
+                            ws.send(format.encode(searchResult), { binary: config.protobuf.enabled, mask: true });
                         }, error => {
                             libs.publishError(error);
                         });
+                    } else if (protocol.kind === "resave failed logs") {
+                        elastic.resaveFailedLogs();
                     } else {
                         libs.publishErrorMessage(`protocol kind ${protocol.kind} is not recognized.`);
                     }
@@ -71,7 +73,7 @@ export function start() {
             kind: "history samples",
             historySamples,
         };
-        ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
+        ws.send(format.encode(protocol), { binary: config.protobuf.enabled, mask: true });
     });
 
     libs.logSubject.bufferTime(1000).subscribe(logs => {
