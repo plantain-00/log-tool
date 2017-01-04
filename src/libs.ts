@@ -90,19 +90,19 @@ export function readDirAsync(filepath: string) {
 export class Sender {
     private timeout = 3000;
     constructor(private ws: WebSocket) { }
-    send(message: any, options: {
-        mask?: boolean | undefined;
-        binary?: boolean | undefined;
-    }) {
+    send(message: any, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: () => void) {
         this.ws.send(message, options, error1 => {
             if (error1) {
+                publishError(error1);
                 setTimeout(() => {
                     this.ws.send(message, options, error2 => {
                         if (error2) {
+                            publishError(error2);
                             setTimeout(() => {
                                 this.ws.send(message, options, error3 => {
                                     if (error3) {
-                                        // todo: alarm and save message
+                                        publishError(error3);
+                                        next();
                                     }
                                 });
                             }, this.timeout);

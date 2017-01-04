@@ -1,4 +1,5 @@
 import * as libs from "./libs";
+import * as types from "./types";
 import * as config from "./config";
 
 let db: libs.sqlite3.Database;
@@ -26,6 +27,7 @@ export function start() {
 }
 
 function createTablesIfNotExists() {
+    // this table is used to store sample
     db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'", [], (error, row) => {
         if (error) {
             libs.publishError(error);
@@ -40,14 +42,80 @@ function createTablesIfNotExists() {
             }
         }
     });
+    // this table is used to store logs that cannot be sent out by outflow
+    db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'", [], (error, row) => {
+        if (error) {
+            libs.publishError(error);
+        } else {
+            const exists = row.count > 0;
+            if (!exists) {
+                db.run("CREATE TABLE outflow_logs (value)", creationError => {
+                    if (creationError) {
+                        libs.publishError(creationError);
+                    }
+                });
+            }
+        }
+    });
+    // this table is used to store logs that cannot be stored into elastic search
+    db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'", [], (error, row) => {
+        if (error) {
+            libs.publishError(error);
+        } else {
+            const exists = row.count > 0;
+            if (!exists) {
+                db.run("CREATE TABLE elastic_logs (value)", creationError => {
+                    if (creationError) {
+                        libs.publishError(creationError);
+                    }
+                });
+            }
+        }
+    });
 }
 
-export function querySamples(from: number, to: number, next: (rows: { time: number:value: string }[]) => void) {
-    db.all("SELECT * from samples WHERE time >= ? and time <= ?", [from, to], (error, rows) => {
+export function querySamples(from: number, to: number, next: (rows: { time: number, value: string }[]) => void) {
+    db.all("SELECT time, time from samples WHERE time >= ? and time <= ?", [from, to], (error, rows) => {
         if (error) {
             libs.publishError(error);
         } else {
             next(rows);
+        }
+    });
+}
+
+export function saveOutflowLog(log: string | Uint8Array) {
+    db.run("INSERT INTO outflow_logs (value) values (?)", [log], error => {
+        if (error) {
+            libs.publishError(error);
+        }
+    });
+}
+
+export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string | Uint8Array }[]) => void) {
+    db.all("SELECT ROWID, value from outflow_logs", [], (error, rows) => {
+        if (error) {
+            libs.publishError(error);
+        } else {
+            next(rows);
+        }
+    });
+}
+
+export function saveElasticLog(log: types.Log) {
+    db.run("INSERT INTO elastic_logs (value) values (?)", [JSON.stringify(log)], error => {
+        if (error) {
+            libs.publishError(error);
+        }
+    });
+}
+
+export function queryAllElasticLogs(next: (rows: { ROWID: number, value: types.Log }[]) => void) {
+    db.all("SELECT ROWID, value from elastic_logs", [], (error, rows) => {
+        if (error) {
+            libs.publishError(error);
+        } else {
+            next(rows.map(r => JSON.parse(r)));
         }
     });
 }

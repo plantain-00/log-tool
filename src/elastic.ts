@@ -1,6 +1,7 @@
 import * as libs from "./libs";
 import * as config from "./config";
 import * as types from "./types";
+import { saveElasticLog } from "./sqlite";
 
 export function start() {
     if (!config.elastic.enabled) {
@@ -14,6 +15,7 @@ export function start() {
             headers: { "Content-Type": "application/json" },
         }).catch(error => {
             libs.publishError(error);
+            saveElasticLog(log);
         });
     });
 }
