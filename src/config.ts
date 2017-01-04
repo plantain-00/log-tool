@@ -32,7 +32,11 @@ type Config = {
     protobuf: {
         enabled: boolean;
     };
+    sqlite: {
+        filePath: string;
+        samples: boolean;
+    };
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-export const {elastic, gui, inflow, outflow, watcher, protobuf}: Config = require(configurationFilePath);
+export const {elastic, gui, inflow, outflow, watcher, protobuf, sqlite}: Config = require(configurationFilePath);

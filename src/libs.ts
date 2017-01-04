@@ -11,8 +11,9 @@ import { Reconnector } from "reconnection/browser";
 import * as moment from "moment";
 import { Server as WebSocketServer } from "uws";
 import * as protobuf from "protobufjs";
+import * as sqlite3 from "sqlite3";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3 };
 
 export const hostname = os.hostname();
 

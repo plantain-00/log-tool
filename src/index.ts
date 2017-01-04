@@ -5,6 +5,7 @@ import * as inflow from "./inflow";
 import * as outflow from "./outflow";
 import * as elastic from "./elastic";
 import * as format from "./format";
+import * as sqlite from "./sqlite";
 
 watcher.start();
 gui.start();
@@ -12,6 +13,7 @@ inflow.start();
 outflow.start();
 elastic.start();
 format.start();
+sqlite.start();
 
 console.log("log tool started.");
 

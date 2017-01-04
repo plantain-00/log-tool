@@ -65,4 +65,9 @@ module.exports = {
     protobuf: {
         enabled: true,
     },
+    sqlite: {
+        filePath: "./data.db",
+        // if enabled, will save samples to sqlite.
+        samples: true,
+    },
 };
