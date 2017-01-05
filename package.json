@@ -26,10 +26,9 @@
   "devDependencies": {
     "@types/chart.js": "0.0.9",
     "@types/express": "4.0.34",
-    "@types/lodash": "4.14.45",
     "@types/node": "6.0.53",
     "@types/node-fetch": "1.6.6",
-    "@types/sqlite3": "^2.2.31",
+    "@types/sqlite3": "2.2.31",
     "@types/uws": "0.0.0",
     "@types/ws": "0.0.37",
     "bootstrap": "3.3.7",
@@ -47,7 +46,6 @@
   },
   "dependencies": {
     "express": "4.14.0",
-    "lodash": "4.17.4",
     "moment": "2.17.1",
     "node-fetch": "1.6.3",
     "protobufjs": "6.3.1",
