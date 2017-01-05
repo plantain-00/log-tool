@@ -50,8 +50,8 @@ export function start() {
             ws.on("message", (data: string, flag) => {
                 try {
                     const protocol: types.Protocol = format.decode(data);
-                    if (protocol.kind === "search") {
-                        elastic.search(protocol.search!.q, protocol.search!.from, protocol.search!.size).then(result => {
+                    if (protocol.kind === "search" && protocol.search) {
+                        elastic.search(protocol.search.q, protocol.search.from, protocol.search.size).then(result => {
                             const searchResult: types.Protocol = {
                                 kind: "search result",
                                 searchResult: result,
@@ -63,16 +63,17 @@ export function start() {
                     } else if (protocol.kind === "resave failed logs") {
                         elastic.resaveFailedLogs();
                     } else if (protocol.kind === "search samples") {
-                        const from = Math.round(libs.moment(protocol.searchSamples!.from).valueOf() / 1000);
-                        const to = Math.round(libs.moment(protocol.
-                            searchSamples!.to).valueOf() / 1000);
-                        sqlite.querySamples(from, to, rows => {
-                            const searchSamplesResult: types.Protocol = {
-                                kind: "search samples result",
-                                searchSampleResult: rows,
-                            };
-                            ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
-                        });
+                        if (protocol.searchSamples) {
+                            const from = Math.round(libs.moment(protocol.searchSamples.from).valueOf() / 1000);
+                            const to = Math.round(libs.moment(protocol.searchSamples.to).valueOf() / 1000);
+                            sqlite.querySamples(from, to, rows => {
+                                const searchSamplesResult: types.Protocol = {
+                                    kind: "search samples result",
+                                    searchSampleResult: rows,
+                                };
+                                ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
+                            });
+                        }
                     } else {
                         libs.publishErrorMessage(`protocol kind ${protocol.kind} is not recognized.`);
                     }

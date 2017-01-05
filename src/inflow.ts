@@ -15,7 +15,7 @@ export function start() {
         ws.on("message", (inflowString: string, flag) => {
             try {
                 const protocol = format.decode(inflowString);
-                if (protocol.flows) {
+                if (protocol.kind === "flows" && protocol.flows) {
                     for (const flow of protocol.flows) {
                         if (flow.kind === "log") {
                             libs.logSubject.next(flow.log);

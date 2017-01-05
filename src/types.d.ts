@@ -1,20 +1,45 @@
-export type Protocol = {
-    kind: "flows" | "search" | "search result" | "history samples" | "resave failed logs" | "search samples" | "search samples result",
-    serverTime?: string;
-    flows?: Flow[],
-    search?: {
-        q: string;
-        from: number;
-        size: number;
+export type Protocol =
+    {
+        kind: "flows",
+        serverTime?: string;
+        flows: Flow[],
+    }
+    |
+    {
+        kind: "search",
+        search: {
+            q: string;
+            from: number;
+            size: number;
+        };
+    }
+    |
+    {
+        kind: "search result",
+        searchResult: SearchLogsResult;
+    }
+    |
+    {
+        kind: "history samples",
+        historySamples: SampleFrame[];
+    }
+    |
+    {
+        kind: "resave failed logs",
+    }
+    |
+    {
+        kind: "search samples",
+        searchSamples: {
+            from: string;
+            to: string;
+        };
+    }
+    |
+    {
+        kind: "search samples result",
+        searchSampleResult: SampleFrame[];
     };
-    searchResult?: SearchLogsResult;
-    historySamples?: SampleFrame[];
-    searchSamples?: {
-        from: string;
-        to: string;
-    };
-    searchSampleResult?: SampleFrame[];
-};
 
 export type Flow =
     {

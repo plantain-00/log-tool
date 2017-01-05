@@ -165,20 +165,22 @@ const reconnector = new Reconnector(() => {
                 }
             } else if (protocol.kind === "flows") {
                 const samples: types.Sample[] = [];
-                for (const flow of protocol.flows!) {
-                    if (flow.kind === "log") {
-                        const log: Log = flow.log;
-                        try {
-                            log.visible = true;
-                            log.visibilityButtonExtraBottom = 0;
-                            log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
-                        } catch (error) {
-                            console.log(error);
+                if (protocol.flows) {
+                    for (const flow of protocol.flows) {
+                        if (flow.kind === "log") {
+                            const log: Log = flow.log;
+                            try {
+                                log.visible = true;
+                                log.visibilityButtonExtraBottom = 0;
+                                log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                            } catch (error) {
+                                console.log(error);
+                            }
+                            app.logsPush.unshift(log);
+                            app.newLogsCount++;
+                        } else if (flow.kind === "sample") {
+                            samples.push(flow.sample);
                         }
-                        app.logsPush.unshift(log);
-                        app.newLogsCount++;
-                    } else if (flow.kind === "sample") {
-                        samples.push(flow.sample);
                     }
                 }
 
@@ -195,7 +197,7 @@ const reconnector = new Reconnector(() => {
                     protocol.historySamples = [];
                 }
                 initializeCharts();
-                for (const sampleFrame of protocol.historySamples!) {
+                for (const sampleFrame of protocol.historySamples) {
                     appendChartData(sampleFrame);
                 }
             } else if (protocol.kind === "search samples result") {
