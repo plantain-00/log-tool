@@ -33,7 +33,8 @@ module.exports = {
     resolve: {
         alias: {
             "vue$": "vue/dist/vue.js",
-            "chart.js": "chart.js/dist/Chart.bundle.min.js",
+            "moment": "moment/min/moment.min.js",
+            "chart.js": "chart.js/dist/Chart.min.js",
             "protobufjs": "protobufjs/dist/protobuf.min.js"
         }
     }

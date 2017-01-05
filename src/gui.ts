@@ -3,6 +3,7 @@ import * as types from "./types";
 import * as config from "./config";
 import * as elastic from "./elastic";
 import * as format from "./format";
+import * as sqlite from "./sqlite";
 
 const historySamples: types.SampleFrame[] = [];
 const maxHistorySampleCount = 300;
@@ -40,7 +41,7 @@ export function start() {
                     serverTime: libs.getNow(),
                     flows,
                 };
-                ws.send(format.encode(protocol), { binary: config.protobuf.enabled, mask: true });
+                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
             });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();
@@ -55,12 +56,23 @@ export function start() {
                                 kind: "search result",
                                 searchResult: result,
                             };
-                            ws.send(format.encode(searchResult), { binary: config.protobuf.enabled, mask: true });
+                            ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
                         }, error => {
                             libs.publishError(error);
                         });
                     } else if (protocol.kind === "resave failed logs") {
                         elastic.resaveFailedLogs();
+                    } else if (protocol.kind === "search samples") {
+                        const from = Math.round(libs.moment(protocol.searchSamples!.from).valueOf() / 1000);
+                        const to = Math.round(libs.moment(protocol.
+                            searchSamples!.to).valueOf() / 1000);
+                        sqlite.querySamples(from, to, rows => {
+                            const searchSamplesResult: types.Protocol = {
+                                kind: "search samples result",
+                                searchSampleResult: rows,
+                            };
+                            ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
+                        });
                     } else {
                         libs.publishErrorMessage(`protocol kind ${protocol.kind} is not recognized.`);
                     }
@@ -73,7 +85,7 @@ export function start() {
             kind: "history samples",
             historySamples,
         };
-        ws.send(format.encode(protocol), { binary: config.protobuf.enabled, mask: true });
+        ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
     });
 
     libs.logSubject.bufferTime(1000).subscribe(logs => {

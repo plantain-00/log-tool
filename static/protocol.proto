@@ -9,6 +9,8 @@ message Protocol {
     optional Search search = 4;
     optional SearchLogsResult searchResult = 5;
     repeated SampleFrame historySamples = 6;
+    optional SearchSamples searchSamples = 7;
+    repeated SampleFrame searchSampleResult = 8;
 }
 
 message Flow {
@@ -44,4 +46,9 @@ message SearchLogsResult {
 message SampleFrame {
     required string time = 1;
     repeated Sample samples = 2;
+}
+
+message SearchSamples {
+    required string from = 1;
+    required string to = 2;
 }

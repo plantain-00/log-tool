@@ -74,12 +74,17 @@ function createTablesIfNotExists() {
     });
 }
 
-export function querySamples(from: number, to: number, next: (rows: { time: number, value: string }[]) => void) {
-    db.all("SELECT time, time from samples WHERE time >= ? and time <= ?", [from, to], (error, rows) => {
+export function querySamples(from: number, to: number, next: (sampleFrames: types.SampleFrame[]) => void) {
+    db.all("SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC", [from, to], (error, rows: { time: number, value: string }[]) => {
         if (error) {
             libs.publishError(error);
         } else {
-            next(rows);
+            next(rows.map(r => {
+                return {
+                    time: libs.moment(r.time * 1000).format("YYYY-MM-DD HH:mm:ss"),
+                    samples: JSON.parse(r.value) as types.Sample[],
+                };
+            }));
         }
     });
 }

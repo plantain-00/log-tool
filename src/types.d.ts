@@ -1,5 +1,5 @@
 export type Protocol = {
-    kind: "flows" | "search" | "search result" | "history samples" | "resave failed logs",
+    kind: "flows" | "search" | "search result" | "history samples" | "resave failed logs" | "search samples" | "search samples result",
     serverTime?: string;
     flows?: Flow[],
     search?: {
@@ -9,6 +9,11 @@ export type Protocol = {
     };
     searchResult?: SearchLogsResult;
     historySamples?: SampleFrame[];
+    searchSamples?: {
+        from: string;
+        to: string;
+    };
+    searchSampleResult?: SampleFrame[];
 };
 
 export type Flow =

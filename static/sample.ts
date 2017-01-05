@@ -10,6 +10,9 @@ const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
 const maxCount = 300;
 
+const searchResultChartDatas: { [name: string]: LinearChartData } = {};
+const searchResultCharts: { [name: string]: Chart } = {};
+
 // initialize charts and charts' datas
 for (const config of chartConfigs) {
     chartDatas[config.name] = {
@@ -17,6 +20,10 @@ for (const config of chartConfigs) {
         datasets: [],
     };
     tempChartDatas[config.name] = {
+        labels: [],
+        datasets: [],
+    };
+    searchResultChartDatas[config.name] = {
         labels: [],
         datasets: [],
     };
@@ -185,5 +192,95 @@ export function initializeCharts() {
                 },
             },
         });
+    }
+
+    for (const config of chartConfigs) {
+        const element = document.getElementById("history-" + config.name) as HTMLCanvasElement;
+        const ctx = element.getContext("2d");
+        searchResultCharts[config.name] = new Chart(ctx!, {
+            type: "line",
+            data: searchResultChartDatas[config.name],
+            options: {
+                responsive: false,
+                animation: {
+                    duration: 0,
+                },
+                elements: {
+                    line: {
+                        borderWidth: 0,
+                    },
+                    point: {
+                        radius: 0,
+                    },
+                },
+                scales: {
+                    xAxes: [{
+                        type: "time",
+                        time: {
+                            format: "YYYY-MM-DD HH:mm:ss",
+                            tooltipFormat: "YYYY-MM-DD HH:mm:ss",
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: "time",
+                        },
+                    }],
+                    yAxes: [{
+                        stacked: true,
+                        scaleLabel: {
+                            display: true,
+                        },
+                    }],
+                },
+            },
+        });
+    }
+}
+
+export function showSearchResult(sampleFrames: types.SampleFrame[]) {
+    for (const config of chartConfigs) {
+        searchResultChartDatas[config.name].labels = [];
+        searchResultChartDatas[config.name].datasets = [];
+    }
+
+    for (const sampleFrame of sampleFrames) {
+        for (const config of chartConfigs) {
+            searchResultChartDatas[config.name].labels!.push(sampleFrame.time);
+
+            for (const sample of sampleFrame.samples) {
+                const seriesName = `${sample.hostname}:${sample.port}`;
+                const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
+
+                const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName);
+                if (searchResultChartDataset) {
+                    // found it in searchResultChartDatas, so just push the number to searchResultChartDatas
+                    (searchResultChartDataset.data as number[]).push(count);
+                } else {
+                    // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+                    const length = searchResultChartDatas[config.name].labels!.length - 1;
+                    const data: number[] = [];
+                    for (let j = 0; j < length; j++) {
+                        data.push(0);
+                    }
+                    data.push(count);
+                    const color = getColor(seriesName);
+                    searchResultChartDatas[config.name].datasets!.push({
+                        label: seriesName,
+                        data,
+                        borderColor: color,
+                        backgroundColor: color,
+                    });
+                }
+            }
+
+            for (const dataset of searchResultChartDatas[config.name].datasets!) {
+                if (sampleFrame.samples.every(s => `${s.hostname}:${s.port}` !== dataset.label)) {
+                    (dataset.data as number[]).push(0);
+                }
+            }
+        }
+    }
+    for (const config of chartConfigs) {
+        searchResultCharts[config.name].update();
     }
 }

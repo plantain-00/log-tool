@@ -1,8 +1,9 @@
 import * as Vue from "vue";
 import Component from "vue-class-component";
+import * as moment from "moment";
 import * as types from "../src/types";
 import { Reconnector } from "reconnection/browser";
-import { appendChartData, trimHistory, initializeCharts, updateCharts } from "./sample";
+import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearchResult } from "./sample";
 import * as format from "./format";
 
 let ws: WebSocket | undefined;
@@ -39,6 +40,8 @@ class App extends Vue {
     showFormattedLogPush = true;
     chartConfigs = chartConfigs;
     chartWidth = 0;
+    searchFrom = moment().clone().add(-1, "minute").format("YYYY-MM-DD HH:mm:ss");
+    searchTo = moment().format("YYYY-MM-DD HH:mm:ss");
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
@@ -82,6 +85,38 @@ class App extends Vue {
                     q: this.q,
                     from: this.from,
                     size: this.size,
+                },
+            };
+            ws.send(format.encode(message));
+        }
+    }
+    searchSamples() {
+        if (ws) {
+            if (!moment(this.searchFrom).isValid()) {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: `search from is invalid: ${this.searchFrom}`,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+                return;
+            }
+            if (!moment(this.searchTo).isValid()) {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: `search to is invalid: ${this.searchTo}`,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+                return;
+            }
+            const message: types.Protocol = {
+                kind: "search samples",
+                searchSamples: {
+                    from: this.searchFrom,
+                    to: this.searchTo,
                 },
             };
             ws.send(format.encode(message));
@@ -163,6 +198,11 @@ const reconnector = new Reconnector(() => {
                 for (const sampleFrame of protocol.historySamples!) {
                     appendChartData(sampleFrame);
                 }
+            } else if (protocol.kind === "search samples result") {
+                if (protocol.searchSampleResult === undefined) {
+                    protocol.searchSampleResult = [];
+                }
+                showSearchResult(protocol.searchSampleResult);
             }
         });
     };
