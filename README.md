@@ -15,7 +15,11 @@
 
 ![](./architecture.png)
 
-#### usage
+#### install
+
+```bash
+git clone -b release https://github.com/plantain-00/log-tool.git . --depth=1 && npm i --production
+```
 
 ```bash
 node dist/index.js
@@ -26,6 +30,8 @@ or
 ```bash
 node dist/index.js the-path-to-the-configuration-file
 ```
+
+Then open `http://localhost:8000` in your browser.
 
 the default configuration file is `./log-tool.config.js`, it's in: [./log-tool.config.js](https://github.com/plantain-00/log-tool/blob/master/log-tool.config.js)
 
