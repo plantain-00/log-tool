@@ -65,3 +65,13 @@ curl -XPUT http://localhost:9200/tool -d '
     }
 }'
 ```
+
+#### demo
+
+##### sample 1
+
+![sample1](./sample1.png)
+
+##### sample 2
+
+![sample2](./sample2.png)

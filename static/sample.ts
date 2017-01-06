@@ -38,20 +38,6 @@ function find<T>(array: T[], condition: (element: T) => boolean): T | undefined 
     return undefined;
 }
 
-function calculateSum(config: types.ChartConfig) {
-    if (!config.willSum) {
-        config.sum = undefined;
-    } else {
-        let result = 0;
-        for (const dataset of chartDatas[config.name].datasets!) {
-            for (const data of dataset.data!) {
-                result += (data as number);
-            }
-        }
-        config.sum = result;
-    }
-}
-
 export function trimHistory<T>(array: T[]) {
     if (array.length > maxCount) {
         array.splice(0, array.length - maxCount);
@@ -135,7 +121,6 @@ export function updateCharts() {
             for (const dataset of chartDatas[config.name].datasets!) {
                 trimHistory(dataset.data as number[]);
             }
-            calculateSum(config);
             if (hasNewData) {
                 allCharts[config.name].update();
             }

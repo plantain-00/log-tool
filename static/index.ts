@@ -14,9 +14,6 @@ type Log = types.Log & {
     visibilityButtonExtraBottom?: number;
 };
 declare const chartConfigs: types.ChartConfig[];
-for (const config of chartConfigs) {
-    config.sum = undefined;
-}
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*

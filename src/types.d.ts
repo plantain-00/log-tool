@@ -78,8 +78,6 @@ export type SampleFrame = {
 export type ChartConfig = {
     name: string;
     description: string;
-    willSum: boolean;
     compute?: (array: { [name: string]: number }) => number;
     unit?: string;
-    sum?: number;
 };
