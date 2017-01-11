@@ -1,16 +1,17 @@
 import { getColor } from "./color";
 import * as types from "../src/types";
+import * as Chart from "chart.js";
 
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
-const chartDatas: { [name: string]: LinearChartData } = {};
-const tempChartDatas: { [name: string]: LinearChartData } = {};
+const chartDatas: { [name: string]: Chart.LinearChartData } = {};
+const tempChartDatas: { [name: string]: Chart.LinearChartData } = {};
 let mouseOverChartName: string | undefined = undefined;
 const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
 const maxCount = 300;
 
-const searchResultChartDatas: { [name: string]: LinearChartData } = {};
+const searchResultChartDatas: { [name: string]: Chart.LinearChartData } = {};
 const searchResultCharts: { [name: string]: Chart } = {};
 
 // initialize charts and charts' datas

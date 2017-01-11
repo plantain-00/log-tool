@@ -3,7 +3,7 @@ import * as types from "../src/types";
 declare const protobufConfig: { enabled: boolean };
 
 const protofile: string = require("raw!./protocol.proto");
-const protocolType = protobuf.parse(protofile).root.lookup("protocolPackage.Protocol") as protobuf.Type;
+const protocolType = (protobuf.parse(protofile)["root"] as protobuf.Root).lookup("protocolPackage.Protocol") as protobuf.Type;
 
 export function encode(protocol: types.Protocol): string | Uint8Array {
     if (protobufConfig.enabled) {
