@@ -27,8 +27,12 @@ export function start() {
     app.use(libs.bodyParser.json());
     app.post(config.inflow.httpFallbackPath, (request, response) => {
         const protocol: types.Protocol = request.body;
-        handleMessage(protocol);
-        response.end();
+        if (protocol) {
+            handleMessage(protocol);
+            response.end("accepted");
+        } else {
+            response.end("unrecognised body");
+        }
     });
 
     wss.on("connection", ws => {
