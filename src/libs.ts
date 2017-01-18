@@ -7,13 +7,14 @@ import * as express from "express";
 import * as http from "http";
 import fetch from "node-fetch";
 import * as types from "./types";
-import { Reconnector } from "reconnection/browser";
+import { Reconnector } from "reconnection/nodejs";
 import * as moment from "moment";
 import { Server as WebSocketServer } from "uws";
 import * as protobuf from "protobufjs";
 import * as sqlite3 from "sqlite3";
+import * as bodyParser from "body-parser";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3 };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser };
 
 export const hostname = os.hostname();
 

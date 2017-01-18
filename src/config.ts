@@ -5,6 +5,7 @@ type Config = {
         enabled: boolean;
         port: number;
         host: string;
+        httpFallbackPath: string;
     };
     outflow: {
         enabled: boolean;

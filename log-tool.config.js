@@ -3,9 +3,13 @@ module.exports = {
      * transport logs from another log-tool server.
      */
     inflow: {
-        enabled: false,
+        enabled: true,
         port: 8001,
         host: "localhost",
+        /**
+         * with this path, you can post logs to http://localhost:8001/logs
+         */
+        httpFallbackPath: "/logs",
     },
     /**
      * transport logs to another log-tool server.
