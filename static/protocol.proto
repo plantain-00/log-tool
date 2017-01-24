@@ -1,6 +1,6 @@
-package protocolPackage;
-
 syntax = "proto3";
+
+package protocolPackage;
 
 message Protocol {
     required string kind = 1;
@@ -28,18 +28,18 @@ message Log {
 
 message Sample {
     required string hostname = 1;
-    required int32 port = 2;
-    map<string, int32> values = 3;
+    required uint32 port = 2;
+    map<string, uint32> values = 3;
 }
 
 message Search {
     required string q = 1;
-    required int32 from = 2;
-    required int32 size = 3;
+    required uint32 from = 2;
+    required uint32 size = 3;
 }
 
 message SearchLogsResult {
-    required int32 total = 1;
+    required uint32 total = 1;
     repeated Log logs = 2;
 }
 

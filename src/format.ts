@@ -21,7 +21,12 @@ export function encode(protocol: types.Protocol): string | Uint8Array {
 
 export function decode(protocol: ArrayBuffer | string): types.Protocol {
     if (typeof protocol === "string") {
-        return JSON.parse(protocol);
+        const result = JSON.parse(protocol);
+        const isValidJson = libs.validate(result);
+        if (!isValidJson) {
+            throw new Error(libs.validate.errors![0].message);
+        }
+        return result;
     }
     return protocolType.decode(new Buffer(protocol)).asJSON() as types.Protocol;
 }

@@ -37,7 +37,11 @@ the default configuration file is `./log-tool.config.js`, it's in: [./log-tool.c
 
 #### protocol
 
-The message should be a string from `JSON.stringify(protocol)` or a protobuf encoded binary, the protocol's type is in: [./src/types.d.ts](https://github.com/plantain-00/log-tool/blob/master/src/types.d.ts) and its proto file is in: [./static/protocol.proto](https://github.com/plantain-00/log-tool/blob/master/static/protocol.proto)
+The message should be a string from `JSON.stringify(protocol)`(json schema: [./static/protocol.json](https://github.com/plantain-00/log-tool/blob/master/static/protocol.json))
+
+Or a protobuf encoded binary(protobuf file: [./static/protocol.proto](https://github.com/plantain-00/log-tool/blob/master/static/protocol.proto)).
+
+Or just see the type: [./src/types.d.ts](https://github.com/plantain-00/log-tool/blob/master/src/types.d.ts) 
 
 #### create index for elastic
 

@@ -32,6 +32,7 @@
     "@types/sqlite3": "2.2.31",
     "@types/uws": "0.0.0",
     "@types/ws": "0.0.37",
+    "ajv": "4.11.2",
     "bootstrap": "3.3.7",
     "chart.js": "2.4.0",
     "clean-css": "3.4.23",

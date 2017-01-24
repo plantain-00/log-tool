@@ -7,3 +7,4 @@ import * as moment from "moment";
 (global as any).moment = moment;
 import "chart.js";
 import "protobufjs";
+import "ajv";
