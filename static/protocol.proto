@@ -4,13 +4,16 @@ package protocolPackage;
 
 message Protocol {
     required string kind = 1;
-    optional string serverTime = 2;
-    repeated Flow flows = 3;
-    optional Search search = 4;
-    optional SearchLogsResult searchResult = 5;
-    repeated SampleFrame historySamples = 6;
-    optional SearchSamples searchSamples = 7;
-    repeated SampleFrame searchSampleResult = 8;
+    optional uint32 requestId = 2;
+    optional string error = 3;
+    optional string serverTime = 4;
+    repeated Flow flows = 5;
+    optional Search search = 6;
+    optional SearchLogsResult searchResult = 7;
+    repeated SampleFrame historySamples = 8;
+    optional SearchSamples searchSamples = 9;
+    repeated SampleFrame searchSampleResult = 10;
+    optional ResaveFailedLogsResult resaveFailedLogsResult = 11;
 }
 
 message Flow {
@@ -51,4 +54,9 @@ message SampleFrame {
 message SearchSamples {
     required string from = 1;
     required string to = 2;
+}
+
+message ResaveFailedLogsResult {
+    required uint32 savedCount = 1;
+    required uint32 totalCount = 2;
 }

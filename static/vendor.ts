@@ -8,3 +8,4 @@ import * as moment from "moment";
 import "chart.js";
 import "protobufjs";
 import "ajv";
+import "rpc-on-ws";

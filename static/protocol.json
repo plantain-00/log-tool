@@ -10,9 +10,18 @@
         "search result",
         "history samples",
         "resave failed logs",
+        "resave failed logs result",
         "search samples",
         "search samples result"
       ]
+    },
+    "requestId": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295
+    },
+    "error": {
+      "type": "string"
     },
     "serverTime": {
       "type": "string"
@@ -43,13 +52,14 @@
       "items": {
         "$ref": "#/definitions/protocolPackage.SampleFrame"
       }
+    },
+    "resaveFailedLogsResult": {
+      "$ref": "#/definitions/protocolPackage.ResaveFailedLogsResult"
     }
   },
   "required": [
     "kind"
   ],
-  "minProperties": 2,
-  "maxProperties": 3,
   "definitions": {
     "protocolPackage.Log": {
       "title": "Log",
@@ -204,6 +214,26 @@
       "required": [
         "from",
         "to"
+      ]
+    },
+    "protocolPackage.ResaveFailedLogsResult": {
+      "title": "ResaveFailedLogsResult",
+      "type": "object",
+      "properties": {
+        "savedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "totalCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      },
+      "required": [
+        "savedCount",
+        "totalCount"
       ]
     }
   }

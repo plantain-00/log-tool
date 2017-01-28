@@ -5,6 +5,8 @@ import * as types from "../src/types";
 import { Reconnector } from "reconnection/browser";
 import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearchResult } from "./sample";
 import * as format from "./format";
+import { WsRpc } from "rpc-on-ws";
+import { Subject } from "rxjs/Subject";
 
 let ws: WebSocket | undefined;
 
@@ -18,6 +20,49 @@ declare const chartConfigs: types.ChartConfig[];
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*
 AND *`;
+
+const subject = new Subject<types.Protocol>();
+subject.subscribe(protocol => {
+    if (protocol.kind === "flows") {
+        const samples: types.Sample[] = [];
+        if (protocol.flows) {
+            for (const flow of protocol.flows) {
+                if (flow.kind === "log") {
+                    const log: Log = flow.log;
+                    try {
+                        log.visible = true;
+                        log.visibilityButtonExtraBottom = 0;
+                        log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    app.logsPush.unshift(log);
+                    app.newLogsCount++;
+                } else if (flow.kind === "sample") {
+                    samples.push(flow.sample);
+                }
+            }
+        }
+
+        if (samples.length > 0) {
+            appendChartData({
+                time: protocol.serverTime!,
+                samples,
+            });
+        }
+
+        trimHistory(app.logsPush);
+    } else if (protocol.kind === "history samples") {
+        if (protocol.historySamples === undefined) {
+            protocol.historySamples = [];
+        }
+        initializeCharts();
+        for (const sampleFrame of protocol.historySamples) {
+            appendChartData(sampleFrame);
+        }
+    }
+});
+const wsRpc = new WsRpc(subject, message => message.requestId!, message => message.error);
 
 @Component({
     template: require("raw!./app.html"),
@@ -76,15 +121,44 @@ class App extends Vue {
             this.from += this.size;
         }
         if (ws) {
-            const message: types.Protocol = {
-                kind: "search",
-                search: {
-                    q: this.q,
-                    from: this.from,
-                    size: this.size,
-                },
-            };
-            ws.send(format.encode(message));
+            wsRpc.send(requestId => {
+                const message: types.Protocol = {
+                    kind: "search",
+                    requestId,
+                    search: {
+                        q: this.q,
+                        from: this.from,
+                        size: this.size,
+                    },
+                };
+                ws!.send(format.encode(message));
+            }).then((protocol: types.SearchResultProtocol) => {
+                if (protocol.searchResult && protocol.searchResult.logs) {
+                    for (const h of protocol.searchResult.logs) {
+                        const log: Log = h;
+                        try {
+                            log.visible = true;
+                            log.visibilityButtonExtraBottom = 0;
+                            log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        app.logsSearchResult.push(log);
+                    }
+                    app.logsSearchResultCount = protocol.searchResult.total;
+                } else {
+                    app.logsSearchResult = [];
+                    app.logsSearchResultCount = 0;
+                }
+            }, (error: Error) => {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: error.message,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+            });
         }
     }
     searchSamples() {
@@ -109,22 +183,57 @@ class App extends Vue {
                 app.newLogsCount++;
                 return;
             }
-            const message: types.Protocol = {
-                kind: "search samples",
-                searchSamples: {
-                    from: this.searchFrom,
-                    to: this.searchTo,
-                },
-            };
-            ws.send(format.encode(message));
+            wsRpc.send(requestId => {
+                const message: types.Protocol = {
+                    kind: "search samples",
+                    requestId,
+                    searchSamples: {
+                        from: this.searchFrom,
+                        to: this.searchTo,
+                    },
+                };
+                ws!.send(format.encode(message));
+            }).then((protocol: types.SearchSampleResultProtocol) => {
+                if (protocol.searchSampleResult === undefined) {
+                    protocol.searchSampleResult = [];
+                }
+                showSearchResult(protocol.searchSampleResult);
+            }, (error: Error) => {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: error.message,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+            });
         }
     }
     resaveFailedLogs() {
         if (ws) {
-            const message: types.Protocol = {
-                kind: "resave failed logs",
-            };
-            ws.send(format.encode(message));
+            wsRpc.send(requestId => {
+                const message: types.Protocol = {
+                    kind: "resave failed logs",
+                    requestId,
+                };
+                ws!.send(format.encode(message));
+            }).then((protocol: types.ResaveFailedLogsResultProtocol) => {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: `handled ${protocol.resaveFailedLogsResult!.savedCount} / ${protocol.resaveFailedLogsResult!.totalCount} logs.`,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+            }, (error: Error) => {
+                this.logsPush.unshift({
+                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    content: error.message,
+                    hostname: "",
+                    filepath: "",
+                });
+                app.newLogsCount++;
+            });
         }
     }
     toggleVisibility(log: Log) {
@@ -142,67 +251,7 @@ const reconnector = new Reconnector(() => {
     ws.binaryType = "arraybuffer";
     ws.onmessage = event => {
         format.decode(event.data, protocol => {
-            if (protocol.kind === "search result") {
-                if (protocol.searchResult && protocol.searchResult.logs) {
-                    for (const h of protocol.searchResult.logs) {
-                        const log: Log = h;
-                        try {
-                            log.visible = true;
-                            log.visibilityButtonExtraBottom = 0;
-                            log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
-                        } catch (error) {
-                            console.log(error);
-                        }
-                        app.logsSearchResult.push(log);
-                    }
-                    app.logsSearchResultCount = protocol.searchResult.total;
-                } else {
-                    app.logsSearchResult = [];
-                    app.logsSearchResultCount = 0;
-                }
-            } else if (protocol.kind === "flows") {
-                const samples: types.Sample[] = [];
-                if (protocol.flows) {
-                    for (const flow of protocol.flows) {
-                        if (flow.kind === "log") {
-                            const log: Log = flow.log;
-                            try {
-                                log.visible = true;
-                                log.visibilityButtonExtraBottom = 0;
-                                log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
-                            } catch (error) {
-                                console.log(error);
-                            }
-                            app.logsPush.unshift(log);
-                            app.newLogsCount++;
-                        } else if (flow.kind === "sample") {
-                            samples.push(flow.sample);
-                        }
-                    }
-                }
-
-                if (samples.length > 0) {
-                    appendChartData({
-                        time: protocol.serverTime!,
-                        samples,
-                    });
-                }
-
-                trimHistory(app.logsPush);
-            } else if (protocol.kind === "history samples") {
-                if (protocol.historySamples === undefined) {
-                    protocol.historySamples = [];
-                }
-                initializeCharts();
-                for (const sampleFrame of protocol.historySamples) {
-                    appendChartData(sampleFrame);
-                }
-            } else if (protocol.kind === "search samples result") {
-                if (protocol.searchSampleResult === undefined) {
-                    protocol.searchSampleResult = [];
-                }
-                showSearchResult(protocol.searchSampleResult);
-            }
+            subject.next(protocol);
         });
     };
     ws.onclose = () => {

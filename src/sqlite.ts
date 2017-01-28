@@ -74,18 +74,20 @@ function createTablesIfNotExists() {
     });
 }
 
-export function querySamples(from: number, to: number, next: (sampleFrames: types.SampleFrame[]) => void) {
-    db.all("SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC", [from, to], (error, rows: { time: number, value: string }[]) => {
-        if (error) {
-            libs.publishError(error);
-        } else {
-            next(rows.map(r => {
-                return {
-                    time: libs.moment(r.time * 1000).format("YYYY-MM-DD HH:mm:ss"),
-                    samples: JSON.parse(r.value) as types.Sample[],
-                };
-            }));
-        }
+export function querySamples(from: number, to: number) {
+    return new Promise<types.SampleFrame[]>((resolve, reject) => {
+        db.all("SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC", [from, to], (error, rows: { time: number, value: string }[]) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(rows.map(r => {
+                    return {
+                        time: libs.moment(r.time * 1000).format("YYYY-MM-DD HH:mm:ss"),
+                        samples: JSON.parse(r.value) as types.Sample[],
+                    };
+                }));
+            }
+        });
     });
 }
 
@@ -123,20 +125,26 @@ export function saveElasticLog(log: types.Log) {
     });
 }
 
-export function queryAllElasticLogs(next: (rows: { ROWID: number, value: string }[]) => void) {
-    db.all("SELECT ROWID, value from elastic_logs", [], (error, rows) => {
-        if (error) {
-            libs.publishError(error);
-        } else {
-            next(rows);
-        }
+export function queryAllElasticLogs() {
+    return new Promise<{ ROWID: number, value: string }[]>((resolve, reject) => {
+        db.all("SELECT ROWID, value from elastic_logs", [], (error, rows) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(rows);
+            }
+        });
     });
 }
 
 export function deleteSuccessfulElasticLog(rowid: number) {
-    db.run("DELETE FROM elastic_logs WHERE ROWID = ?", [rowid], error => {
-        if (error) {
-            libs.publishError(error);
-        }
+    return new Promise<void>((resolve, reject) => {
+        db.run("DELETE FROM elastic_logs WHERE ROWID = ?", [rowid], error => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
     });
 }

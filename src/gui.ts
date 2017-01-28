@@ -50,29 +50,73 @@ export function start() {
             ws.on("message", (data: string, flag) => {
                 try {
                     const protocol: types.Protocol = format.decode(data);
-                    if (protocol.kind === "search" && protocol.search) {
-                        elastic.search(protocol.search.q, protocol.search.from, protocol.search.size).then(result => {
+                    if (protocol.kind === "search") {
+                        if (protocol.search) {
+                            elastic.search(protocol.search.q, protocol.search.from, protocol.search.size).then(result => {
+                                const searchResult: types.Protocol = {
+                                    kind: "search result",
+                                    requestId: protocol.requestId,
+                                    searchResult: result,
+                                };
+                                ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
+                            }, (error: Error) => {
+                                const searchResult: types.Protocol = {
+                                    kind: "search result",
+                                    requestId: protocol.requestId,
+                                    error: error.message,
+                                };
+                                ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
+                            });
+                        } else {
                             const searchResult: types.Protocol = {
                                 kind: "search result",
-                                searchResult: result,
+                                requestId: protocol.requestId,
+                                error: "no parameter",
                             };
                             ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
-                        }, error => {
-                            libs.publishError(error);
-                        });
+                        }
                     } else if (protocol.kind === "resave failed logs") {
-                        elastic.resaveFailedLogs();
+                        elastic.resaveFailedLogs().then(result => {
+                            const resaveFailedLogsResult: types.Protocol = {
+                                kind: "resave failed logs result",
+                                requestId: protocol.requestId,
+                                resaveFailedLogsResult: result,
+                            };
+                            ws.send(format.encode(resaveFailedLogsResult), { binary: config.protobuf.enabled });
+                        }, error => {
+                            const resaveFailedLogsResult: types.Protocol = {
+                                kind: "resave failed logs result",
+                                requestId: protocol.requestId,
+                                error: error.message,
+                            };
+                            ws.send(format.encode(resaveFailedLogsResult), { binary: config.protobuf.enabled });
+                        });
                     } else if (protocol.kind === "search samples") {
                         if (protocol.searchSamples) {
                             const from = Math.round(libs.moment(protocol.searchSamples.from).valueOf() / 1000);
                             const to = Math.round(libs.moment(protocol.searchSamples.to).valueOf() / 1000);
-                            sqlite.querySamples(from, to, rows => {
+                            sqlite.querySamples(from, to).then(rows => {
                                 const searchSamplesResult: types.Protocol = {
                                     kind: "search samples result",
+                                    requestId: protocol.requestId,
                                     searchSampleResult: rows,
                                 };
                                 ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
+                            }, error => {
+                                const searchSamplesResult: types.Protocol = {
+                                    kind: "search samples result",
+                                    requestId: protocol.requestId,
+                                    error: error.message,
+                                };
+                                ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
                             });
+                        } else {
+                            const searchSamplesResult: types.Protocol = {
+                                kind: "search samples result",
+                                requestId: protocol.requestId,
+                                error: "no parameter",
+                            };
+                            ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
                         }
                     } else {
                         libs.publishErrorMessage(`protocol kind ${protocol.kind} is not recognized.`);

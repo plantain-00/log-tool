@@ -1,45 +1,57 @@
-export type Protocol =
-    {
-        kind: "flows",
-        serverTime?: string;
-        flows: Flow[],
-    }
-    |
-    {
-        kind: "search",
-        search: {
-            q: string;
-            from: number;
-            size: number;
-        };
-    }
-    |
-    {
-        kind: "search result",
-        searchResult: SearchLogsResult;
-    }
-    |
-    {
-        kind: "history samples",
-        historySamples: SampleFrame[];
-    }
-    |
-    {
-        kind: "resave failed logs",
-    }
-    |
-    {
-        kind: "search samples",
-        searchSamples: {
-            from: string;
-            to: string;
-        };
-    }
-    |
-    {
-        kind: "search samples result",
-        searchSampleResult: SampleFrame[];
+export type Protocol = {
+    requestId?: number;
+    error?: string;
+} & (FlowsProtocol | SearchProtocol | SearchResultProtocol | HistorySamplesProtocol | ResaveFailedLogsProtocol | ResaveFailedLogsResultProtocol | SearchSamplesProtocol | SearchSampleResultProtocol);
+
+export type FlowsProtocol = {
+    kind: "flows",
+    serverTime?: string;
+    flows: Flow[],
+};
+
+export type SearchProtocol = {
+    kind: "search",
+    search: {
+        q: string;
+        from: number;
+        size: number;
     };
+};
+
+export type SearchResultProtocol = {
+    kind: "search result",
+    searchResult?: SearchLogsResult;
+};
+
+export type HistorySamplesProtocol = {
+    kind: "history samples",
+    historySamples: SampleFrame[];
+};
+
+export type ResaveFailedLogsProtocol = {
+    kind: "resave failed logs",
+};
+
+export type ResaveFailedLogsResultProtocol = {
+    kind: "resave failed logs result",
+    resaveFailedLogsResult?: {
+        savedCount: number;
+        totalCount: number;
+    };
+};
+
+export type SearchSamplesProtocol = {
+    kind: "search samples",
+    searchSamples: {
+        from: string;
+        to: string;
+    };
+};
+
+export type SearchSampleResultProtocol = {
+    kind: "search samples result",
+    searchSampleResult?: SampleFrame[];
+};
 
 export type Flow =
     {

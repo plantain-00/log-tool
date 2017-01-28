@@ -34,18 +34,22 @@ export async function search(q: string, from: number, size: number): Promise<typ
     };
 }
 
-export function resaveFailedLogs() {
-    sqlite.queryAllElasticLogs(rows => {
-        for (const row of rows) {
-            libs.fetch(config.elastic.url, {
-                method: "POST",
-                body: row.value,
-                headers: { "Content-Type": "application/json" },
-            }).then(response => {
-                sqlite.deleteSuccessfulElasticLog(row.ROWID);
-            }, error => {
-                libs.publishError(error);
-            });
+export async function resaveFailedLogs() {
+    const rows = await sqlite.queryAllElasticLogs();
+    let count = 0;
+    for (const row of rows) {
+        const response = await libs.fetch(config.elastic.url, {
+            method: "POST",
+            body: row.value,
+            headers: { "Content-Type": "application/json" },
+        });
+        if (response.status < 300) {
+            await sqlite.deleteSuccessfulElasticLog(row.ROWID);
+            count++;
         }
-    });
+    }
+    return {
+        savedCount: count,
+        totalCount: rows.length,
+    };
 }
