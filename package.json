@@ -35,7 +35,7 @@
     "ajv": "4.11.2",
     "bootstrap": "3.3.7",
     "chart.js": "2.4.0",
-    "clean-css": "4.0.3",
+    "clean-css-cli": "4.0.0",
     "github-fork-ribbon-css": "0.2.1",
     "html-minifier": "3.3.0",
     "raw-loader": "0.5.1",
