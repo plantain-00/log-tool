@@ -65,7 +65,7 @@ subject.subscribe(protocol => {
 const wsRpc = new WsRpc(subject, message => message.requestId!, message => message.error);
 
 @Component({
-    template: require("raw!./app.html"),
+    template: require("raw-loader!./app.html"),
 })
 class App extends Vue {
     tabIndex = 0;

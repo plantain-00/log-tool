@@ -6,7 +6,7 @@ import * as Chart from "chart.js";
 declare const chartConfigs: types.ChartConfig[];
 const chartDatas: { [name: string]: Chart.LinearChartData } = {};
 const tempChartDatas: { [name: string]: Chart.LinearChartData } = {};
-let mouseOverChartName: string | undefined = undefined;
+let mouseOverChartName: string | undefined;
 const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
 const maxCount = 300;

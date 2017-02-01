@@ -4,11 +4,11 @@ import * as Ajv from "ajv";
 import * as types from "../src/types";
 declare const protobufConfig: { enabled: boolean };
 
-const protofile: string = require("raw!./protocol.proto");
+const protofile: string = require("raw-loader!./protocol.proto");
 const protocolType = (protobuf.parse(protofile)["root"] as protobuf.Root).lookup("protocolPackage.Protocol") as protobuf.Type;
 
 const ajv = new Ajv();
-const jsonSchema = require("raw!./protocol.json");
+const jsonSchema = require("raw-loader!./protocol.json");
 const validate = ajv.compile(JSON.parse(jsonSchema));
 
 export function encode(protocol: types.Protocol): string | Uint8Array {
@@ -36,6 +36,6 @@ export function decode(data: string | ArrayBuffer, next: (protocol: types.Protoc
             next(result);
         }
     } else {
-        next(protocolType.decode(new Uint8Array(data)).asJSON() as types.Protocol);
+        next(protocolType.decode(new Uint8Array(data)).toObject() as types.Protocol);
     }
 }

@@ -28,5 +28,5 @@ export function decode(protocol: ArrayBuffer | string): types.Protocol {
         }
         return result;
     }
-    return protocolType.decode(new Buffer(protocol)).asJSON() as types.Protocol;
+    return protocolType.decode(new Buffer(protocol)).toObject() as types.Protocol;
 }
