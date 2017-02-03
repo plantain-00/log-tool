@@ -7,6 +7,7 @@ import * as elastic from "./elastic";
 import * as format from "./format";
 import * as sqlite from "./sqlite";
 import * as folderSizeWatcher from "./folderSizeWatcher";
+import * as countLogs from "./countLogs";
 
 watcher.start();
 gui.start();
@@ -16,6 +17,7 @@ elastic.start();
 format.start();
 sqlite.start();
 folderSizeWatcher.start();
+countLogs.start();
 
 console.log("log tool started.");
 

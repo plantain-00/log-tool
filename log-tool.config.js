@@ -70,13 +70,19 @@ module.exports = {
         enabled: true,
     },
     /**
-     * watch the size of folder
+     * watch the size of folder.
      */
     folderSizeWatcher: {
         enabled: true,
         folders: {
             mysqlSize: "./static/",
         },
+    },
+    /**
+     * count the logs.
+     */
+    countLogs: {
+        enabled: true,
     },
     sqlite: {
         filePath: "./data.db",

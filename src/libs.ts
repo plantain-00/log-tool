@@ -29,15 +29,6 @@ export const sampleSubject = new Subject<types.Sample>();
 
 export const bufferedLogSubject = logSubject.bufferTime(1000);
 
-bufferedLogSubject.subscribe(logs => {
-    sampleSubject.next({
-        hostname,
-        values: {
-            logCount: logs.length,
-        },
-    });
-});
-
 export const bufferedSampleSubject = sampleSubject
     .bufferTime(1000)
     .filter(s => s.length > 0)
