@@ -78,7 +78,7 @@ export type SearchLogsResult = {
 
 export type Sample = {
     hostname: string;
-    port: number;
+    port?: number;
     values: { [name: string]: number };
 };
 

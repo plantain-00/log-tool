@@ -45,6 +45,10 @@ export function trimHistory<T>(array: T[]) {
     }
 }
 
+function getSampleName(sample: types.Sample) {
+    return sample.port ? `${sample.hostname}:${sample.port}` : sample.hostname;
+}
+
 export function appendChartData(sampleFrame: types.SampleFrame) {
     const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
@@ -52,7 +56,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
         tempChartDatas[config.name].labels!.push(time);
 
         for (const sample of sampleFrame.samples) {
-            const seriesName = `${sample.hostname}:${sample.port}`;
+            const seriesName = getSampleName(sample);
             const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
 
             const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
@@ -78,7 +82,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
         }
 
         for (const dataset of tempChartDatas[config.name].datasets!) {
-            if (sampleFrame.samples.every(s => `${s.hostname}:${s.port}` !== dataset.label)) {
+            if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
                 (dataset.data as number[]).push(0);
             }
         }
@@ -234,7 +238,7 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
             searchResultChartDatas[config.name].labels!.push(sampleFrame.time);
 
             for (const sample of sampleFrame.samples) {
-                const seriesName = `${sample.hostname}:${sample.port}`;
+                const seriesName = getSampleName(sample);
                 const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
 
                 const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName);
@@ -260,7 +264,7 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
             }
 
             for (const dataset of searchResultChartDatas[config.name].datasets!) {
-                if (sampleFrame.samples.every(s => `${s.hostname}:${s.port}` !== dataset.label)) {
+                if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
                     (dataset.data as number[]).push(0);
                 }
             }

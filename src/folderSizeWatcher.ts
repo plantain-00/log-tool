@@ -14,7 +14,6 @@ export function start() {
         }
         libs.sampleSubject.next({
             hostname: libs.hostname,
-            port: config.gui.port,
             values,
         });
     }, 1000);

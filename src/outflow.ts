@@ -11,25 +11,22 @@ export function start() {
 
     let ws: libs.WebSocket;
     let sender: libs.Sender;
-    const subscription = libs.flowObservable
-        .bufferTime(1000)
-        .filter(s => s.length > 0)
-        .subscribe(flows => {
-            const protocol: types.Protocol = {
-                kind: "flows",
-                flows,
-            };
-            const message = format.encode(protocol);
-            if (ws && ws.readyState === ws.OPEN && sender) {
-                sender.send(message, { binary: config.protobuf.enabled, mask: true }, isSuccess => {
-                    if (!isSuccess) {
-                        sqlite.saveOutflowLog(message);
-                    }
-                });
-            } else {
-                sqlite.saveOutflowLog(message);
-            }
-        });
+    const subscription = libs.bufferedFlowObservable.subscribe(flows => {
+        const protocol: types.Protocol = {
+            kind: "flows",
+            flows,
+        };
+        const message = format.encode(protocol);
+        if (ws && ws.readyState === ws.OPEN && sender) {
+            sender.send(message, { binary: config.protobuf.enabled, mask: true }, isSuccess => {
+                if (!isSuccess) {
+                    sqlite.saveOutflowLog(message);
+                }
+            });
+        } else {
+            sqlite.saveOutflowLog(message);
+        }
+    });
     const reconnector = new libs.Reconnector(() => {
         ws = new libs.WebSocket(config.outflow.url);
         sender = new libs.Sender(ws);

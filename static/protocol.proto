@@ -31,7 +31,7 @@ message Log {
 
 message Sample {
     required string hostname = 1;
-    required uint32 port = 2;
+    optional uint32 port = 2;
     map<string, uint32> values = 3;
 }
 

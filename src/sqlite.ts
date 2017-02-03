@@ -13,16 +13,14 @@ export function start() {
         }
     });
     if (config.sqlite.samples) {
-        libs.sampleSubject.bufferTime(1000)
-            .filter(s => s.length > 0)
-            .subscribe(samples => {
-                const time = Math.round(Date.now() / 1000);
-                db.run("INSERT INTO samples (time, value) values (?, ?)", [time, JSON.stringify(samples)], error => {
-                    if (error) {
-                        libs.publishError(error);
-                    }
-                });
+        libs.bufferedSampleSubject.subscribe(samples => {
+            const time = Math.round(Date.now() / 1000);
+            db.run("INSERT INTO samples (time, value) values (?, ?)", [time, JSON.stringify(samples)], error => {
+                if (error) {
+                    libs.publishError(error);
+                }
             });
+        });
     }
 }
 

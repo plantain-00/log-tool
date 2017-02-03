@@ -14,8 +14,9 @@ import * as protobuf from "protobufjs";
 import * as sqlite3 from "sqlite3";
 import * as bodyParser from "body-parser";
 import * as Ajv from "ajv";
+import * as _ from "lodash";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _ };
 
 const ajv = new Ajv();
 const jsonSchema = require("../static/protocol.json");
@@ -26,17 +27,50 @@ export const hostname = os.hostname();
 export const logSubject = new Subject<types.Log>();
 export const sampleSubject = new Subject<types.Sample>();
 
-export const flowObservable: Observable<types.Flow> = Observable.merge(logSubject.map(log => {
-    return {
-        kind: "log",
-        log,
-    };
-}), sampleSubject.map(sample => {
-    return {
-        kind: "sample",
-        sample,
-    };
-}));
+export const bufferedLogSubject = logSubject.bufferTime(1000);
+
+bufferedLogSubject.subscribe(logs => {
+    sampleSubject.next({
+        hostname,
+        values: {
+            logCount: logs.length,
+        },
+    });
+});
+
+export const bufferedSampleSubject = sampleSubject
+    .bufferTime(1000)
+    .filter(s => s.length > 0)
+    .map(samples => {
+        const result: types.Sample[] = [];
+        for (const sample of samples) {
+            const resultSample = result.find(r => r.hostname === sample.hostname && r.port === sample.port);
+            if (resultSample) {
+                Object.assign(resultSample.values, sample.values);
+            } else {
+                result.push(sample);
+            }
+        }
+        return result;
+    });
+
+export const bufferedFlowObservable = Observable.merge(
+    bufferedLogSubject
+        .filter(logs => logs.length > 0)
+        .map(logs => logs.map(log => ({ kind: "log" as "log", log })),
+    ),
+    bufferedSampleSubject
+        .map(samples => (samples.map(sample => ({ kind: "sample" as "sample", sample }))),
+    ))
+    .bufferTime(1000)
+    .filter(s => s.length > 0)
+    .map(logsOrSamplesArray => {
+        let result: types.Flow[] = [];
+        for (const logsOrSamples of logsOrSamplesArray) {
+            result = result.concat(logsOrSamples);
+        }
+        return result;
+    });
 
 export function publishError(error: Error) {
     logSubject.next({

@@ -19,30 +19,25 @@ export function start() {
 
     app.use(libs.express.static(libs.path.resolve(__dirname, "../static")));
 
-    libs.sampleSubject.bufferTime(1000)
-        .filter(s => s.length > 0)
-        .subscribe(samples => {
-            historySamples.push({
-                time: libs.getNow(),
-                samples,
-            });
-            if (historySamples.length > maxHistorySampleCount) {
-                historySamples.splice(0, historySamples.length - maxHistorySampleCount);
-            }
+    libs.bufferedSampleSubject.subscribe(samples => {
+        historySamples.push({
+            time: libs.getNow(),
+            samples,
         });
+        if (historySamples.length > maxHistorySampleCount) {
+            historySamples.splice(0, historySamples.length - maxHistorySampleCount);
+        }
+    });
 
     wss.on("connection", ws => {
-        const subscription = libs.flowObservable
-            .bufferTime(1000)
-            .filter(s => s.length > 0)
-            .subscribe(flows => {
-                const protocol: types.Protocol = {
-                    kind: "flows",
-                    serverTime: libs.getNow(),
-                    flows,
-                };
-                ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
-            });
+        const subscription = libs.bufferedFlowObservable.subscribe(flows => {
+            const protocol: types.Protocol = {
+                kind: "flows",
+                serverTime: libs.getNow(),
+                flows,
+            };
+            ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
+        });
         ws.on("close", (code, name) => {
             subscription.unsubscribe();
         });
@@ -132,16 +127,6 @@ export function start() {
         };
         ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
     });
-
-    // libs.logSubject.bufferTime(1000).subscribe(logs => {
-    //     libs.sampleSubject.next({
-    //         hostname: libs.hostname,
-    //         port: config.gui.port,
-    //         values: {
-    //             logCount: logs.length,
-    //         },
-    //     });
-    // });
 
     server.on("request", app);
     server.listen(config.gui.port, config.gui.host);
