@@ -20,25 +20,18 @@ export async function start() {
 
     // watch all paths
     for (const pathname of config.watcher.paths) {
-        // make it clear that it is directory or file
         const stats = await libs.statAsync(pathname);
         if (stats) {
-            // for every file, if no position in positions, read all file
+            await initialize(pathname, stats);
             if (stats.isDirectory()) {
-                const files = await libs.readDirAsync(pathname);
-                if (files) {
-                    for (const file of files) {
-                        const filepath = libs.path.resolve(pathname, file);
-                        const fileStats = await libs.statAsync(filepath);
-                        if (fileStats) {
-                            readNewlyAddedLogsThenPublish(filepath, fileStats.size);
-                        }
-                    }
-                }
-            } else {
-                readNewlyAddedLogsThenPublish(pathname, stats.size);
+                libs.fs.watch(pathname, { recursive: true }, (event, filename) => {
+                    fileOrDirectoryChanged(libs.path.resolve(pathname, filename));
+                });
+            } else if (stats.isFile()) {
+                libs.fs.watch(pathname, (event, filename) => {
+                    fileOrDirectoryChanged(pathname);
+                });
             }
-            watch(pathname, stats.isDirectory());
         }
     }
 
@@ -52,19 +45,34 @@ export async function start() {
     }, 1000);
 }
 
-function watch(pathname: string, isDirectory: boolean) {
-    libs.fs.watch(pathname, (event, filename) => {
-        const filepath = isDirectory ? libs.path.resolve(pathname, filename) : pathname;
-        libs.fs.stat(filepath, (fileError, fileStats) => {
-            if (fileError) {
-                // the file is deleted
-                libs.publishError(fileError);
-                delete positions[filepath];
-            } else {
-                // the file is updated or a new file
-                readNewlyAddedLogsThenPublish(filepath, fileStats.size);
+async function initialize(pathname: string, stats: libs.fs.Stats) {
+    // for every file, if no position in positions, read all file
+    if (stats.isDirectory()) {
+        const files = await libs.readDirAsync(pathname);
+        if (files) {
+            for (const file of files) {
+                const filepath = libs.path.resolve(pathname, file);
+                const fileStats = await libs.statAsync(filepath);
+                if (fileStats) {
+                    await initialize(filepath, fileStats);
+                }
             }
-        });
+        }
+    } else if (stats.isFile()) {
+        readNewlyAddedLogsThenPublish(pathname, stats.size);
+    }
+}
+
+function fileOrDirectoryChanged(pathname: string) {
+    libs.fs.stat(pathname, (statError, stats) => {
+        if (statError) {
+            // the file or directory is deleted
+            libs.publishError(statError);
+            delete positions[pathname];
+        } else if (stats && stats.isFile()) {
+            // the file is updated or a new file
+            readNewlyAddedLogsThenPublish(pathname, stats.size);
+        }
     });
 }
 

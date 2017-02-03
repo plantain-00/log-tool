@@ -59,7 +59,7 @@ module.exports = {
      * transport logs to elastic search server for searching old logs purpose.
      */
     elastic: {
-        enabled: true,
+        enabled: false,
         // `tool` is the index name, `logs` is the type name, they are all needed.
         url: "http://localhost:9200/tool/logs",
     },
@@ -68,6 +68,15 @@ module.exports = {
      */
     protobuf: {
         enabled: true,
+    },
+    /**
+     * watch the size of folder
+     */
+    folderSizeWatcher: {
+        enabled: true,
+        folders: {
+            mysqlSize: "./static/",
+        },
     },
     sqlite: {
         filePath: "./data.db",

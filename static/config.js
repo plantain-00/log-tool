@@ -5,6 +5,12 @@ var chartConfigs = [
         unit: undefined,
         compute: undefined,
     },
+    {
+        name: "mysqlSize",
+        description: "mysql数据",
+        unit: "B",
+        compute: undefined,
+    },
     // {
     //     /**
     //      * be unique

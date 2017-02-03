@@ -6,6 +6,7 @@ import * as outflow from "./outflow";
 import * as elastic from "./elastic";
 import * as format from "./format";
 import * as sqlite from "./sqlite";
+import * as folderSizeWatcher from "./folderSizeWatcher";
 
 watcher.start();
 gui.start();
@@ -14,6 +15,7 @@ outflow.start();
 elastic.start();
 format.start();
 sqlite.start();
+folderSizeWatcher.start();
 
 console.log("log tool started.");
 

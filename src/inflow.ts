@@ -3,18 +3,6 @@ import * as config from "./config";
 import * as format from "./format";
 import * as types from "./types";
 
-function handleMessage(protocol: types.Protocol) {
-    if (protocol.kind === "flows" && protocol.flows) {
-        for (const flow of protocol.flows) {
-            if (flow.kind === "log") {
-                libs.logSubject.next(flow.log);
-            } else if (flow.kind === "sample") {
-                libs.sampleSubject.next(flow.sample);
-            }
-        }
-    }
-}
-
 export function start() {
     if (!config.inflow.enabled) {
         return;
@@ -48,4 +36,16 @@ export function start() {
 
     server.on("request", app);
     server.listen(config.inflow.port, config.inflow.host);
+}
+
+function handleMessage(protocol: types.Protocol) {
+    if (protocol.kind === "flows" && protocol.flows) {
+        for (const flow of protocol.flows) {
+            if (flow.kind === "log") {
+                libs.logSubject.next(flow.log);
+            } else if (flow.kind === "sample") {
+                libs.sampleSubject.next(flow.sample);
+            }
+        }
+    }
 }

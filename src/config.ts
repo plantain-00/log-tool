@@ -33,6 +33,10 @@ type Config = {
     protobuf: {
         enabled: boolean;
     };
+    folderSizeWatcher: {
+        enabled: boolean;
+        folders: { [name: string]: string };
+    };
     sqlite: {
         filePath: string;
         samples: boolean;
@@ -40,4 +44,4 @@ type Config = {
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-export const {elastic, gui, inflow, outflow, watcher, protobuf, sqlite}: Config = require(configurationFilePath);
+export const {elastic, gui, inflow, outflow, watcher, protobuf, folderSizeWatcher, sqlite}: Config = require(configurationFilePath);
