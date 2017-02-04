@@ -84,6 +84,12 @@ module.exports = {
     countLogs: {
         enabled: true,
     },
+    /**
+     * show os information.
+     */
+    os: {
+        enabled: true,
+    },
     sqlite: {
         filePath: "./data.db",
         // if enabled, will save samples to sqlite.

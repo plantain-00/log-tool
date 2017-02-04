@@ -46,7 +46,7 @@ export function trimHistory<T>(array: T[]) {
 }
 
 function getSampleName(sample: types.Sample) {
-    return sample.port ? `${sample.hostname}:${sample.port}` : sample.hostname;
+    return sample.port !== undefined ? `${sample.hostname}:${sample.port}` : sample.hostname;
 }
 
 export function appendChartData(sampleFrame: types.SampleFrame) {

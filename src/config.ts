@@ -40,6 +40,9 @@ type Config = {
     countLogs: {
         enabled: boolean;
     };
+    os: {
+        enabled: boolean;
+    };
     sqlite: {
         filePath: string;
         samples: boolean;
@@ -47,4 +50,4 @@ type Config = {
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-export const {elastic, gui, inflow, outflow, watcher, protobuf, folderSizeWatcher, countLogs, sqlite}: Config = require(configurationFilePath);
+export const {elastic, gui, inflow, outflow, watcher, protobuf, folderSizeWatcher, countLogs, os, sqlite}: Config = require(configurationFilePath);

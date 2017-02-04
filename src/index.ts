@@ -8,6 +8,7 @@ import * as format from "./format";
 import * as sqlite from "./sqlite";
 import * as folderSizeWatcher from "./folderSizeWatcher";
 import * as countLogs from "./countLogs";
+import * as os from "./os";
 
 watcher.start();
 gui.start();
@@ -18,6 +19,7 @@ format.start();
 sqlite.start();
 folderSizeWatcher.start();
 countLogs.start();
+os.start();
 
 console.log("log tool started.");
 

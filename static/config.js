@@ -8,7 +8,19 @@ var chartConfigs = [
     {
         name: "mysqlSize",
         description: "mysql数据",
-        unit: "B",
+        unit: "kB",
+        compute: undefined,
+    },
+    {
+        name: "cpu",
+        description: "CPU",
+        unit: "%",
+        compute: undefined,
+    },
+    {
+        name: "memory",
+        description: "内存",
+        unit: "%",
         compute: undefined,
     },
     // {

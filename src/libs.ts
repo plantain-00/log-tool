@@ -16,7 +16,7 @@ import * as bodyParser from "body-parser";
 import * as Ajv from "ajv";
 import * as _ from "lodash";
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _ };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os };
 
 const ajv = new Ajv();
 const jsonSchema = require("../static/protocol.json");
