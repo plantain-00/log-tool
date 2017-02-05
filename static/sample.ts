@@ -49,6 +49,11 @@ function getSampleName(sample: types.Sample) {
     return sample.port !== undefined ? `${sample.hostname}:${sample.port}` : sample.hostname;
 }
 
+function getValue(config: types.ChartConfig, sample: types.Sample) {
+    const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
+    return config.unitScale === undefined ? count : Math.round(count / config.unitScale);
+}
+
 export function appendChartData(sampleFrame: types.SampleFrame) {
     const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
@@ -57,7 +62,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
 
         for (const sample of sampleFrame.samples) {
             const seriesName = getSampleName(sample);
-            const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
+            const count = getValue(config, sample);
 
             const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
             if (tempChartDataset) {
@@ -239,7 +244,7 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
 
             for (const sample of sampleFrame.samples) {
                 const seriesName = getSampleName(sample);
-                const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
+                const count = getValue(config, sample);
 
                 const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName);
                 if (searchResultChartDataset) {

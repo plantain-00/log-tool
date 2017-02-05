@@ -92,4 +92,5 @@ export type ChartConfig = {
     description: string;
     compute?: (array: { [name: string]: number }) => number;
     unit?: string;
+    unitScale?: number;
 };

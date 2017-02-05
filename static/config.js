@@ -3,24 +3,28 @@ var chartConfigs = [
         name: "logCount",
         description: "日志数",
         unit: undefined,
+        unitScale: undefined,
         compute: undefined,
     },
     {
         name: "mysqlSize",
         description: "mysql数据",
         unit: "kB",
+        unitScale: 1024,
         compute: undefined,
     },
     {
         name: "cpu",
         description: "CPU",
         unit: "%",
+        unitScale: undefined,
         compute: undefined,
     },
     {
         name: "memory",
         description: "内存",
         unit: "%",
+        unitScale: undefined,
         compute: undefined,
     },
     // {
@@ -33,6 +37,7 @@ var chartConfigs = [
     //      */
     //     description: "HTTP响应平均耗时",
     //     unit: "ms",
+    //     unitScale: undefined,
     //     /**
     //      * if set, the value is not from sample data, but is computed from sample data
     //      */
@@ -44,12 +49,14 @@ var chartConfigs = [
     //     name: "httpRequestCount",
     //     description: "HTTP请求数",
     //     unit: undefined,
+    //     unitScale: undefined,
     //     compute: undefined,
     // },
     // {
     //     name: "httpResponseTime",
     //     description: "HTTP响应耗时",
     //     unit: "ms",
+    //     unitScale: undefined,
     //     compute: undefined,
     // },
 ];

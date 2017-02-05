@@ -10,7 +10,7 @@ export function start() {
         const values: { [name: string]: number } = {};
         for (const name in config.folderSizeWatcher.folders) {
             const folder = config.folderSizeWatcher.folders[name];
-            values[name] = Math.round(await getSize(folder) / 1024);
+            values[name] = await getSize(folder);
         }
         libs.sampleSubject.next({
             hostname: libs.hostname,
