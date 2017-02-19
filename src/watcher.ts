@@ -64,15 +64,15 @@ async function initialize(pathname: string, stats: libs.fs.Stats) {
 }
 
 function fileOrDirectoryChanged(pathname: string) {
-    libs.fs.stat(pathname, (statError, stats) => {
-        if (statError) {
-            // the file or directory is deleted
-            libs.publishError(statError);
-            delete positions[pathname];
-        } else if (stats && stats.isFile()) {
+    libs.statAsync(pathname).then(stats => {
+        if (stats && stats.isFile()) {
             // the file is updated or a new file
             readNewlyAddedLogsThenPublish(pathname, stats.size);
         }
+    }, statError => {
+        // the file or directory is deleted
+        libs.publishError(statError);
+        delete positions[pathname];
     });
 }
 

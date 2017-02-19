@@ -121,11 +121,17 @@ export function readFileAsync(filepath: string) {
 
 export function readDirAsync(filepath: string) {
     return new Promise<string[] | undefined>((resolve, reject) => {
-        fs.readdir(filepath, (error, files) => {
-            if (error) {
-                publishError(error);
+        fs.access(filepath, err => {
+            if (err) {
+                resolve(undefined);
+            } else {
+                fs.readdir(filepath, (error, files) => {
+                    if (error) {
+                        publishError(error);
+                    }
+                    resolve(files);
+                });
             }
-            resolve(files);
         });
     });
 }

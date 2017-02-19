@@ -88,9 +88,10 @@ export type SampleFrame = {
 };
 
 export type ChartConfig = {
+    enabled: boolean;
     name: string;
     description: string;
-    compute?: (array: { [name: string]: number }) => number;
+    compute?: (sample: { [name: string]: number }) => number;
     unit?: string;
     unitScale?: number;
 };

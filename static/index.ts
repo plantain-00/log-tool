@@ -8,6 +8,9 @@ import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
 
+// declared in config.js
+declare const chartConfigs: types.ChartConfig[];
+
 let ws: WebSocket | undefined;
 
 type Log = types.Log & {
@@ -15,7 +18,6 @@ type Log = types.Log & {
     visible?: boolean;
     visibilityButtonExtraBottom?: number;
 };
-declare const chartConfigs: types.ChartConfig[];
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*
