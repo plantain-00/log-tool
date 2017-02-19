@@ -87,22 +87,34 @@ export function getNow() {
 
 export function statAsync(pathname: string) {
     return new Promise<fs.Stats | undefined>((resolve, reject) => {
-        fs.stat(pathname, (error, stats) => {
-            if (error) {
-                publishError(error);
+        fs.access(pathname, err => {
+            if (err) {
+                resolve(undefined);
+            } else {
+                fs.stat(pathname, (error, stats) => {
+                    if (error) {
+                        publishError(error);
+                    }
+                    resolve(stats);
+                });
             }
-            resolve(stats);
         });
     });
 }
 
 export function readFileAsync(filepath: string) {
     return new Promise<string | undefined>((resolve, reject) => {
-        fs.readFile(filepath, "utf8", (error, data) => {
-            if (error) {
-                publishError(error);
+        fs.access(filepath, err => {
+            if (err) {
+                resolve(undefined);
+            } else {
+                fs.readFile(filepath, "utf8", (error, data) => {
+                    if (error) {
+                        publishError(error);
+                    }
+                    resolve(data);
+                });
             }
-            resolve(data);
         });
     });
 }

@@ -247,7 +247,7 @@ const app = new App({
 
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const reconnector = new Reconnector(() => {
-    ws = new WebSocket(`${wsProtocol}//${location.host}`);
+    ws = new WebSocket(`${wsProtocol}//${location.host}/ws`);
     ws.binaryType = "arraybuffer";
     ws.onmessage = event => {
         format.decode(event.data, protocol => {
