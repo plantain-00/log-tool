@@ -92,7 +92,7 @@ class App extends Vue {
     visibilityButtonStyle(log: Log) {
         return {
             position: "absolute",
-            bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom) : 0) + "px",
+            bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom!) : 0) + "px",
             right: 10 + "px",
         };
     }
