@@ -4,8 +4,7 @@
   "description": "A tool to watch log files changes, and transport, transform, store, monitor, search logs.",
   "main": "src/index.js",
   "scripts": {
-    "build": "tsc -p src",
-    "build-static": "tsc -p static && npm run minifier-template && webpack --display-modules && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static",
+    "build": "tsc -p src && tsc -p static && npm run minifier-template && webpack --display-modules && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static",
     "lint": "tslint \"src/*.ts\" \"static/*.ts\"",
     "minifier-template": "html-minifier --collapse-whitespace --case-sensitive static/app.template.html -o static/app.html",
     "clean": "rm -f static/vendor.bundle-*.js static/index.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css",
