@@ -20,12 +20,15 @@ export function start() {
             });
         }
 
-        const memory = Math.round(100 - libs.os.freemem() / libs.os.totalmem() * 100);
-        libs.sampleSubject.next({
-            hostname: libs.hostname,
-            values: {
-                memory,
-            },
+        libs.si.mem().then((a: { available: number, total: number }) => {
+            const memory = Math.round(100 - a.available / a.total * 100);
+            console.log(memory);
+            libs.sampleSubject.next({
+                hostname: libs.hostname,
+                values: {
+                    memory,
+                },
+            });
         });
     }, 1000);
 }
