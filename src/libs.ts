@@ -15,9 +15,8 @@ import * as sqlite3 from "sqlite3";
 import * as bodyParser from "body-parser";
 import * as Ajv from "ajv";
 import * as _ from "lodash";
-const si = require("systeminformation");
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os, si };
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os };
 
 const ajv = new Ajv();
 const jsonSchema = require("../static/protocol.json");
