@@ -171,7 +171,7 @@ export function initializeCharts() {
                     xAxes: [{
                         type: "time",
                         time: {
-                            format: "HH:mm:ss",
+                            // format: "HH:mm:ss",
                             tooltipFormat: "HH:mm:ss",
                         },
                         scaleLabel: {
@@ -213,7 +213,7 @@ export function initializeCharts() {
                     xAxes: [{
                         type: "time",
                         time: {
-                            format: "YYYY-MM-DD HH:mm:ss",
+                            // format: "YYYY-MM-DD HH:mm:ss",
                             tooltipFormat: "YYYY-MM-DD HH:mm:ss",
                         },
                         scaleLabel: {
