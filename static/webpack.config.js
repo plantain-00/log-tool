@@ -7,7 +7,7 @@ module.exports = {
         vendor: "./static/vendor"
     },
     output: {
-        path: path.join(__dirname, "static"),
+        path: __dirname,
         filename: "[name].bundle.js"
     },
     plugins: [

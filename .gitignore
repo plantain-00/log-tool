@@ -42,3 +42,4 @@ static/*bundle*.css
 static/app.html
 static/index.html
 *.db
+!*.config.js
