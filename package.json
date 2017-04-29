@@ -4,7 +4,7 @@
   "description": "A tool to watch log files changes, and transport, transform, store, monitor, search logs.",
   "main": "src/index.js",
   "scripts": {
-    "build": "tsc -p src && tsc -p static && npm run minifier-template && webpack --display-modules --config static/webpack.config.js && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static --config static/rev-static.config.js",
+    "build": "rimraf dist && tsc -p src && tsc -p static && npm run minifier-template && webpack --display-modules --config static/webpack.config.js && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static --config static/rev-static.config.js",
     "lint": "tslint \"src/*.ts\" \"static/*.ts\"",
     "minifier-template": "html-minifier --collapse-whitespace --case-sensitive static/app.template.html -o static/app.html",
     "clean": "rimraf static/vendor.bundle-*.js static/index.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css",
@@ -42,7 +42,7 @@
     "rimraf": "2.6.1",
     "rpc-on-ws": "3.1.1",
     "tslint": "5.0.0",
-    "typescript": "2.2.2",
+    "typescript": "2.3.2",
     "vue": "2.2.6",
     "vue-class-component": "5.0.1",
     "webpack": "2.3.2"
