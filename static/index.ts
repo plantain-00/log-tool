@@ -7,6 +7,7 @@ import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearc
 import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
+import { staticAppTemplateHtml } from "./variables";
 
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
@@ -67,7 +68,7 @@ subject.subscribe(protocol => {
 const wsRpc = new WsRpc(subject, message => message.requestId!, message => message.error);
 
 @Component({
-    template: require("raw-loader!./app.html"),
+    template: staticAppTemplateHtml,
 })
 class App extends Vue {
     tabIndex = 0;
@@ -286,7 +287,7 @@ window.onscroll = () => {
     }
 };
 
-app.chartWidth = document.getElementById("tab-content") !.getBoundingClientRect().width - 30;
+app.chartWidth = document.getElementById("tab-content")!.getBoundingClientRect().width - 30;
 
 setInterval(() => {
     updateCharts();

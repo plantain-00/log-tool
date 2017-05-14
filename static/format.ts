@@ -3,13 +3,12 @@ import * as Ajv from "ajv";
 
 import * as types from "../src/types";
 declare const protobufConfig: { enabled: boolean };
+import { staticProtocolProto, staticProtocolJson } from "./variables";
 
-const protofile: string = require("raw-loader!./protocol.proto");
-const protocolType = (protobuf.parse(protofile)["root"] as protobuf.Root).lookup("protocolPackage.Protocol") as protobuf.Type;
+const protocolType = protobuf.Root.fromJSON(staticProtocolProto).lookup("protocolPackage.Protocol") as protobuf.Type;
 
 const ajv = new Ajv();
-const jsonSchema = require("raw-loader!./protocol.json");
-const validate = ajv.compile(JSON.parse(jsonSchema));
+const validate = ajv.compile(staticProtocolJson);
 
 export function encode(protocol: types.Protocol): string | Uint8Array {
     if (protobufConfig.enabled) {
