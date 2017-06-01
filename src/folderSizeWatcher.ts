@@ -9,8 +9,10 @@ export function start() {
     setInterval(async () => {
         const values: { [name: string]: number } = {};
         for (const name in config.folderSizeWatcher.folders) {
-            const folder = config.folderSizeWatcher.folders[name];
-            values[name] = await getSize(folder);
+            if (config.folderSizeWatcher.folders.hasOwnProperty(name)) {
+                const folder = config.folderSizeWatcher.folders[name];
+                values[name] = await getSize(folder);
+            }
         }
         libs.sampleSubject.next({
             hostname: libs.hostname,

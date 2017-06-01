@@ -19,8 +19,14 @@ import * as _ from "lodash";
 export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os };
 
 const ajv = new Ajv();
+// tslint:disable-next-line:no-var-requires
 const jsonSchema = require("../static/protocol.json");
 export const validate = ajv.compile(jsonSchema);
+
+export function print(message: any) {
+    // tslint:disable-next-line:no-console
+    console.log(message);
+}
 
 export const hostname = os.hostname();
 

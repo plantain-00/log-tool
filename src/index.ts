@@ -21,8 +21,8 @@ folderSizeWatcher.start();
 countLogs.start();
 os.start();
 
-console.log("log tool started.");
+libs.print("log tool started.");
 
 libs.logSubject.subscribe(log => {
-    console.log(log);
+    libs.print(log);
 });

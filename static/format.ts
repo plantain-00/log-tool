@@ -30,6 +30,7 @@ export function decode(data: string | ArrayBuffer, next: (protocol: types.Protoc
         const result = JSON.parse(data);
         const isValidJson = validate(result);
         if (!isValidJson) {
+            // tslint:disable-next-line:no-console
             console.log(validate.errors![0].message);
         } else {
             next(result);

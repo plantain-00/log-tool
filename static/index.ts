@@ -37,6 +37,7 @@ subject.subscribe(protocol => {
                         log.visibilityButtonExtraBottom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
+                        // tslint:disable-next-line:no-console
                         console.log(error);
                     }
                     app.logsPush.unshift(log);
@@ -144,6 +145,7 @@ class App extends Vue {
                             log.visibilityButtonExtraBottom = 0;
                             log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
                         } catch (error) {
+                            // tslint:disable-next-line:no-console
                             console.log(error);
                         }
                         app.logsSearchResult.push(log);

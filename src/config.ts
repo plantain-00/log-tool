@@ -50,4 +50,5 @@ type Config = {
 };
 
 const configurationFilePath = process.argv[2] || "../log-tool.config.js";
+// tslint:disable-next-line:no-var-requires
 export const {elastic, gui, inflow, outflow, watcher, protobuf, folderSizeWatcher, countLogs, os, sqlite}: Config = require(configurationFilePath);
