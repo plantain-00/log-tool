@@ -13,7 +13,7 @@ export function start() {
     let sender: libs.Sender;
     const subscription = libs.bufferedFlowObservable.subscribe(flows => {
         const protocol: types.Protocol = {
-            kind: "flows",
+            kind: types.ProtocolKind.flows,
             flows,
         };
         const message = format.encode(protocol);

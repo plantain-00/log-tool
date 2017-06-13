@@ -39,11 +39,11 @@ export function start() {
 }
 
 function handleMessage(protocol: types.Protocol) {
-    if (protocol.kind === "flows" && protocol.flows) {
+    if (protocol.kind === types.ProtocolKind.flows && protocol.flows) {
         for (const flow of protocol.flows) {
-            if (flow.kind === "log") {
+            if (flow.kind === types.ProtocolKind.log) {
                 libs.logSubject.next(flow.log);
-            } else if (flow.kind === "sample") {
+            } else if (flow.kind === types.ProtocolKind.sample) {
                 libs.sampleSubject.next(flow.sample);
             }
         }

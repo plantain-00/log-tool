@@ -26,7 +26,7 @@ AND *`;
 
 const subject = new Subject<types.Protocol>();
 subject.subscribe(protocol => {
-    if (protocol.kind === "flows") {
+    if (protocol.kind === types.ProtocolKind.flows) {
         const samples: types.Sample[] = [];
         if (protocol.flows) {
             for (const flow of protocol.flows) {
@@ -56,7 +56,7 @@ subject.subscribe(protocol => {
         }
 
         trimHistory(app.logsPush);
-    } else if (protocol.kind === "history samples") {
+    } else if (protocol.kind === types.ProtocolKind.historySamples) {
         if (protocol.historySamples === undefined) {
             protocol.historySamples = [];
         }
@@ -127,7 +127,7 @@ class App extends Vue {
         if (ws) {
             wsRpc.send(requestId => {
                 const message: types.Protocol = {
-                    kind: "search",
+                    kind: types.ProtocolKind.search,
                     requestId,
                     search: {
                         q: this.q,
@@ -190,7 +190,7 @@ class App extends Vue {
             }
             wsRpc.send(requestId => {
                 const message: types.Protocol = {
-                    kind: "search samples",
+                    kind: types.ProtocolKind.searchSamples,
                     requestId,
                     searchSamples: {
                         from: this.searchFrom,
@@ -218,7 +218,7 @@ class App extends Vue {
         if (ws) {
             wsRpc.send(requestId => {
                 const message: types.Protocol = {
-                    kind: "resave failed logs",
+                    kind: types.ProtocolKind.resaveFailedLogs,
                     requestId,
                 };
                 ws!.send(format.encode(message));

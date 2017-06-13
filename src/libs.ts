@@ -53,10 +53,10 @@ export const bufferedSampleSubject = sampleSubject
 export const bufferedFlowObservable = Observable.merge(
     bufferedLogSubject
         .filter(logs => logs.length > 0)
-        .map(logs => logs.map(log => ({ kind: "log" as "log", log })),
+        .map(logs => logs.map(log => ({ kind: types.ProtocolKind.log, log } as types.LogProtocol)),
     ),
     bufferedSampleSubject
-        .map(samples => (samples.map(sample => ({ kind: "sample" as "sample", sample }))),
+        .map(samples => (samples.map(sample => ({ kind: types.ProtocolKind.sample, sample } as types.SampleProtocol))),
     ))
     .bufferTime(1000)
     .filter(s => s.length > 0)

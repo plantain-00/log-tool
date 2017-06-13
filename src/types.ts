@@ -3,14 +3,27 @@ export type Protocol = {
     error?: string;
 } & (FlowsProtocol | SearchProtocol | SearchResultProtocol | HistorySamplesProtocol | ResaveFailedLogsProtocol | ResaveFailedLogsResultProtocol | SearchSamplesProtocol | SearchSampleResultProtocol);
 
+export const enum ProtocolKind {
+    flows = "flows",
+    search = "search",
+    searchResult = "search result",
+    historySamples = "history samples",
+    resaveFailedLogs = "resave failed logs",
+    resaveFailedLogsResult = "resave failed logs result",
+    searchSamples = "search samples",
+    searchSamplesResult = "search samples result",
+    log = "log",
+    sample = "sample",
+}
+
 export type FlowsProtocol = {
-    kind: "flows",
+    kind: ProtocolKind.flows,
     serverTime?: string;
     flows: Flow[],
 };
 
 export type SearchProtocol = {
-    kind: "search",
+    kind: ProtocolKind.search,
     search: {
         q: string;
         from: number;
@@ -19,21 +32,21 @@ export type SearchProtocol = {
 };
 
 export type SearchResultProtocol = {
-    kind: "search result",
+    kind: ProtocolKind.searchResult,
     searchResult?: SearchLogsResult;
 };
 
 export type HistorySamplesProtocol = {
-    kind: "history samples",
+    kind: ProtocolKind.historySamples,
     historySamples: SampleFrame[];
 };
 
 export type ResaveFailedLogsProtocol = {
-    kind: "resave failed logs",
+    kind: ProtocolKind.resaveFailedLogs,
 };
 
 export type ResaveFailedLogsResultProtocol = {
-    kind: "resave failed logs result",
+    kind: ProtocolKind.resaveFailedLogsResult,
     resaveFailedLogsResult?: {
         savedCount: number;
         totalCount: number;
@@ -41,7 +54,7 @@ export type ResaveFailedLogsResultProtocol = {
 };
 
 export type SearchSamplesProtocol = {
-    kind: "search samples",
+    kind: ProtocolKind.searchSamples,
     searchSamples: {
         from: string;
         to: string;
@@ -49,20 +62,21 @@ export type SearchSamplesProtocol = {
 };
 
 export type SearchSampleResultProtocol = {
-    kind: "search samples result",
+    kind: ProtocolKind.searchSamplesResult,
     searchSampleResult?: SampleFrame[];
 };
 
-export type Flow =
-    {
-        kind: "log";
-        log: Log;
-    }
-    |
-    {
-        kind: "sample";
-        sample: Sample;
-    };
+export type LogProtocol = {
+    kind: ProtocolKind.log;
+    log: Log;
+};
+
+export type SampleProtocol = {
+    kind: ProtocolKind.sample;
+    sample: Sample;
+};
+
+export type Flow = LogProtocol | SampleProtocol;
 
 export type Log = {
     time: string;

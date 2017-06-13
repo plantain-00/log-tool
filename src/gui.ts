@@ -32,7 +32,7 @@ export function start() {
     wss.on("connection", ws => {
         const subscription = libs.bufferedFlowObservable.subscribe(flows => {
             const protocol: types.Protocol = {
-                kind: "flows",
+                kind: types.ProtocolKind.flows,
                 serverTime: libs.getNow(),
                 flows,
             };
@@ -45,18 +45,18 @@ export function start() {
             ws.on("message", (data: string, flag) => {
                 try {
                     const protocol: types.Protocol = format.decode(data);
-                    if (protocol.kind === "search") {
+                    if (protocol.kind === types.ProtocolKind.search) {
                         if (protocol.search) {
                             elastic.search(protocol.search.q, protocol.search.from, protocol.search.size).then(result => {
                                 const searchResult: types.Protocol = {
-                                    kind: "search result",
+                                    kind: types.ProtocolKind.searchResult,
                                     requestId: protocol.requestId,
                                     searchResult: result,
                                 };
                                 ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
                             }, (error: Error) => {
                                 const searchResult: types.Protocol = {
-                                    kind: "search result",
+                                    kind: types.ProtocolKind.searchResult,
                                     requestId: protocol.requestId,
                                     error: error.message,
                                 };
@@ -64,42 +64,42 @@ export function start() {
                             });
                         } else {
                             const searchResult: types.Protocol = {
-                                kind: "search result",
+                                kind: types.ProtocolKind.searchResult,
                                 requestId: protocol.requestId,
                                 error: "no parameter",
                             };
                             ws.send(format.encode(searchResult), { binary: config.protobuf.enabled });
                         }
-                    } else if (protocol.kind === "resave failed logs") {
+                    } else if (protocol.kind === types.ProtocolKind.resaveFailedLogs) {
                         elastic.resaveFailedLogs().then(result => {
                             const resaveFailedLogsResult: types.Protocol = {
-                                kind: "resave failed logs result",
+                                kind: types.ProtocolKind.resaveFailedLogsResult,
                                 requestId: protocol.requestId,
                                 resaveFailedLogsResult: result,
                             };
                             ws.send(format.encode(resaveFailedLogsResult), { binary: config.protobuf.enabled });
                         }, error => {
                             const resaveFailedLogsResult: types.Protocol = {
-                                kind: "resave failed logs result",
+                                kind: types.ProtocolKind.resaveFailedLogsResult,
                                 requestId: protocol.requestId,
                                 error: error.message,
                             };
                             ws.send(format.encode(resaveFailedLogsResult), { binary: config.protobuf.enabled });
                         });
-                    } else if (protocol.kind === "search samples") {
+                    } else if (protocol.kind === types.ProtocolKind.searchSamples) {
                         if (protocol.searchSamples) {
                             const from = Math.round(libs.moment(protocol.searchSamples.from).valueOf() / 1000);
                             const to = Math.round(libs.moment(protocol.searchSamples.to).valueOf() / 1000);
                             sqlite.querySamples(from, to).then(rows => {
                                 const searchSamplesResult: types.Protocol = {
-                                    kind: "search samples result",
+                                    kind: types.ProtocolKind.searchSamplesResult,
                                     requestId: protocol.requestId,
                                     searchSampleResult: rows,
                                 };
                                 ws.send(format.encode(searchSamplesResult), { binary: config.protobuf.enabled });
                             }, error => {
                                 const searchSamplesResult: types.Protocol = {
-                                    kind: "search samples result",
+                                    kind: types.ProtocolKind.searchSamplesResult,
                                     requestId: protocol.requestId,
                                     error: error.message,
                                 };
@@ -107,7 +107,7 @@ export function start() {
                             });
                         } else {
                             const searchSamplesResult: types.Protocol = {
-                                kind: "search samples result",
+                                kind: types.ProtocolKind.searchSamplesResult,
                                 requestId: protocol.requestId,
                                 error: "no parameter",
                             };
@@ -122,7 +122,7 @@ export function start() {
             });
         }
         const protocol: types.Protocol = {
-            kind: "history samples",
+            kind: types.ProtocolKind.historySamples,
             historySamples,
         };
         ws.send(format.encode(protocol), { binary: config.protobuf.enabled });
