@@ -1,0 +1,1 @@
+INSERT INTO elastic_logs (value) values (?)

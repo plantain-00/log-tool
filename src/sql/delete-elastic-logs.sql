@@ -1,0 +1,1 @@
+DELETE FROM elastic_logs WHERE ROWID = ?

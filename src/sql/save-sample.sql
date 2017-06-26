@@ -1,0 +1,1 @@
+INSERT INTO samples (time, value) VALUES (?, ?);

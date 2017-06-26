@@ -33,7 +33,6 @@ module.exports = {
         alias: {
             "vue$": "vue/dist/vue.min.js",
             "moment": "moment/min/moment.min.js",
-            "chart.js": "chart.js/dist/Chart.min.js",
             "protobufjs": "protobufjs/dist/protobuf.min.js"
         }
     }

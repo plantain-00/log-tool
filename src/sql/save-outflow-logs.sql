@@ -1,0 +1,1 @@
+INSERT INTO outflow_logs (value) values (?)

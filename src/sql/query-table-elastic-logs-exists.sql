@@ -1,0 +1,1 @@
+"SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'

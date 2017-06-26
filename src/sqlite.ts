@@ -1,6 +1,7 @@
 import * as libs from "./libs";
 import * as types from "./types";
 import * as config from "./config";
+import * as sql from "./variables";
 
 let db: libs.sqlite3.Database;
 
@@ -15,7 +16,7 @@ export function start() {
     if (config.sqlite.samples) {
         libs.bufferedSampleSubject.subscribe(samples => {
             const time = Math.round(Date.now() / 1000);
-            db.run("INSERT INTO samples (time, value) values (?, ?)", [time, JSON.stringify(samples)], error => {
+            db.run(sql.srcSqlSaveSampleSql, [time, JSON.stringify(samples)], error => {
                 if (error) {
                     libs.publishError(error);
                 }
@@ -26,13 +27,13 @@ export function start() {
 
 function createTablesIfNotExists() {
     // this table is used to store sample
-    db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'", [], (error, row) => {
+    db.get(sql.srcSqlQueryTableSamplesExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run("CREATE TABLE samples (time, value)", creationError => {
+                db.run(sql.srcSqlCreateTableSampleSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -41,13 +42,13 @@ function createTablesIfNotExists() {
         }
     });
     // this table is used to store logs that cannot be sent out by outflow
-    db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'", [], (error, row) => {
+    db.get(sql.srcSqlQueryTableOutflowLogsExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run("CREATE TABLE outflow_logs (value)", creationError => {
+                db.run(sql.srcSqlCreateTableOutflowLogsSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -56,13 +57,13 @@ function createTablesIfNotExists() {
         }
     });
     // this table is used to store logs that cannot be stored into elastic search
-    db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'", [], (error, row) => {
+    db.get(sql.srcSqlQueryTableElasticLogsExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run("CREATE TABLE elastic_logs (value)", creationError => {
+                db.run(sql.srcSqlCreateTableElasticLogsSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -74,7 +75,7 @@ function createTablesIfNotExists() {
 
 export function querySamples(from: number, to: number) {
     return new Promise<types.SampleFrame[]>((resolve, reject) => {
-        db.all("SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC", [from, to], (error, rows: { time: number, value: string }[]) => {
+        db.all(sql.srcSqlQuerySamplesSql, [from, to], (error, rows: { time: number, value: string }[]) => {
             if (error) {
                 reject(error);
             } else {
@@ -90,7 +91,7 @@ export function querySamples(from: number, to: number) {
 }
 
 export function saveOutflowLog(log: string | Uint8Array) {
-    db.run("INSERT INTO outflow_logs (value) values (?)", [log], error => {
+    db.run(sql.srcSqlSaveOutflowLogsSql, [log], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -98,7 +99,7 @@ export function saveOutflowLog(log: string | Uint8Array) {
 }
 
 export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string | Uint8Array }[]) => void) {
-    db.all("SELECT ROWID, value from outflow_logs", [], (error, rows) => {
+    db.all(sql.srcSqlQueryOutflowLogsSql, [], (error, rows) => {
         if (error) {
             libs.publishError(error);
         } else {
@@ -108,7 +109,7 @@ export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string 
 }
 
 export function deleteSuccessfulOutflowLog(rowid: number) {
-    db.run("DELETE FROM outflow_logs WHERE ROWID = ?", [rowid], error => {
+    db.run(sql.srcSqlDeleteOutflowLogsSql, [rowid], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -116,7 +117,7 @@ export function deleteSuccessfulOutflowLog(rowid: number) {
 }
 
 export function saveElasticLog(log: types.Log) {
-    db.run("INSERT INTO elastic_logs (value) values (?)", [JSON.stringify(log)], error => {
+    db.run(sql.srcSqlSaveElasticLogsSql, [JSON.stringify(log)], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -125,7 +126,7 @@ export function saveElasticLog(log: types.Log) {
 
 export function queryAllElasticLogs() {
     return new Promise<{ ROWID: number, value: string }[]>((resolve, reject) => {
-        db.all("SELECT ROWID, value from elastic_logs", [], (error, rows) => {
+        db.all(sql.srcSqlQueryElasticLogsSql, [], (error, rows) => {
             if (error) {
                 reject(error);
             } else {
@@ -137,7 +138,7 @@ export function queryAllElasticLogs() {
 
 export function deleteSuccessfulElasticLog(rowid: number) {
     return new Promise<void>((resolve, reject) => {
-        db.run("DELETE FROM elastic_logs WHERE ROWID = ?", [rowid], error => {
+        db.run(sql.srcSqlDeleteElasticLogsSql, [rowid], error => {
             if (error) {
                 reject(error);
             } else {

@@ -1,0 +1,14 @@
+export const srcSqlCreateTableElasticLogsSql = `CREATE TABLE elastic_logs (value)`;
+export const srcSqlCreateTableOutflowLogsSql = `CREATE TABLE outflow_logs (value)`;
+export const srcSqlCreateTableSampleSql = `CREATE TABLE samples (time, value)`;
+export const srcSqlDeleteElasticLogsSql = `DELETE FROM elastic_logs WHERE ROWID = ?`;
+export const srcSqlDeleteOutflowLogsSql = `DELETE FROM outflow_logs WHERE ROWID = ?`;
+export const srcSqlQueryElasticLogsSql = `SELECT ROWID, value from elastic_logs`;
+export const srcSqlQueryOutflowLogsSql = `SELECT ROWID, value from outflow_logs`;
+export const srcSqlQuerySamplesSql = `SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC`;
+export const srcSqlQueryTableElasticLogsExistsSql = `"SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'`;
+export const srcSqlQueryTableOutflowLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'`;
+export const srcSqlQueryTableSamplesExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'`;
+export const srcSqlSaveElasticLogsSql = `INSERT INTO elastic_logs (value) values (?)`;
+export const srcSqlSaveOutflowLogsSql = `INSERT INTO outflow_logs (value) values (?)`;
+export const srcSqlSaveSampleSql = `INSERT INTO samples (time, value) VALUES (?, ?);`;

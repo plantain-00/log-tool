@@ -1,0 +1,1 @@
+DELETE FROM outflow_logs WHERE ROWID = ?

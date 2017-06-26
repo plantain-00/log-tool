@@ -1,0 +1,1 @@
+SELECT ROWID, value from outflow_logs

@@ -1,0 +1,1 @@
+CREATE TABLE outflow_logs (value)
