@@ -6,7 +6,7 @@ export const srcSqlDeleteOutflowLogsSql = `DELETE FROM outflow_logs WHERE ROWID 
 export const srcSqlQueryElasticLogsSql = `SELECT ROWID, value from elastic_logs`;
 export const srcSqlQueryOutflowLogsSql = `SELECT ROWID, value from outflow_logs`;
 export const srcSqlQuerySamplesSql = `SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC`;
-export const srcSqlQueryTableElasticLogsExistsSql = `"SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'`;
+export const srcSqlQueryTableElasticLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'`;
 export const srcSqlQueryTableOutflowLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'`;
 export const srcSqlQueryTableSamplesExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'`;
 export const srcSqlSaveElasticLogsSql = `INSERT INTO elastic_logs (value) values (?)`;

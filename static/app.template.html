@@ -55,7 +55,7 @@
                                         <pre>not started or nothing found.</pre>
                                     </li>
                                     <li class="hide-button-container li-result-item" v-for="(log, index) in logsSearchResult">
-                                        <span class="label label-primary">{{log.time}}</span>
+                                        <span class="label label-primary"><relative-time :time="log.timeValue"></relative-time></span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
                                         <pre v-if="log.content && showRawLogResult">{{log.content}}</pre>
@@ -92,7 +92,7 @@
                             <div class="row">
                                 <ul class="col-md-12">
                                     <li class="hide-button-container li-result-item" v-for="(log, index) in logsPush">
-                                        <span class="label label-primary">{{log.time}}</span>
+                                        <span class="label label-primary"><relative-time :time="log.timeValue"></relative-time></span>
                                         <span class="label label-default">{{log.hostname}}</span>
                                         <span class="label label-default">{{log.filepath}}</span>
                                         <pre v-if="log.content && showRawLogPush">{{log.content}}</pre>

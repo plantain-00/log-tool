@@ -52,7 +52,7 @@ module.exports = {
      */
     gui: {
         enabled: true,
-        port: 8000,
+        port: 9000,
         host: "localhost",
     },
     /**

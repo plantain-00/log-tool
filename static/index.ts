@@ -18,6 +18,7 @@ type Log = types.Log & {
     formattedContent?: string;
     visible?: boolean;
     visibilityButtonExtraBottom?: number;
+    timeValue?: number;
 };
 
 const initialQuery = `time:["1970-01-01 00:00:00" TO *]
@@ -140,6 +141,7 @@ class App extends Vue {
                 if (protocol.searchResult && protocol.searchResult.logs) {
                     for (const h of protocol.searchResult.logs) {
                         const log: Log = h;
+                        log.timeValue = moment(log.time).valueOf();
                         try {
                             log.visible = true;
                             log.visibilityButtonExtraBottom = 0;
@@ -161,6 +163,7 @@ class App extends Vue {
                     content: error.message,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
             });
@@ -174,6 +177,7 @@ class App extends Vue {
                     content: `search from is invalid: ${this.searchFrom}`,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
                 return;
@@ -184,6 +188,7 @@ class App extends Vue {
                     content: `search to is invalid: ${this.searchTo}`,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
                 return;
@@ -209,6 +214,7 @@ class App extends Vue {
                     content: error.message,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
             });
@@ -228,6 +234,7 @@ class App extends Vue {
                     content: `handled ${protocol.resaveFailedLogsResult!.savedCount} / ${protocol.resaveFailedLogsResult!.totalCount} logs.`,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
             }, (error: Error) => {
@@ -236,6 +243,7 @@ class App extends Vue {
                     content: error.message,
                     hostname: "",
                     filepath: "",
+                    timeValue: Date.now(),
                 });
                 app.newLogsCount++;
             });

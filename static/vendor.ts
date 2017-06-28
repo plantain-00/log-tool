@@ -10,3 +10,4 @@ import "chart.js";
 import "protobufjs";
 import "ajv";
 import "rpc-on-ws";
+import "relative-time-component/dist/vue";
