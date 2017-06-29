@@ -7,7 +7,8 @@ import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearc
 import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
-import { staticAppTemplateHtml } from "./variables";
+import { staticAppTemplateHtml, staticSearchLogsTemplateHtml, staticRealtimeLogsTemplateHtml, staticSearchSamplesTemplateHtml, staticRealtimeSamplesTemplateHtml, staticOthersTemplateHtml } from "./variables";
+import { TabContainerData } from "tab-container-component/dist/common";
 
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
@@ -25,8 +26,14 @@ const initialQuery = `time:["1970-01-01 00:00:00" TO *]
 AND hostname:*
 AND *`;
 
-const subject = new Subject<types.Protocol>();
-subject.subscribe(protocol => {
+const protocolDataSubject = new Subject<types.Protocol>();
+const logsPushSubject = new Subject<Log>();
+const updateChartWidthSubject = new Subject<number>();
+const scrollSubject = new Subject<number>();
+const trimHistorySubject = new Subject<void>();
+const updateNewLogsCountSubject = new Subject<void>();
+
+protocolDataSubject.subscribe(protocol => {
     if (protocol.kind === types.ProtocolKind.flows) {
         const samples: types.Sample[] = [];
         if (protocol.flows) {
@@ -41,8 +48,8 @@ subject.subscribe(protocol => {
                         // tslint:disable-next-line:no-console
                         console.log(error);
                     }
-                    app.logsPush.unshift(log);
-                    app.newLogsCount++;
+                    logsPushSubject.next(log);
+                    updateNewLogsCountSubject.next();
                 } else if (flow.kind === "sample") {
                     samples.push(flow.sample);
                 }
@@ -56,7 +63,7 @@ subject.subscribe(protocol => {
             });
         }
 
-        trimHistory(app.logsPush);
+        trimHistorySubject.next();
     } else if (protocol.kind === types.ProtocolKind.historySamples) {
         if (protocol.historySamples === undefined) {
             protocol.historySamples = [];
@@ -67,56 +74,60 @@ subject.subscribe(protocol => {
         }
     }
 });
-const wsRpc = new WsRpc(subject, message => message.requestId!, message => message.error);
+
+const wsRpc = new WsRpc(protocolDataSubject, message => message.requestId!, message => message.error);
+
+function visibilityButtonStyle(log: Log) {
+    return {
+        position: "absolute",
+        bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom!) : 0) + "px",
+        right: 10 + "px",
+    };
+}
+
+function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeight: number) {
+    if (element) {
+        const rect = element.getBoundingClientRect();
+        log.visibilityButtonExtraBottom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
+            ? (rect.top + rect.height - innerHeight) : 0;
+    }
+}
 
 @Component({
-    template: staticAppTemplateHtml,
+    template: staticSearchLogsTemplateHtml,
+    props: ["data"],
 })
-class App extends Vue {
-    tabIndex = 0;
+class SearchLogs extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
-    logsPush: Log[] = [];
     q = initialQuery;
     from = 0;
     size = 10;
-    newLogsCount = 0;
     showRawLogResult = false;
     showFormattedLogResult = true;
-    showRawLogPush = false;
-    showFormattedLogPush = true;
-    chartConfigs = chartConfigs;
-    chartWidth = 0;
-    searchFrom = moment().clone().add(-1, "minute").format("YYYY-MM-DD HH:mm:ss");
-    searchTo = moment().format("YYYY-MM-DD HH:mm:ss");
+
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
     }
+
+    beforeMount() {
+        scrollSubject.subscribe(innerHeight => {
+            for (let i = 0; i < this.logsSearchResult.length; i++) {
+                const log = this.logsSearchResult[i];
+                const element = document.getElementById(this.logSearchResultId(i));
+                handleButtonVisibility(element, log, innerHeight);
+            }
+        });
+    }
+
+    beforeDestroy() {
+        scrollSubject.unsubscribe();
+    }
+
     visibilityButtonStyle(log: Log) {
-        return {
-            position: "absolute",
-            bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom!) : 0) + "px",
-            right: 10 + "px",
-        };
+        return visibilityButtonStyle(log);
     }
-    logSearchResultId(index: number) {
-        return `log-search-result-${index}`;
-    }
-    logPushId(index: number) {
-        return `log-push-${index}`;
-    }
-    tab(tabIndex: number) {
-        this.tabIndex = tabIndex;
-        if (this.tabIndex === 1) {
-            this.newLogsCount = 0;
-        }
-    }
-    clearLogsSearchResult() {
-        this.logsSearchResult = [];
-    }
-    clearLogsPush() {
-        this.logsPush = [];
-    }
+
     search(freshStart: boolean) {
         if (freshStart) {
             this.from = 0;
@@ -150,47 +161,133 @@ class App extends Vue {
                             // tslint:disable-next-line:no-console
                             console.log(error);
                         }
-                        app.logsSearchResult.push(log);
+                        this.logsSearchResult.push(log);
                     }
-                    app.logsSearchResultCount = protocol.searchResult.total;
+                    this.logsSearchResultCount = protocol.searchResult.total;
                 } else {
-                    app.logsSearchResult = [];
-                    app.logsSearchResultCount = 0;
+                    this.logsSearchResult = [];
+                    this.logsSearchResultCount = 0;
                 }
             }, (error: Error) => {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: error.message,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
             });
         }
     }
+
+    clearLogsSearchResult() {
+        this.logsSearchResult = [];
+    }
+
+    logSearchResultId(index: number) {
+        return `log-search-result-${index}`;
+    }
+
+    toggleVisibility(log: Log) {
+        log.visible = !log.visible;
+    }
+}
+
+Vue.component("search-logs", SearchLogs);
+
+@Component({
+    template: staticRealtimeLogsTemplateHtml,
+    props: ["data"],
+})
+class RealtimeLogs extends Vue {
+    logsPush: Log[] = [];
+    showRawLogPush = false;
+    showFormattedLogPush = true;
+
+    beforeMount() {
+        logsPushSubject.subscribe(log => {
+            this.logsPush.unshift(log);
+        });
+        scrollSubject.subscribe(innerHeight => {
+            for (let i = 0; i < this.logsPush.length; i++) {
+                const log = this.logsPush[i];
+                const element = document.getElementById(this.logPushId(i));
+                handleButtonVisibility(element, log, innerHeight);
+            }
+        });
+        trimHistorySubject.subscribe(() => {
+            trimHistory(this.logsPush);
+        });
+    }
+
+    beforeDestroy() {
+        logsPushSubject.unsubscribe();
+        scrollSubject.unsubscribe();
+        trimHistorySubject.unsubscribe();
+    }
+
+    visibilityButtonStyle(log: Log) {
+        return visibilityButtonStyle(log);
+    }
+
+    clearLogsPush() {
+        this.logsPush = [];
+    }
+
+    logPushId(index: number) {
+        return `log-push-${index}`;
+    }
+
+    toggleVisibility(log: Log) {
+        log.visible = !log.visible;
+    }
+}
+
+Vue.component("realtime-logs", RealtimeLogs);
+
+@Component({
+    template: staticSearchSamplesTemplateHtml,
+    props: ["data"],
+})
+class SearchSamples extends Vue {
+    searchFrom = moment().clone().add(-1, "minute").format("YYYY-MM-DD HH:mm:ss");
+    searchTo = moment().format("YYYY-MM-DD HH:mm:ss");
+    chartConfigs = chartConfigs;
+    chartWidth = 0;
+
+    beforeMount() {
+        updateChartWidthSubject.subscribe(chartWidth => {
+            this.chartWidth = chartWidth;
+        });
+    }
+
+    beforeDestroy() {
+        updateChartWidthSubject.unsubscribe();
+    }
+
     searchSamples() {
         if (ws) {
             if (!moment(this.searchFrom).isValid()) {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: `search from is invalid: ${this.searchFrom}`,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
                 return;
             }
             if (!moment(this.searchTo).isValid()) {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: `search to is invalid: ${this.searchTo}`,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
                 return;
             }
             wsRpc.send(requestId => {
@@ -209,17 +306,47 @@ class App extends Vue {
                 }
                 showSearchResult(protocol.searchSampleResult);
             }, (error: Error) => {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: error.message,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
             });
         }
     }
+}
+
+Vue.component("search-samples", SearchSamples);
+
+@Component({
+    template: staticRealtimeSamplesTemplateHtml,
+    props: ["data"],
+})
+class RealtimeSamples extends Vue {
+    chartConfigs = chartConfigs;
+    chartWidth = 0;
+
+    beforeMount() {
+        updateChartWidthSubject.subscribe(chartWidth => {
+            this.chartWidth = chartWidth;
+        });
+    }
+
+    beforeDestroy() {
+        updateChartWidthSubject.unsubscribe();
+    }
+}
+
+Vue.component("realtime-samples", RealtimeSamples);
+
+@Component({
+    template: staticOthersTemplateHtml,
+    props: ["data"],
+})
+class Others extends Vue {
     resaveFailedLogs() {
         if (ws) {
             wsRpc.send(requestId => {
@@ -229,61 +356,102 @@ class App extends Vue {
                 };
                 ws!.send(format.encode(message));
             }).then((protocol: types.ResaveFailedLogsResultProtocol) => {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: `handled ${protocol.resaveFailedLogsResult!.savedCount} / ${protocol.resaveFailedLogsResult!.totalCount} logs.`,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
             }, (error: Error) => {
-                this.logsPush.unshift({
+                logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
                     content: error.message,
                     hostname: "",
                     filepath: "",
                     timeValue: Date.now(),
                 });
-                app.newLogsCount++;
+                updateNewLogsCountSubject.next();
             });
         }
     }
-    toggleVisibility(log: Log) {
-        log.visible = !log.visible;
-    }
 }
 
-const app = new App({
-    el: "#body",
+Vue.component("others", Others);
+
+Vue.component("realtime-logs-title", {
+    template: `<a href="javascript:void">Realtime Logs<span class="badge" v-if="data > 0">{{data}}</span></a>`,
+    props: ["data"],
 });
 
-function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeight: number) {
-    if (element) {
-        const rect = element.getBoundingClientRect();
-        log.visibilityButtonExtraBottom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
-            ? (rect.top + rect.height - innerHeight) : 0;
+@Component({
+    template: staticAppTemplateHtml,
+})
+class App extends Vue {
+    data: TabContainerData[] = [
+        {
+            isActive: true,
+            title: "Search Logs",
+            component: "search-logs",
+            data: "",
+        },
+        {
+            isActive: false,
+            titleComponent: "realtime-logs-title",
+            titleData: 0,
+            component: "realtime-logs",
+            data: "",
+        },
+        {
+            isActive: false,
+            title: "Search Samples",
+            component: "search-samples",
+            data: "",
+        },
+        {
+            isActive: false,
+            title: "Realtime Samples",
+            component: "realtime-samples",
+            data: "",
+        },
+        {
+            isActive: false,
+            title: "Others",
+            component: "others",
+            data: "",
+        },
+    ];
+
+    beforeMount() {
+        updateNewLogsCountSubject.subscribe(chartWidth => {
+            this.data[1].titleData++;
+        });
+    }
+
+    beforeDestroy() {
+        updateNewLogsCountSubject.unsubscribe();
+    }
+
+    switching(index: number) {
+        if (index === 1) {
+            this.data[1].titleData = 0;
+        }
     }
 }
+
+// tslint:disable-next-line:no-unused-expression
+new App({ el: "#body" });
 
 window.onscroll = () => {
     const innerHeight = (window.innerHeight || document.documentElement.clientHeight);
-    for (let i = 0; i < app.logsSearchResult.length; i++) {
-        const log = app.logsSearchResult[i];
-        const element = document.getElementById(app.logSearchResultId(i));
-        handleButtonVisibility(element, log, innerHeight);
-    }
-    for (let i = 0; i < app.logsPush.length; i++) {
-        const log = app.logsPush[i];
-        const element = document.getElementById(app.logPushId(i));
-        handleButtonVisibility(element, log, innerHeight);
-    }
+    scrollSubject.next(innerHeight);
 };
 
 setTimeout(() => {
-    const tabContentElement = document.getElementById("tab-content");
-    if (tabContentElement) {
-        app.chartWidth = tabContentElement.getBoundingClientRect().width - 30;
+    const tabContainerElements = document.getElementsByClassName("tab-container");
+    if (tabContainerElements && tabContainerElements.length) {
+        updateChartWidthSubject.next(tabContainerElements[0].getBoundingClientRect().width - 30);
     }
 
     const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
@@ -292,7 +460,7 @@ setTimeout(() => {
         ws.binaryType = "arraybuffer";
         ws.onmessage = event => {
             format.decode(event.data, protocol => {
-                subject.next(protocol);
+                protocolDataSubject.next(protocol);
             });
         };
         ws.onclose = () => {

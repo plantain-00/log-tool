@@ -1,0 +1,19 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <ul class="menu list-unstyled">
+            <li v-for="(config, index) in chartConfigs">
+                <a :href="'#' + config.name">{{config.description}}</a>
+            </li>
+        </ul>
+        <div class="row" v-for="(config, index) in chartConfigs">
+            <div class="col-md-12">
+                <h4 :id="config.name" style="padding-top: 10px;">
+                    {{config.description}}
+                    {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
+                    {{config.sum !== undefined ? (" " + config.sum) : ""}}
+                </h4>
+                <canvas :id="'current-' + config.name" class="graph" :width="chartWidth" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
