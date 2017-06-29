@@ -258,23 +258,6 @@ const app = new App({
     el: "#body",
 });
 
-const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-const reconnector = new Reconnector(() => {
-    ws = new WebSocket(`${wsProtocol}//${location.host}/ws`);
-    ws.binaryType = "arraybuffer";
-    ws.onmessage = event => {
-        format.decode(event.data, protocol => {
-            subject.next(protocol);
-        });
-    };
-    ws.onclose = () => {
-        reconnector.reconnect();
-    };
-    ws.onopen = () => {
-        reconnector.reset();
-    };
-});
-
 function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeight: number) {
     if (element) {
         const rect = element.getBoundingClientRect();
@@ -297,7 +280,29 @@ window.onscroll = () => {
     }
 };
 
-app.chartWidth = document.getElementById("tab-content")!.getBoundingClientRect().width - 30;
+setTimeout(() => {
+    const tabContentElement = document.getElementById("tab-content");
+    if (tabContentElement) {
+        app.chartWidth = tabContentElement.getBoundingClientRect().width - 30;
+    }
+
+    const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+    const reconnector = new Reconnector(() => {
+        ws = new WebSocket(`${wsProtocol}//${location.host}/ws`);
+        ws.binaryType = "arraybuffer";
+        ws.onmessage = event => {
+            format.decode(event.data, protocol => {
+                subject.next(protocol);
+            });
+        };
+        ws.onclose = () => {
+            reconnector.reconnect();
+        };
+        ws.onopen = () => {
+            reconnector.reset();
+        };
+    });
+}, 1000);
 
 setInterval(() => {
     updateCharts();

@@ -56,7 +56,7 @@ function getValue(config: types.ChartConfig, sample: types.Sample) {
 }
 
 export function appendChartData(sampleFrame: types.SampleFrame) {
-    const time = sampleFrame.time.split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
+    const time = sampleFrame.time; // .split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
     for (const config of chartConfigs) {
         tempChartDatas[config.name].labels!.push(time);
@@ -101,11 +101,14 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
 }
 
 function isElementInViewport(element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
-    return rect.bottom > 0
-        && rect.right > 0
-        && rect.left < (window.innerWidth || document.documentElement.clientWidth)
-        && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    if (element) {
+        const rect = element.getBoundingClientRect();
+        return rect.bottom > 0
+            && rect.right > 0
+            && rect.left < (window.innerWidth || document.documentElement.clientWidth)
+            && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    }
+    return false;
 }
 
 export function updateCharts() {
