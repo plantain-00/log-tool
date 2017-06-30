@@ -5,14 +5,16 @@
   "main": "src/index.js",
   "scripts": {
     "build": "rimraf dist && npm run file2variable && tsc -p src && tsc -p static && webpack --display-modules --config static/webpack.config.js && npm run lessc && npm run bundle-vendor-css && npm run bundle-css && npm run clean && rev-static --config static/rev-static.config.js",
-    "lint": "tslint \"src/*.ts\" \"static/*.ts\" && npm run stylelint",
+    "lint": "tslint \"src/*.ts\" \"static/*.ts\" && npm run stylelint && npm run standard",
     "file2variable": "file2variable-cli static/*.template.html static/protocol.proto static/protocol.json -o static/variables.ts --html-minify --json --protobuf && file2variable-cli src/sql/*.sql -o src/variables.ts",
     "clean": "rimraf static/vendor.bundle-*.js static/index.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css",
     "bundle-vendor-css": "cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/dist/tab-container.min.css -o ./static/vendor.bundle.css",
     "bundle-css": "cleancss ./static/index.css -o ./static/index.bundle.css",
     "doc": "dot -Tpng architecture.dot > architecture.png",
     "lessc": "lessc ./static/index.less > ./static/index.css",
-    "stylelint": "stylelint \"**/*.less\""
+    "stylelint": "stylelint \"**/*.less\"",
+    "standard": "standard \"**/*.config.js\"",
+    "fix": "standard --fix \"**/*.config.js\""
   },
   "repository": {
     "type": "git",
@@ -43,6 +45,7 @@
     "rev-static": "2.4.2",
     "rimraf": "2.6.1",
     "rpc-on-ws": "3.1.1",
+    "standard": "10.0.2",
     "stylelint": "7.11.1",
     "stylelint-config-standard": "16.0.0",
     "tab-container-component": "1.1.0",
