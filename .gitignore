@@ -44,3 +44,4 @@ static/index.html
 *.db
 !*.config.js
 src/*.js
+static/index.css

@@ -1,29 +1,19 @@
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div class="row flex-center">
-            <div class="col-md-3">
-                <input class="form-control" v-model="searchFrom">
-            </div>
-            <div class="col-md-3">
-                <input class="form-control" v-model="searchTo">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary btn-lg primary-button" @click="searchSamples()" :disabled="!searchFrom || !searchTo">search</button>
-            </div>
-        </div>
-        <ul class="menu list-unstyled">
-            <li v-for="(config, index) in chartConfigs">
-                <a :href="'#' + config.name">{{config.description}}</a>
-            </li>
-        </ul>
-        <div class="row" v-for="(config, index) in chartConfigs">
-            <div class="col-md-12">
-                <h4 :id="config.name" style="padding-top: 10px;">
-                    {{config.description}}
-                    {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
-                </h4>
-                <canvas :id="'history-' + config.name" class="graph" :width="chartWidth" height="300"></canvas>
-            </div>
-        </div>
+<div class="panel">
+    <div class="flex-center">
+        <input class="form-control" style="width: 30%;" v-model="searchFrom">
+        <input class="form-control" style="width: 30%;" v-model="searchTo">
+        <button class="btn btn-primary btn-lg primary-button" @click="searchSamples()" :disabled="!searchFrom || !searchTo">search</button>
+    </div>
+    <ul class="menu list-unstyled">
+        <li v-for="(config, index) in chartConfigs">
+            <a :href="'#' + config.name">{{config.description}}</a>
+        </li>
+    </ul>
+    <div v-for="(config, index) in chartConfigs">
+        <h4 :id="config.name" style="padding-top: 10px;">
+            {{config.description}}
+            {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
+        </h4>
+        <canvas :id="'history-' + config.name" class="graph" :width="chartWidth" height="300"></canvas>
     </div>
 </div>
