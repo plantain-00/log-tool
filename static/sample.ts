@@ -5,14 +5,14 @@ import * as Chart from "chart.js";
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
 
-const chartDatas: { [name: string]: Chart.LinearChartData } = {};
-const tempChartDatas: { [name: string]: Chart.LinearChartData } = {};
+const chartDatas: { [name: string]: Chart.ChartData } = {};
+const tempChartDatas: { [name: string]: Chart.ChartData } = {};
 let mouseOverChartName: string | undefined;
 const allCharts: { [name: string]: Chart } = {};
 const allChartElements: { [name: string]: HTMLCanvasElement } = {};
 const maxCount = 300;
 
-const searchResultChartDatas: { [name: string]: Chart.LinearChartData } = {};
+const searchResultChartDatas: { [name: string]: Chart.ChartData } = {};
 const searchResultCharts: { [name: string]: Chart } = {};
 
 // initialize charts and charts' datas

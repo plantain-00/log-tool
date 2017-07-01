@@ -14,7 +14,7 @@ export function start() {
         }
     });
     if (config.sqlite.samples) {
-        libs.bufferedSampleSubject.subscribe(samples => {
+        libs.bufferedSampleSubject.subscribe((samples: types.Sample[]) => {
             const time = Math.round(Date.now() / 1000);
             db.run(sql.srcSqlSaveSampleSql, [time, JSON.stringify(samples)], error => {
                 if (error) {

@@ -36,6 +36,6 @@ export function decode(data: string | ArrayBuffer, next: (protocol: types.Protoc
             next(result);
         }
     } else {
-        next(protocolType.decode(new Uint8Array(data)).toObject() as types.Protocol);
+        next(protocolType.decode(new Uint8Array(data)).toJSON() as types.Protocol);
     }
 }

@@ -32,12 +32,12 @@ export const hostname = os.hostname();
 export const logSubject = new Subject<types.Log>();
 export const sampleSubject = new Subject<types.Sample>();
 
-export const bufferedLogSubject = logSubject.bufferTime(1000);
+export const bufferedLogSubject = (logSubject as Observable<types.Log>).bufferTime(1000);
 
-export const bufferedSampleSubject = sampleSubject
+export const bufferedSampleSubject = (sampleSubject as Observable<types.Sample>)
     .bufferTime(1000)
-    .filter(s => s.length > 0)
-    .map(samples => {
+    .filter((s: types.Sample[]) => s.length > 0)
+    .map((samples: types.Sample[]) => {
         const result: types.Sample[] = [];
         for (const sample of samples) {
             const resultSample = result.find(r => r.hostname === sample.hostname && r.port === sample.port);
@@ -52,8 +52,8 @@ export const bufferedSampleSubject = sampleSubject
 
 export const bufferedFlowObservable = Observable.merge(
     bufferedLogSubject
-        .filter(logs => logs.length > 0)
-        .map(logs => logs.map(log => {
+        .filter((logs: types.Log[]) => logs.length > 0)
+        .map((logs: types.Log[]) => logs.map(log => {
             const protocol: types.LogProtocol = {
                 kind: types.ProtocolKind.log,
                 log,
@@ -62,7 +62,7 @@ export const bufferedFlowObservable = Observable.merge(
         }),
     ),
     bufferedSampleSubject
-        .map(samples => (samples.map(sample => {
+        .map((samples: types.Sample[]) => (samples.map((sample: types.Sample) => {
             const protocol: types.SampleProtocol = {
                 kind: types.ProtocolKind.sample,
                 sample,
@@ -75,7 +75,7 @@ export const bufferedFlowObservable = Observable.merge(
     .map(logsOrSamplesArray => {
         let result: types.Flow[] = [];
         for (const logsOrSamples of logsOrSamplesArray) {
-            result = result.concat(logsOrSamples);
+            result = result.concat(logsOrSamples as types.Flow[]);
         }
         return result;
     });
