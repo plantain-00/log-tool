@@ -3,12 +3,12 @@ import * as Ajv from "ajv";
 
 import * as types from "../src/types";
 declare const protobufConfig: { enabled: boolean };
-import { staticProtocolProto, staticProtocolJson } from "./variables";
+import { protocolProto, protocolJson } from "./variables";
 
-const protocolType = protobuf.Root.fromJSON(staticProtocolProto).lookup("protocolPackage.Protocol") as protobuf.Type;
+const protocolType = protobuf.Root.fromJSON(protocolProto).lookup("protocolPackage.Protocol") as protobuf.Type;
 
 const ajv = new Ajv();
-const validate = ajv.compile(staticProtocolJson);
+const validate = ajv.compile(protocolJson);
 
 export function encode(protocol: types.Protocol): string | Uint8Array {
     if (protobufConfig.enabled) {

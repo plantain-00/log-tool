@@ -7,7 +7,7 @@ import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearc
 import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
-import { staticAppTemplateHtml, staticSearchLogsTemplateHtml, staticRealtimeLogsTemplateHtml, staticSearchSamplesTemplateHtml, staticRealtimeSamplesTemplateHtml, staticOthersTemplateHtml } from "./variables";
+import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
 import { TabContainerData } from "tab-container-component/dist/common";
 
 // declared in config.js
@@ -94,7 +94,7 @@ function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeig
 }
 
 @Component({
-    template: staticSearchLogsTemplateHtml,
+    template: searchLogsTemplateHtml,
     props: ["data"],
 })
 class SearchLogs extends Vue {
@@ -197,7 +197,7 @@ class SearchLogs extends Vue {
 Vue.component("search-logs", SearchLogs);
 
 @Component({
-    template: staticRealtimeLogsTemplateHtml,
+    template: realtimeLogsTemplateHtml,
     props: ["data"],
 })
 class RealtimeLogs extends Vue {
@@ -247,7 +247,7 @@ class RealtimeLogs extends Vue {
 Vue.component("realtime-logs", RealtimeLogs);
 
 @Component({
-    template: staticSearchSamplesTemplateHtml,
+    template: searchSamplesTemplateHtml,
     props: ["data"],
 })
 class SearchSamples extends Vue {
@@ -322,7 +322,7 @@ class SearchSamples extends Vue {
 Vue.component("search-samples", SearchSamples);
 
 @Component({
-    template: staticRealtimeSamplesTemplateHtml,
+    template: realtimeSamplesTemplateHtml,
     props: ["data"],
 })
 class RealtimeSamples extends Vue {
@@ -343,7 +343,7 @@ class RealtimeSamples extends Vue {
 Vue.component("realtime-samples", RealtimeSamples);
 
 @Component({
-    template: staticOthersTemplateHtml,
+    template: othersTemplateHtml,
     props: ["data"],
 })
 class Others extends Vue {
@@ -386,7 +386,7 @@ Vue.component("realtime-logs-title", {
 });
 
 @Component({
-    template: staticAppTemplateHtml,
+    template: appTemplateHtml,
 })
 class App extends Vue {
     data: TabContainerData[] = [

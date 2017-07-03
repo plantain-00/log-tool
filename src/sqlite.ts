@@ -16,7 +16,7 @@ export function start() {
     if (config.sqlite.samples) {
         libs.bufferedSampleSubject.subscribe((samples: types.Sample[]) => {
             const time = Math.round(Date.now() / 1000);
-            db.run(sql.srcSqlSaveSampleSql, [time, JSON.stringify(samples)], error => {
+            db.run(sql.saveSampleSql, [time, JSON.stringify(samples)], error => {
                 if (error) {
                     libs.publishError(error);
                 }
@@ -27,13 +27,13 @@ export function start() {
 
 function createTablesIfNotExists() {
     // this table is used to store sample
-    db.get(sql.srcSqlQueryTableSamplesExistsSql, [], (error, row) => {
+    db.get(sql.queryTableSamplesExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run(sql.srcSqlCreateTableSampleSql, creationError => {
+                db.run(sql.createTableSampleSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -42,13 +42,13 @@ function createTablesIfNotExists() {
         }
     });
     // this table is used to store logs that cannot be sent out by outflow
-    db.get(sql.srcSqlQueryTableOutflowLogsExistsSql, [], (error, row) => {
+    db.get(sql.queryTableOutflowLogsExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run(sql.srcSqlCreateTableOutflowLogsSql, creationError => {
+                db.run(sql.createTableOutflowLogsSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -57,13 +57,13 @@ function createTablesIfNotExists() {
         }
     });
     // this table is used to store logs that cannot be stored into elastic search
-    db.get(sql.srcSqlQueryTableElasticLogsExistsSql, [], (error, row) => {
+    db.get(sql.queryTableElasticLogsExistsSql, [], (error, row) => {
         if (error) {
             libs.publishError(error);
         } else {
             const exists = row.count > 0;
             if (!exists) {
-                db.run(sql.srcSqlCreateTableElasticLogsSql, creationError => {
+                db.run(sql.createTableElasticLogsSql, creationError => {
                     if (creationError) {
                         libs.publishError(creationError);
                     }
@@ -75,7 +75,7 @@ function createTablesIfNotExists() {
 
 export function querySamples(from: number, to: number) {
     return new Promise<types.SampleFrame[]>((resolve, reject) => {
-        db.all(sql.srcSqlQuerySamplesSql, [from, to], (error, rows: { time: number, value: string }[]) => {
+        db.all(sql.querySamplesSql, [from, to], (error, rows: { time: number, value: string }[]) => {
             if (error) {
                 reject(error);
             } else {
@@ -91,7 +91,7 @@ export function querySamples(from: number, to: number) {
 }
 
 export function saveOutflowLog(log: string | Uint8Array) {
-    db.run(sql.srcSqlSaveOutflowLogsSql, [log], error => {
+    db.run(sql.saveOutflowLogsSql, [log], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -99,7 +99,7 @@ export function saveOutflowLog(log: string | Uint8Array) {
 }
 
 export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string | Uint8Array }[]) => void) {
-    db.all(sql.srcSqlQueryOutflowLogsSql, [], (error, rows) => {
+    db.all(sql.queryOutflowLogsSql, [], (error, rows) => {
         if (error) {
             libs.publishError(error);
         } else {
@@ -109,7 +109,7 @@ export function queryAllOutflowLogs(next: (rows: { ROWID: number, value: string 
 }
 
 export function deleteSuccessfulOutflowLog(rowid: number) {
-    db.run(sql.srcSqlDeleteOutflowLogsSql, [rowid], error => {
+    db.run(sql.deleteOutflowLogsSql, [rowid], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -117,7 +117,7 @@ export function deleteSuccessfulOutflowLog(rowid: number) {
 }
 
 export function saveElasticLog(log: types.Log) {
-    db.run(sql.srcSqlSaveElasticLogsSql, [JSON.stringify(log)], error => {
+    db.run(sql.saveElasticLogsSql, [JSON.stringify(log)], error => {
         if (error) {
             libs.publishError(error);
         }
@@ -126,7 +126,7 @@ export function saveElasticLog(log: types.Log) {
 
 export function queryAllElasticLogs() {
     return new Promise<{ ROWID: number, value: string }[]>((resolve, reject) => {
-        db.all(sql.srcSqlQueryElasticLogsSql, [], (error, rows) => {
+        db.all(sql.queryElasticLogsSql, [], (error, rows) => {
             if (error) {
                 reject(error);
             } else {
@@ -138,7 +138,7 @@ export function queryAllElasticLogs() {
 
 export function deleteSuccessfulElasticLog(rowid: number) {
     return new Promise<void>((resolve, reject) => {
-        db.run(sql.srcSqlDeleteElasticLogsSql, [rowid], error => {
+        db.run(sql.deleteElasticLogsSql, [rowid], error => {
             if (error) {
                 reject(error);
             } else {
