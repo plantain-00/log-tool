@@ -12,3 +12,4 @@ import "ajv";
 import "rpc-on-ws";
 import "relative-time-component/dist/vue";
 import "tab-container-component/dist/vue";
+import "rxjs/Subject";
