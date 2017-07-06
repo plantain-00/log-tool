@@ -7,11 +7,14 @@ import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearc
 import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
+import { Locale } from "relative-time-component/dist/vue";
 import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
 import { TabContainerData } from "tab-container-component/dist/common";
 
 // declared in config.js
 declare const chartConfigs: types.ChartConfig[];
+
+let locale: Locale | null = null;
 
 let ws: WebSocket | undefined;
 
@@ -105,6 +108,7 @@ class SearchLogs extends Vue {
     size = 10;
     showRawLogResult = false;
     showFormattedLogResult = true;
+    locale = locale;
 
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
@@ -440,8 +444,10 @@ class App extends Vue {
     }
 }
 
-// tslint:disable-next-line:no-unused-expression
-new App({ el: "#body" });
+function start() {
+    // tslint:disable-next-line:no-unused-expression
+    new App({ el: "#body" });
+}
 
 window.onscroll = () => {
     const innerHeight = (window.innerHeight || document.documentElement.clientHeight);
@@ -475,3 +481,14 @@ setTimeout(() => {
 setInterval(() => {
     updateCharts();
 }, 1000);
+
+if (navigator.language === "zh-CN") {
+    import ("relative-time-component/dist/locales/" + navigator.language + ".js").then(module => {
+        locale = module.locale;
+        start();
+    }, error => {
+        start();
+    });
+} else {
+    start();
+}

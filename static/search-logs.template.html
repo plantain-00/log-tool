@@ -17,7 +17,7 @@
             <pre class="pre">not started or nothing found.</pre>
         </li>
         <li class="hide-button-container li-result-item" v-for="(log, index) in logsSearchResult">
-            <span class="label label-primary"><relative-time :time="log.timeValue"></relative-time></span>
+            <span class="label label-primary"><relative-time :time="log.timeValue" :locale="locale"></relative-time></span>
             <span class="label label-default">{{log.hostname}}</span>
             <span class="label label-default">{{log.filepath}}</span>
             <pre class="pre" v-if="log.content && showRawLogResult">{{log.content}}</pre>
