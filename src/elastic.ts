@@ -20,8 +20,20 @@ export function start() {
     });
 }
 
-export async function search(q: string, from: number, size: number): Promise<types.SearchLogsResult> {
-    const response = await libs.fetch(`${config.elastic.url}/_search?q=${q}&from=${from}&size=${size}&sort=time:desc`);
+export async function search(content: string, time: string, hostname: string, from: number, size: number): Promise<types.SearchLogsResult> {
+    const response = await libs.fetch(`${config.elastic.url}/_search`, {
+        method: "POST",
+        body: JSON.stringify({
+            from,
+            size,
+            sort: [{ time: "desc" }],
+            query: {
+                query_string: {
+                    query: `content:${content} AND time:${time} AND hostname:${hostname}`,
+                },
+            },
+        }),
+    });
     const json: {
         hits: {
             total: number;

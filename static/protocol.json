@@ -158,7 +158,13 @@
       "title": "Search",
       "type": "object",
       "properties": {
-        "q": {
+        "content": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "hostname": {
           "type": "string"
         },
         "from": {
@@ -173,7 +179,9 @@
         }
       },
       "required": [
-        "q",
+        "content",
+        "time",
+        "hostname",
         "from",
         "size"
       ]

@@ -25,9 +25,9 @@ type Log = types.Log & {
     timeValue?: number;
 };
 
-const initialQuery = `time:["1970-01-01 00:00:00" TO *]
-AND hostname:*
-AND *`;
+const initialContent = "*";
+const initialTime = `["1970-01-01 00:00:00" TO *]`;
+const initialHostname = "*";
 
 const protocolDataSubject = new Subject<types.Protocol>();
 const logsPushSubject = new Subject<Log>();
@@ -103,7 +103,9 @@ function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeig
 class SearchLogs extends Vue {
     logsSearchResult: Log[] = [];
     logsSearchResultCount = 0;
-    q = initialQuery;
+    content = initialContent;
+    time = initialTime;
+    hostname = initialHostname;
     from = 0;
     size = 10;
     showRawLogResult = false;
@@ -146,7 +148,9 @@ class SearchLogs extends Vue {
                     kind: types.ProtocolKind.search,
                     requestId,
                     search: {
-                        q: this.q,
+                        content: this.content,
+                        time: this.time,
+                        hostname: this.hostname,
                         from: this.from,
                         size: this.size,
                     },
@@ -164,6 +168,12 @@ class SearchLogs extends Vue {
                         } catch (error) {
                             // tslint:disable-next-line:no-console
                             console.log(error);
+                        }
+                        if (this.content && this.content !== "*") {
+                            log.content = log.content.split(this.content).join(`<span class="highlighted">${this.content}</span>`);
+                            if (log.formattedContent) {
+                                log.formattedContent = log.formattedContent.split(this.content).join(`<span class="highlighted">${this.content}</span>`);
+                            }
                         }
                         this.logsSearchResult.push(log);
                     }

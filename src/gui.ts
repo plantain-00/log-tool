@@ -47,7 +47,7 @@ export function start() {
                     const protocol: types.Protocol = format.decode(data);
                     if (protocol.kind === types.ProtocolKind.search) {
                         if (protocol.search) {
-                            elastic.search(protocol.search.q, protocol.search.from, protocol.search.size).then(result => {
+                            elastic.search(protocol.search.content, protocol.search.time, protocol.search.hostname, protocol.search.from, protocol.search.size).then(result => {
                                 const searchResult: types.Protocol = {
                                     kind: types.ProtocolKind.searchResult,
                                     requestId: protocol.requestId,

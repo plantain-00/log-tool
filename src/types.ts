@@ -25,7 +25,9 @@ export type FlowsProtocol = {
 export type SearchProtocol = {
     kind: ProtocolKind.search,
     search: {
-        q: string;
+        content: string;
+        time: string;
+        hostname: string;
         from: number;
         size: number;
     };
