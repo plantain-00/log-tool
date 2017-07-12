@@ -218,6 +218,7 @@ class RealtimeLogs extends Vue {
     logsPush: Log[] = [];
     showRawLogPush = false;
     showFormattedLogPush = true;
+    locale = locale;
 
     beforeMount() {
         logsPushSubject.subscribe(log => {
@@ -492,13 +493,9 @@ setInterval(() => {
     updateCharts();
 }, 1000);
 
+import { locale as zhCNLocale } from "relative-time-component/dist/locales/zh-CN.js";
+
 if (navigator.language === "zh-CN") {
-    import ("relative-time-component/dist/locales/" + navigator.language + ".js").then(module => {
-        locale = module.locale;
-        start();
-    }, error => {
-        start();
-    });
-} else {
-    start();
+    locale = zhCNLocale;
 }
+start();
