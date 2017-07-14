@@ -2,6 +2,7 @@ module.exports = {
   include: [
     'dist/*.js',
     'static/protocol.proto',
+    'static/protocol.json',
     'static/*.bundle-*.js',
     'static/index.html',
     'static/index.config.js',
