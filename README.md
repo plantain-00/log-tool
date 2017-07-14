@@ -18,7 +18,7 @@
 #### install
 
 ```bash
-git clone -b release https://github.com/plantain-00/log-tool.git . --depth=1 && npm i --production
+git clone https://github.com/plantain-00/log-tool-release.git . --depth=1 && npm i --production
 ```
 
 ```bash

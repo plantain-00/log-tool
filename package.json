@@ -15,7 +15,8 @@
     "stylelint": "stylelint \"**/*.less\"",
     "standard": "standard \"**/*.config.js\"",
     "fix": "standard --fix \"**/*.config.js\"",
-    "test": "tsc -p spec && jasmine && tsc -p static_spec && karma start static_spec/karma.config.js"
+    "test": "tsc -p spec && jasmine && tsc -p static_spec && karma start static_spec/karma.config.js",
+    "release": "clean-release"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "@types/ws": "3.0.0",
     "chart.js": "2.6.0",
     "clean-css-cli": "4.1.6",
+    "clean-release": "1.1.1",
     "file2variable-cli": "1.4.0",
     "github-fork-ribbon-css": "0.2.1",
     "jasmine": "2.6.0",
