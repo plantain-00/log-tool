@@ -5,7 +5,6 @@ module.exports = {
     'static/protocol.json',
     'static/*.bundle-*.js',
     'static/index.html',
-    'static/index.config.js',
     'LICENSE',
     'package.json',
     'README.md'
