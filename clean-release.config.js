@@ -6,7 +6,6 @@ module.exports = {
     'static/*.bundle-*.js',
     'static/index.html',
     'static/index.config.js',
-    'log-tool.config.js',
     'LICENSE',
     'package.json',
     'README.md'

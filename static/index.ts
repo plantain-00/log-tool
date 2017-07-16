@@ -1,18 +1,18 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import * as moment from "moment";
-import * as types from "../src/types";
+
 import { Reconnector } from "reconnection/browser";
-import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearchResult } from "./sample";
-import * as format from "./format";
 import { WsRpc } from "rpc-on-ws";
 import { Subject } from "rxjs/Subject";
 import { Locale } from "relative-time-component/dist/vue";
 import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
 import { TabContainerData } from "tab-container-component/dist/common";
 
-// declared in config.js
-declare const chartConfigs: types.ChartConfig[];
+import * as types from "../src/types";
+import * as format from "./format";
+import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearchResult } from "./sample";
+import { defaultConfig } from "./config";
 
 let locale: Locale | null = null;
 
@@ -268,7 +268,7 @@ Vue.component("realtime-logs", RealtimeLogs);
 class SearchSamples extends Vue {
     searchFrom = moment().clone().add(-1, "minute").format("YYYY-MM-DD HH:mm:ss");
     searchTo = moment().format("YYYY-MM-DD HH:mm:ss");
-    chartConfigs = chartConfigs;
+    chartConfigs = defaultConfig.chart;
     chartWidth = 0;
 
     beforeMount() {
@@ -341,7 +341,7 @@ Vue.component("search-samples", SearchSamples);
     props: ["data"],
 })
 class RealtimeSamples extends Vue {
-    chartConfigs = chartConfigs;
+    chartConfigs = defaultConfig.chart;
     chartWidth = 0;
 
     beforeMount() {
@@ -352,6 +352,14 @@ class RealtimeSamples extends Vue {
 
     beforeDestroy() {
         updateChartWidthSubject.unsubscribe();
+    }
+
+    scrollBy(id: string) {
+        const element = document.getElementById(`current-${id}`);
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            scrollBy(0, rect.top - 20);
+        }
     }
 }
 

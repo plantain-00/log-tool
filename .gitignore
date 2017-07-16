@@ -50,3 +50,5 @@ service-worker.js
 index.html
 *.data
 *.db
+log-tool.config.js
+index.config.js

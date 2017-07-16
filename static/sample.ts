@@ -1,9 +1,8 @@
-import { getColor } from "./color";
-import * as types from "../src/types";
 import * as Chart from "chart.js";
 
-// declared in config.js
-declare const chartConfigs: types.ChartConfig[];
+import { getColor } from "./color";
+import * as types from "../src/types";
+import { defaultConfig } from "./config";
 
 const chartDatas: { [name: string]: Chart.ChartData } = {};
 const tempChartDatas: { [name: string]: Chart.ChartData } = {};
@@ -16,7 +15,7 @@ const searchResultChartDatas: { [name: string]: Chart.ChartData } = {};
 const searchResultCharts: { [name: string]: Chart } = {};
 
 // initialize charts and charts' datas
-for (const config of chartConfigs) {
+for (const config of defaultConfig.chart) {
     chartDatas[config.name] = {
         labels: [],
         datasets: [],
@@ -58,7 +57,7 @@ function getValue(config: types.ChartConfig, sample: types.Sample) {
 export function appendChartData(sampleFrame: types.SampleFrame) {
     const time = sampleFrame.time; // .split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         tempChartDatas[config.name].labels!.push(time);
 
         for (const sample of sampleFrame.samples) {
@@ -112,7 +111,7 @@ function isElementInViewport(element: HTMLElement) {
 }
 
 export function updateCharts() {
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         const isInViewport = isElementInViewport(allChartElements[config.name]);
         if (isInViewport && mouseOverChartName !== config.name) {
             const hasNewData = tempChartDatas[config.name].labels!.length > 0;
@@ -143,7 +142,7 @@ export function updateCharts() {
 }
 
 export function initializeCharts() {
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         const element = document.getElementById("current-" + config.name) as HTMLCanvasElement;
         element.onmouseover = () => {
             mouseOverChartName = config.name;
@@ -193,7 +192,7 @@ export function initializeCharts() {
         });
     }
 
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         const element = document.getElementById("history-" + config.name) as HTMLCanvasElement;
         const ctx = element.getContext("2d");
         searchResultCharts[config.name] = new Chart(ctx!, {
@@ -237,13 +236,13 @@ export function initializeCharts() {
 }
 
 export function showSearchResult(sampleFrames: types.SampleFrame[]) {
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         searchResultChartDatas[config.name].labels = [];
         searchResultChartDatas[config.name].datasets = [];
     }
 
     for (const sampleFrame of sampleFrames) {
-        for (const config of chartConfigs) {
+        for (const config of defaultConfig.chart) {
             searchResultChartDatas[config.name].labels!.push(sampleFrame.time);
 
             for (const sample of sampleFrame.samples) {
@@ -279,7 +278,7 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
             }
         }
     }
-    for (const config of chartConfigs) {
+    for (const config of defaultConfig.chart) {
         searchResultCharts[config.name].update();
     }
 }

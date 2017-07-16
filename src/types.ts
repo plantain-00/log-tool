@@ -109,5 +109,12 @@ export type ChartConfig = {
     description: string;
     compute?: (sample: { [name: string]: number }) => number;
     unit?: string;
-    unitScale?: number;
+    unitScale?: number; // eg: { unit: "KB", unitScale: 1024 }, 10240 B -> 10 KB
+};
+
+export type Config = {
+    chart: ChartConfig[];
+    protobuf: {
+        enabled: boolean;
+    };
 };

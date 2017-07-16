@@ -1,11 +1,11 @@
 <div class="panel">
     <ul class="menu">
         <li v-for="(config, index) in chartConfigs">
-            <a :href="'#' + config.name">{{config.description}}</a>
+            <a href="javascript:void(0)" @click="scrollBy(config.name)">{{config.description}}</a>
         </li>
     </ul>
     <div v-for="(config, index) in chartConfigs">
-        <h4 :id="config.name" style="padding-top: 10px;">
+        <h4 style="padding-top: 10px;">
             {{config.description}}
             {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}
             {{config.sum !== undefined ? (" " + config.sum) : ""}}
