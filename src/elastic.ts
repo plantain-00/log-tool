@@ -20,16 +20,16 @@ export function start() {
     });
 }
 
-export async function search(content: string, time: string, hostname: string, from: number, size: number): Promise<types.SearchLogsResult> {
+export async function search(parameters: types.SearchLogs, requestId: number): Promise<types.SearchLogsResult> {
     const response = await libs.fetch(`${config.elastic.url}/_search`, {
         method: "POST",
         body: JSON.stringify({
-            from,
-            size,
+            from: parameters.from,
+            size: parameters.size,
             sort: [{ time: "desc" }],
             query: {
                 query_string: {
-                    query: `content:${content} AND time:${time} AND hostname:${hostname}`,
+                    query: `content:${parameters} AND time:${parameters.time} AND hostname:${parameters.hostname}`,
                 },
             },
         }),
@@ -41,12 +41,14 @@ export async function search(content: string, time: string, hostname: string, fr
         };
     } = await response.json();
     return {
+        kind: types.ResultKind.success,
         total: json.hits.total,
         logs: json.hits.hits.map(s => s._source),
+        requestId,
     };
 }
 
-export async function resaveFailedLogs() {
+export async function resaveFailedLogs(requestId: number): Promise<types.ResaveFailedLogsResult> {
     const rows = await sqlite.queryAllElasticLogs();
     let count = 0;
     for (const row of rows) {
@@ -61,6 +63,8 @@ export async function resaveFailedLogs() {
         }
     }
     return {
+        kind: types.ResultKind.success,
+        requestId,
         savedCount: count,
         totalCount: rows.length,
     };

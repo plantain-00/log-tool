@@ -24,4 +24,5 @@ function loadConfig (config) { // eslint-disable-line no-unused-vars
     unit: 'ms',
     compute: sample => sample.httpRequestCount === 0 ? 0 : Math.round(sample.httpResponseTime / sample.httpRequestCount)
   })
+  // config.protobuf.enabled = false
 }

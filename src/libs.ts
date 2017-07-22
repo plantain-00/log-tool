@@ -19,8 +19,10 @@ import * as _ from "lodash";
 export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os };
 
 const ajv = new Ajv();
-import jsonSchema = require("../static/protocol.json");
-export const validate = ajv.compile(jsonSchema);
+import requestProtocolJsonSchema = require("../static/request-protocol.json");
+export const validateRequestProtocol = ajv.compile(requestProtocolJsonSchema);
+import flowProtocolJsonSchema = require("../static/flow-protocol.json");
+export const validateFlowProtocol = ajv.compile(flowProtocolJsonSchema);
 
 export function print(message: any) {
     // tslint:disable-next-line:no-console
@@ -54,20 +56,18 @@ export const bufferedFlowObservable = Observable.merge(
     bufferedLogSubject
         .filter((logs: types.Log[]) => logs.length > 0)
         .map((logs: types.Log[]) => logs.map(log => {
-            const protocol: types.LogProtocol = {
-                kind: types.ProtocolKind.log,
+            return {
+                kind: types.FlowKind.log,
                 log,
             };
-            return protocol;
         }),
     ),
     bufferedSampleSubject
         .map((samples: types.Sample[]) => (samples.map((sample: types.Sample) => {
-            const protocol: types.SampleProtocol = {
-                kind: types.ProtocolKind.sample,
+            return {
+                kind: types.FlowKind.sample,
                 sample,
             };
-            return protocol;
         })),
     ))
     .bufferTime(1000)

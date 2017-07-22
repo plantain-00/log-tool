@@ -1,84 +1,132 @@
-export type Protocol = {
-    requestId?: number;
-    error?: string;
-} & (FlowsProtocol | SearchProtocol | SearchResultProtocol | HistorySamplesProtocol | ResaveFailedLogsProtocol | ResaveFailedLogsResultProtocol | SearchSamplesProtocol | SearchSampleResultProtocol);
+export type RequestProtocol = {
+    requestId: number;
+} & (
+        {
+            kind: RequestProtocolKind.searchLogs,
+            searchLogs: SearchLogs;
+        } | {
+            kind: RequestProtocolKind.searchSamples,
+            searchSamples: SearchSamples;
+        } | {
+            kind: RequestProtocolKind.resaveFailedLogs,
+        }
+    );
+
+export const enum RequestProtocolKind {
+    searchLogs = "search logs",
+    searchSamples = "search samples",
+    resaveFailedLogs = "resave failed logs",
+}
+
+export type SearchLogs = {
+    content: string;
+    time: string;
+    hostname: string;
+    from: number;
+    size: number;
+};
+
+type SearchSamples = {
+    from: string;
+    to: string;
+};
+
+export type ResponseProtocol =
+    {
+        kind: ProtocolKind.flows,
+        flows: Flows,
+    } | {
+        kind: ProtocolKind.historySamples,
+        historySamples?: SampleFrame[];
+    } | {
+        kind: ProtocolKind.searchLogsResult,
+        searchLogsResult: SearchLogsResult;
+    } | {
+        kind: ProtocolKind.searchSamplesResult,
+        searchSamplesResult: SearchSamplesResult;
+    } | {
+        kind: ProtocolKind.resaveFailedLogsResult,
+        resaveFailedLogsResult: ResaveFailedLogsResult;
+    };
 
 export const enum ProtocolKind {
     flows = "flows",
-    search = "search",
-    searchResult = "search result",
     historySamples = "history samples",
-    resaveFailedLogs = "resave failed logs",
-    resaveFailedLogsResult = "resave failed logs result",
-    searchSamples = "search samples",
+    searchLogsResult = "search logs result",
     searchSamplesResult = "search samples result",
+    resaveFailedLogsResult = "resave failed logs result",
+}
+
+type Flows = {
+    serverTime: string;
+    flows?: Flow[];
+};
+
+export type SearchLogsResult = {
+    requestId: number;
+} & (
+        {
+            kind: ResultKind.success;
+            total: number;
+            logs?: Log[];
+        } | {
+            kind: ResultKind.fail
+            error: string;
+        }
+    );
+
+type SearchSamplesResult = {
+    requestId: number;
+} & (
+        {
+            kind: ResultKind.success,
+            searchSampleResult?: SampleFrame[];
+        } | {
+            kind: ResultKind.fail
+            error: string;
+        }
+    );
+
+export type ResaveFailedLogsResult = {
+    requestId: number;
+} & (
+        {
+            kind: ResultKind.success;
+            savedCount: number;
+            totalCount: number;
+        } | {
+            kind: ResultKind.fail
+            error: string;
+        }
+    );
+
+export const enum ResultKind {
+    success = "success",
+    fail = "fail",
+}
+
+export type SampleFrame = {
+    time: string;
+    samples?: Sample[];
+};
+
+export type FlowProtocol = {
+    flows?: Flow[];
+};
+
+export type Flow =
+    {
+        kind: FlowKind.log;
+        log: Log;
+    } | {
+        kind: FlowKind.sample;
+        sample: Sample;
+    };
+
+export const enum FlowKind {
     log = "log",
     sample = "sample",
 }
-
-export type FlowsProtocol = {
-    kind: ProtocolKind.flows,
-    serverTime?: string;
-    flows: Flow[],
-};
-
-export type SearchProtocol = {
-    kind: ProtocolKind.search,
-    search: {
-        content: string;
-        time: string;
-        hostname: string;
-        from: number;
-        size: number;
-    };
-};
-
-export type SearchResultProtocol = {
-    kind: ProtocolKind.searchResult,
-    searchResult?: SearchLogsResult;
-};
-
-export type HistorySamplesProtocol = {
-    kind: ProtocolKind.historySamples,
-    historySamples: SampleFrame[];
-};
-
-export type ResaveFailedLogsProtocol = {
-    kind: ProtocolKind.resaveFailedLogs,
-};
-
-export type ResaveFailedLogsResultProtocol = {
-    kind: ProtocolKind.resaveFailedLogsResult,
-    resaveFailedLogsResult?: {
-        savedCount: number;
-        totalCount: number;
-    };
-};
-
-export type SearchSamplesProtocol = {
-    kind: ProtocolKind.searchSamples,
-    searchSamples: {
-        from: string;
-        to: string;
-    };
-};
-
-export type SearchSampleResultProtocol = {
-    kind: ProtocolKind.searchSamplesResult,
-    searchSampleResult?: SampleFrame[];
-};
-
-export type LogProtocol = {
-    kind: ProtocolKind.log;
-    log: Log;
-};
-
-export type SampleProtocol = {
-    kind: ProtocolKind.sample;
-    sample: Sample;
-};
-
-export type Flow = LogProtocol | SampleProtocol;
 
 export type Log = {
     time: string;
@@ -87,34 +135,8 @@ export type Log = {
     hostname: string;
 };
 
-export type SearchLogsResult = {
-    total: number;
-    logs: Log[];
-};
-
 export type Sample = {
     hostname: string;
     port?: number;
     values: { [name: string]: number };
-};
-
-export type SampleFrame = {
-    time: string;
-    samples: Sample[];
-};
-
-export type ChartConfig = {
-    enabled: boolean;
-    name: string;
-    description: string;
-    compute?: (sample: { [name: string]: number }) => number;
-    unit?: string;
-    unitScale?: number; // eg: { unit: "KB", unitScale: 1024 }, 10240 B -> 10 KB
-};
-
-export type Config = {
-    chart: ChartConfig[];
-    protobuf: {
-        enabled: boolean;
-    };
 };

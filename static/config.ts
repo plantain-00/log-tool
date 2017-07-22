@@ -1,8 +1,22 @@
-import * as types from "../src/types";
+export type ChartConfig = {
+    enabled: boolean;
+    name: string;
+    description: string;
+    compute?: (sample: { [name: string]: number }) => number;
+    unit?: string;
+    unitScale?: number; // eg: { unit: "KB", unitScale: 1024 }, 10240 B -> 10 KB
+};
 
-declare function loadConfig(config: types.Config): void;
+type Config = {
+    chart: ChartConfig[];
+    protobuf: {
+        enabled: boolean;
+    };
+};
 
-export const defaultConfig: types.Config = {
+declare function loadConfig(config: Config): void;
+
+export const defaultConfig: Config = {
     chart: [
         {
             enabled: true,

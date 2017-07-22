@@ -6,8 +6,8 @@ import * as outflow from "./outflow";
 import * as elastic from "./elastic";
 import * as format from "./format";
 import * as sqlite from "./sqlite";
-import * as folderSizeWatcher from "./folderSizeWatcher";
-import * as countLogs from "./countLogs";
+import * as folderSizeWatcher from "./folder-size-watcher";
+import * as countLogs from "./count-logs";
 import * as os from "./os";
 
 watcher.start();

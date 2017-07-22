@@ -37,7 +37,7 @@ the default configuration file is `./log-tool.config.js`, it's in: [./log-tool.c
 
 #### protocol
 
-The message should be a string from `JSON.stringify(protocol)`(json schema: [./static/protocol.json](https://github.com/plantain-00/log-tool/blob/master/static/protocol.json))
+The message should be a string from `JSON.stringify(protocol)`(json schema: [./static/protocol.json](https://github.com/plantain-00/log-tool/blob/master/static/flow-protocol.json))
 
 Or a protobuf encoded binary(protobuf file: [./static/protocol.proto](https://github.com/plantain-00/log-tool/blob/master/static/protocol.proto)).
 

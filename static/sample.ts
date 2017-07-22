@@ -2,7 +2,7 @@ import * as Chart from "chart.js";
 
 import { getColor } from "./color";
 import * as types from "../src/types";
-import { defaultConfig } from "./config";
+import { defaultConfig, ChartConfig } from "./config";
 
 const chartDatas: { [name: string]: Chart.ChartData } = {};
 const tempChartDatas: { [name: string]: Chart.ChartData } = {};
@@ -49,7 +49,7 @@ function getSampleName(sample: types.Sample) {
     return sample.port !== undefined ? `${sample.hostname}:${sample.port}` : sample.hostname;
 }
 
-function getValue(config: types.ChartConfig, sample: types.Sample) {
+function getValue(config: ChartConfig, sample: types.Sample) {
     const count = config.compute ? config.compute(sample.values) : sample.values[config.name];
     return config.unitScale === undefined ? count : Math.round(count / config.unitScale);
 }
@@ -60,35 +60,37 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
     for (const config of defaultConfig.chart) {
         tempChartDatas[config.name].labels!.push(time);
 
-        for (const sample of sampleFrame.samples) {
-            const seriesName = getSampleName(sample);
-            const count = getValue(config, sample);
+        if (sampleFrame.samples) {
+            for (const sample of sampleFrame.samples) {
+                const seriesName = getSampleName(sample);
+                const count = getValue(config, sample);
 
-            const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
-            if (tempChartDataset) {
-                // found it in tempChartDatas, so just push the number to tempChartDatas
-                (tempChartDataset.data as number[]).push(count);
-            } else {
-                // can not find it, create a new series, and push:0,0,0,0...,0,0,count
-                const length = chartDatas[config.name].labels!.length + tempChartDatas[config.name].labels!.length - 1;
-                const data: number[] = [];
-                for (let j = 0; j < length; j++) {
-                    data.push(0);
+                const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName);
+                if (tempChartDataset) {
+                    // found it in tempChartDatas, so just push the number to tempChartDatas
+                    (tempChartDataset.data as number[]).push(count);
+                } else {
+                    // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+                    const length = chartDatas[config.name].labels!.length + tempChartDatas[config.name].labels!.length - 1;
+                    const data: number[] = [];
+                    for (let j = 0; j < length; j++) {
+                        data.push(0);
+                    }
+                    data.push(count);
+                    const color = getColor(seriesName);
+                    tempChartDatas[config.name].datasets!.push({
+                        label: seriesName,
+                        data,
+                        borderColor: color,
+                        backgroundColor: color,
+                    });
                 }
-                data.push(count);
-                const color = getColor(seriesName);
-                tempChartDatas[config.name].datasets!.push({
-                    label: seriesName,
-                    data,
-                    borderColor: color,
-                    backgroundColor: color,
-                });
             }
-        }
 
-        for (const dataset of tempChartDatas[config.name].datasets!) {
-            if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
-                (dataset.data as number[]).push(0);
+            for (const dataset of tempChartDatas[config.name].datasets!) {
+                if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
+                    (dataset.data as number[]).push(0);
+                }
             }
         }
 
@@ -245,35 +247,37 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
         for (const config of defaultConfig.chart) {
             searchResultChartDatas[config.name].labels!.push(sampleFrame.time);
 
-            for (const sample of sampleFrame.samples) {
-                const seriesName = getSampleName(sample);
-                const count = getValue(config, sample);
+            if (sampleFrame.samples) {
+                for (const sample of sampleFrame.samples) {
+                    const seriesName = getSampleName(sample);
+                    const count = getValue(config, sample);
 
-                const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName);
-                if (searchResultChartDataset) {
-                    // found it in searchResultChartDatas, so just push the number to searchResultChartDatas
-                    (searchResultChartDataset.data as number[]).push(count);
-                } else {
-                    // can not find it, create a new series, and push:0,0,0,0...,0,0,count
-                    const length = searchResultChartDatas[config.name].labels!.length - 1;
-                    const data: number[] = [];
-                    for (let j = 0; j < length; j++) {
-                        data.push(0);
+                    const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName);
+                    if (searchResultChartDataset) {
+                        // found it in searchResultChartDatas, so just push the number to searchResultChartDatas
+                        (searchResultChartDataset.data as number[]).push(count);
+                    } else {
+                        // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+                        const length = searchResultChartDatas[config.name].labels!.length - 1;
+                        const data: number[] = [];
+                        for (let j = 0; j < length; j++) {
+                            data.push(0);
+                        }
+                        data.push(count);
+                        const color = getColor(seriesName);
+                        searchResultChartDatas[config.name].datasets!.push({
+                            label: seriesName,
+                            data,
+                            borderColor: color,
+                            backgroundColor: color,
+                        });
                     }
-                    data.push(count);
-                    const color = getColor(seriesName);
-                    searchResultChartDatas[config.name].datasets!.push({
-                        label: seriesName,
-                        data,
-                        borderColor: color,
-                        backgroundColor: color,
-                    });
                 }
-            }
 
-            for (const dataset of searchResultChartDatas[config.name].datasets!) {
-                if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
-                    (dataset.data as number[]).push(0);
+                for (const dataset of searchResultChartDatas[config.name].datasets!) {
+                    if (sampleFrame.samples.every(s => getSampleName(s) !== dataset.label)) {
+                        (dataset.data as number[]).push(0);
+                    }
                 }
             }
         }

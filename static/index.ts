@@ -29,7 +29,7 @@ const initialContent = "*";
 const initialTime = `["1970-01-01 00:00:00" TO *]`;
 const initialHostname = "*";
 
-const protocolDataSubject = new Subject<types.Protocol>();
+const protocolDataSubject = new Subject<types.ResponseProtocol>();
 const logsPushSubject = new Subject<Log>();
 const updateChartWidthSubject = new Subject<number>();
 const scrollSubject = new Subject<number>();
@@ -39,8 +39,8 @@ const updateNewLogsCountSubject = new Subject<void>();
 protocolDataSubject.subscribe(protocol => {
     if (protocol.kind === types.ProtocolKind.flows) {
         const samples: types.Sample[] = [];
-        if (protocol.flows) {
-            for (const flow of protocol.flows) {
+        if (protocol.flows && protocol.flows.flows) {
+            for (const flow of protocol.flows.flows) {
                 if (flow.kind === "log") {
                     const log: Log = flow.log;
                     try {
@@ -61,7 +61,7 @@ protocolDataSubject.subscribe(protocol => {
 
         if (samples.length > 0) {
             appendChartData({
-                time: protocol.serverTime!,
+                time: protocol.flows.serverTime!,
                 samples,
             });
         }
@@ -78,7 +78,32 @@ protocolDataSubject.subscribe(protocol => {
     }
 });
 
-const wsRpc = new WsRpc(protocolDataSubject, message => message.requestId!, message => message.error);
+const wsRpc = new WsRpc(protocolDataSubject, message => {
+    if (message.kind === types.ProtocolKind.searchLogsResult) {
+        return message.searchLogsResult.requestId;
+    }
+    if (message.kind === types.ProtocolKind.searchSamplesResult) {
+        return message.searchSamplesResult.requestId;
+    }
+    if (message.kind === types.ProtocolKind.resaveFailedLogsResult) {
+        return message.resaveFailedLogsResult.requestId;
+    }
+    return undefined;
+}, message => {
+    if (message.kind === types.ProtocolKind.searchLogsResult
+        && message.searchLogsResult.kind === types.ResultKind.fail) {
+        return message.searchLogsResult.error;
+    }
+    if (message.kind === types.ProtocolKind.searchSamplesResult
+        && message.searchSamplesResult.kind === types.ResultKind.fail) {
+        return message.searchSamplesResult.error;
+    }
+    if (message.kind === types.ProtocolKind.resaveFailedLogsResult
+        && message.resaveFailedLogsResult.kind === types.ResultKind.fail) {
+        return message.resaveFailedLogsResult.error;
+    }
+    return "";
+});
 
 function visibilityButtonStyle(log: Log) {
     return {
@@ -144,21 +169,23 @@ class SearchLogs extends Vue {
         }
         if (ws) {
             wsRpc.send(requestId => {
-                const message: types.Protocol = {
-                    kind: types.ProtocolKind.search,
+                ws!.send(format.encodeRequest({
+                    kind: types.RequestProtocolKind.searchLogs,
                     requestId,
-                    search: {
+                    searchLogs: {
                         content: this.content,
                         time: this.time,
                         hostname: this.hostname,
                         from: this.from,
                         size: this.size,
                     },
-                };
-                ws!.send(format.encode(message));
-            }).then((protocol: types.SearchResultProtocol) => {
-                if (protocol.searchResult && protocol.searchResult.logs) {
-                    for (const h of protocol.searchResult.logs) {
+                }));
+            }).then(protocol => {
+                if (protocol.kind === types.ProtocolKind.searchLogsResult
+                    && protocol.searchLogsResult
+                    && protocol.searchLogsResult.kind === types.ResultKind.success
+                    && protocol.searchLogsResult.logs) {
+                    for (const h of protocol.searchLogsResult.logs) {
                         const log: Log = h;
                         log.timeValue = moment(log.time).valueOf();
                         try {
@@ -177,7 +204,7 @@ class SearchLogs extends Vue {
                         }
                         this.logsSearchResult.push(log);
                     }
-                    this.logsSearchResultCount = protocol.searchResult.total;
+                    this.logsSearchResultCount = protocol.searchLogsResult.total;
                 } else {
                     this.logsSearchResult = [];
                     this.logsSearchResultCount = 0;
@@ -306,20 +333,33 @@ class SearchSamples extends Vue {
                 return;
             }
             wsRpc.send(requestId => {
-                const message: types.Protocol = {
-                    kind: types.ProtocolKind.searchSamples,
+                ws!.send(format.encodeRequest({
+                    kind: types.RequestProtocolKind.searchSamples,
                     requestId,
                     searchSamples: {
                         from: this.searchFrom,
                         to: this.searchTo,
                     },
-                };
-                ws!.send(format.encode(message));
-            }).then((protocol: types.SearchSampleResultProtocol) => {
-                if (protocol.searchSampleResult === undefined) {
-                    protocol.searchSampleResult = [];
+                }));
+            }).then(protocol => {
+                if (protocol.kind === types.ProtocolKind.searchSamplesResult) {
+                    if (protocol.searchSamplesResult.kind === types.ResultKind.success) {
+                        if (protocol.searchSamplesResult.searchSampleResult) {
+                            showSearchResult(protocol.searchSamplesResult.searchSampleResult);
+                        } else {
+                            showSearchResult([]);
+                        }
+                    } else {
+                        logsPushSubject.next({
+                            time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            content: protocol.searchSamplesResult.error,
+                            hostname: "",
+                            filepath: "",
+                            timeValue: Date.now(),
+                        });
+                        updateNewLogsCountSubject.next();
+                    }
                 }
-                showSearchResult(protocol.searchSampleResult);
             }, (error: Error) => {
                 logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -373,20 +413,31 @@ class Others extends Vue {
     resaveFailedLogs() {
         if (ws) {
             wsRpc.send(requestId => {
-                const message: types.Protocol = {
-                    kind: types.ProtocolKind.resaveFailedLogs,
+                ws!.send(format.encodeRequest({
+                    kind: types.RequestProtocolKind.resaveFailedLogs,
                     requestId,
-                };
-                ws!.send(format.encode(message));
-            }).then((protocol: types.ResaveFailedLogsResultProtocol) => {
-                logsPushSubject.next({
-                    time: moment().format("YYYY-MM-DD HH:mm:ss"),
-                    content: `handled ${protocol.resaveFailedLogsResult!.savedCount} / ${protocol.resaveFailedLogsResult!.totalCount} logs.`,
-                    hostname: "",
-                    filepath: "",
-                    timeValue: Date.now(),
-                });
-                updateNewLogsCountSubject.next();
+                }));
+            }).then(protocol => {
+                if (protocol.kind === types.ProtocolKind.resaveFailedLogsResult) {
+                    if (protocol.resaveFailedLogsResult.kind === types.ResultKind.success) {
+                        logsPushSubject.next({
+                            time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            content: `handled ${protocol.resaveFailedLogsResult.savedCount} / ${protocol.resaveFailedLogsResult.totalCount} logs.`,
+                            hostname: "",
+                            filepath: "",
+                            timeValue: Date.now(),
+                        });
+                    } else {
+                        logsPushSubject.next({
+                            time: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            content: protocol.resaveFailedLogsResult.error,
+                            hostname: "",
+                            filepath: "",
+                            timeValue: Date.now(),
+                        });
+                    }
+                    updateNewLogsCountSubject.next();
+                }
             }, (error: Error) => {
                 logsPushSubject.next({
                     time: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -484,7 +535,7 @@ setTimeout(() => {
         ws = new WebSocket(`${wsProtocol}//${location.host}/ws`);
         ws.binaryType = "arraybuffer";
         ws.onmessage = event => {
-            format.decode(event.data, protocol => {
+            format.decodeResponse(event.data, protocol => {
                 protocolDataSubject.next(protocol);
             });
         };

@@ -14,19 +14,20 @@ export function start() {
 
     app.use(libs.bodyParser.json());
     app.post(config.inflow.httpFallbackPath, (request, response) => {
-        const protocol: types.Protocol = request.body;
-        if (protocol) {
+        const protocol: types.FlowProtocol = request.body;
+        const isValidJson = libs.validateFlowProtocol(protocol);
+        if (isValidJson) {
             handleMessage(protocol);
             response.end("accepted");
         } else {
-            response.end("unrecognised body");
+            response.end(libs.validateFlowProtocol.errors![0].message);
         }
     });
 
     wss.on("connection", ws => {
         ws.on("message", (inflowString: string, flag) => {
             try {
-                const protocol = format.decode(inflowString);
+                const protocol = format.decodeFlow(inflowString);
                 handleMessage(protocol);
             } catch (error) {
                 libs.publishError(error);
@@ -38,12 +39,12 @@ export function start() {
     server.listen(config.inflow.port, config.inflow.host);
 }
 
-function handleMessage(protocol: types.Protocol) {
-    if (protocol.kind === types.ProtocolKind.flows && protocol.flows) {
+function handleMessage(protocol: types.FlowProtocol) {
+    if (protocol.flows) {
         for (const flow of protocol.flows) {
-            if (flow.kind === types.ProtocolKind.log) {
+            if (flow.kind === types.FlowKind.log) {
                 libs.logSubject.next(flow.log);
-            } else if (flow.kind === types.ProtocolKind.sample) {
+            } else if (flow.kind === types.FlowKind.sample) {
                 libs.sampleSubject.next(flow.sample);
             }
         }

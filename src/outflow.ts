@@ -1,6 +1,5 @@
 import * as libs from "./libs";
 import * as config from "./config";
-import * as types from "./types";
 import * as format from "./format";
 import * as sqlite from "./sqlite";
 
@@ -12,11 +11,7 @@ export function start() {
     let ws: libs.WebSocket;
     let sender: libs.Sender;
     const subscription = libs.bufferedFlowObservable.subscribe(flows => {
-        const protocol: types.Protocol = {
-            kind: types.ProtocolKind.flows,
-            flows,
-        };
-        const message = format.encode(protocol);
+        const message = format.encodeFlow({ flows });
         if (ws && ws.readyState === ws.OPEN && sender) {
             sender.send(message, { binary: config.protobuf.enabled, mask: true }, isSuccess => {
                 if (!isSuccess) {

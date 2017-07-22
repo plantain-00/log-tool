@@ -3,16 +3,18 @@ import * as Ajv from "ajv";
 
 import * as types from "../src/types";
 import { defaultConfig } from "./config";
-import { protocolProto, protocolJson } from "./variables";
+import { protocolProto, responseProtocolJson } from "./variables";
 
-const protocolType = protobuf.Root.fromJSON(protocolProto).lookup("protocolPackage.Protocol") as protobuf.Type;
+const root = protobuf.Root.fromJSON(protocolProto);
+const RequestProtocolType = root.lookup("RequestProtocol") as protobuf.Type;
+const ResponseProtocolType = root.lookup("ResponseProtocol") as protobuf.Type;
 
 const ajv = new Ajv();
-const validate = ajv.compile(protocolJson);
+const validateResponseProtocol = ajv.compile(responseProtocolJson);
 
-export function encode(protocol: types.Protocol): string | Uint8Array {
+export function encodeRequest(protocol: types.RequestProtocol): string | Uint8Array {
     if (defaultConfig.protobuf.enabled) {
-        return protocolType.encode(protocol).finish();
+        return RequestProtocolType.encode(protocol).finish();
     }
     return JSON.stringify(protocol);
 }
@@ -25,17 +27,17 @@ export function encode(protocol: types.Protocol): string | Uint8Array {
 //     fileReader.readAsArrayBuffer(blob);
 // }
 
-export function decode(data: string | ArrayBuffer, next: (protocol: types.Protocol) => void) {
+export function decodeResponse(data: string | ArrayBuffer, next: (protocol: types.ResponseProtocol) => void) {
     if (typeof data === "string") {
         const result = JSON.parse(data);
-        const isValidJson = validate(result);
+        const isValidJson = validateResponseProtocol(result);
         if (!isValidJson) {
             // tslint:disable-next-line:no-console
-            console.log(validate.errors![0].message);
+            console.log(validateResponseProtocol.errors![0].message);
         } else {
             next(result);
         }
     } else {
-        next(protocolType.decode(new Uint8Array(data)).toJSON() as types.Protocol);
+        next(ResponseProtocolType.decode(new Uint8Array(data)).toJSON() as types.ResponseProtocol);
     }
 }
