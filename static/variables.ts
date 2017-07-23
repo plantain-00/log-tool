@@ -10,12 +10,10 @@ export const protocolProto = {
         "RequestProtocol": {
             "fields": {
                 "requestId": {
-                    "rule": "required",
                     "type": "uint32",
                     "id": 1
                 },
                 "kind": {
-                    "rule": "required",
                     "type": "string",
                     "id": 2
                 },
@@ -32,27 +30,22 @@ export const protocolProto = {
         "SearchLogs": {
             "fields": {
                 "content": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
                 "time": {
-                    "rule": "required",
                     "type": "string",
                     "id": 2
                 },
                 "hostname": {
-                    "rule": "required",
                     "type": "string",
                     "id": 3
                 },
                 "from": {
-                    "rule": "required",
                     "type": "uint32",
                     "id": 4
                 },
                 "size": {
-                    "rule": "required",
                     "type": "uint32",
                     "id": 5
                 }
@@ -61,12 +54,10 @@ export const protocolProto = {
         "SearchSamples": {
             "fields": {
                 "from": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
                 "to": {
-                    "rule": "required",
                     "type": "string",
                     "id": 2
                 }
@@ -75,7 +66,6 @@ export const protocolProto = {
         "ResponseProtocol": {
             "fields": {
                 "kind": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
@@ -93,7 +83,6 @@ export const protocolProto = {
                     "id": 4
                 },
                 "searchSamplesResult": {
-                    "rule": "repeated",
                     "type": "SearchSamplesResult",
                     "id": 5
                 },
@@ -106,7 +95,6 @@ export const protocolProto = {
         "Flows": {
             "fields": {
                 "serverTime": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
@@ -119,76 +107,70 @@ export const protocolProto = {
         },
         "SearchLogsResult": {
             "fields": {
-                "kind": {
-                    "rule": "required",
-                    "type": "string",
+                "requestId": {
+                    "type": "uint32",
                     "id": 1
                 },
-                "requestId": {
-                    "rule": "required",
-                    "type": "uint32",
-                    "id": 2
-                },
-                "error": {
+                "kind": {
                     "type": "string",
-                    "id": 3
+                    "id": 2
                 },
                 "total": {
                     "type": "uint32",
-                    "id": 4
+                    "id": 3
                 },
                 "logs": {
                     "rule": "repeated",
                     "type": "Log",
+                    "id": 4
+                },
+                "error": {
+                    "type": "string",
                     "id": 5
                 }
             }
         },
         "SearchSamplesResult": {
             "fields": {
-                "kind": {
-                    "rule": "required",
-                    "type": "string",
+                "requestId": {
+                    "type": "uint32",
                     "id": 1
                 },
-                "requestId": {
-                    "rule": "required",
-                    "type": "uint32",
-                    "id": 2
-                },
-                "error": {
+                "kind": {
                     "type": "string",
-                    "id": 3
+                    "id": 2
                 },
                 "searchSampleResult": {
                     "rule": "repeated",
                     "type": "SampleFrame",
+                    "id": 3
+                },
+                "error": {
+                    "type": "string",
                     "id": 4
                 }
             }
         },
         "ResaveFailedLogsResult": {
             "fields": {
-                "kind": {
-                    "rule": "required",
-                    "type": "string",
+                "requestId": {
+                    "type": "uint32",
                     "id": 1
                 },
-                "requestId": {
-                    "rule": "required",
-                    "type": "uint32",
-                    "id": 2
-                },
-                "error": {
+                "kind": {
                     "type": "string",
-                    "id": 3
+                    "id": 2
                 },
                 "savedCount": {
                     "type": "uint32",
-                    "id": 4
+                    "id": 3
                 },
                 "totalCount": {
                     "type": "uint32",
+                    "id": 4
+                },
+                "error": {
+                    "type": "string",
                     "id": 5
                 }
             }
@@ -196,7 +178,6 @@ export const protocolProto = {
         "SampleFrame": {
             "fields": {
                 "time": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
@@ -210,7 +191,8 @@ export const protocolProto = {
         "FlowProtocol": {
             "fields": {
                 "flows": {
-                    "type": "Flows",
+                    "rule": "repeated",
+                    "type": "Flow",
                     "id": 1
                 }
             }
@@ -218,7 +200,6 @@ export const protocolProto = {
         "Flow": {
             "fields": {
                 "kind": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
@@ -235,22 +216,18 @@ export const protocolProto = {
         "Log": {
             "fields": {
                 "time": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
                 "content": {
-                    "rule": "required",
                     "type": "string",
                     "id": 2
                 },
                 "filepath": {
-                    "rule": "required",
                     "type": "string",
                     "id": 3
                 },
                 "hostname": {
-                    "rule": "required",
                     "type": "string",
                     "id": 4
                 }
@@ -259,7 +236,6 @@ export const protocolProto = {
         "Sample": {
             "fields": {
                 "hostname": {
-                    "rule": "required",
                     "type": "string",
                     "id": 1
                 },
@@ -277,15 +253,12 @@ export const protocolProto = {
     }
 };
 export const flowProtocolJson = {
-  "$ref": "#/definitions/Flow",
   "definitions": {
     "RequestProtocol": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -306,8 +279,8 @@ export const flowProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "SearchLogs": {
       "type": "object",
@@ -322,14 +295,10 @@ export const flowProtocolJson = {
           "type": "string"
         },
         "from": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "size": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         }
       },
       "required": [
@@ -339,8 +308,7 @@ export const flowProtocolJson = {
         "from",
         "size"
       ],
-      "maxProperties": 5,
-      "minProperties": 5
+      "additionalProperties": false
     },
     "SearchSamples": {
       "type": "object",
@@ -356,8 +324,7 @@ export const flowProtocolJson = {
         "from",
         "to"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false
     },
     "ResponseProtocol": {
       "type": "object",
@@ -384,7 +351,7 @@ export const flowProtocolJson = {
         "searchLogsResult": {
           "$ref": "#/definitions/SearchLogsResult"
         },
-        "searchSampleResult": {
+        "searchSamplesResult": {
           "$ref": "#/definitions/SearchSamplesResult"
         },
         "resaveFailedLogsResult": {
@@ -394,8 +361,8 @@ export const flowProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false,
+      "maxProperties": 2
     },
     "Flows": {
       "type": "object",
@@ -411,18 +378,16 @@ export const flowProtocolJson = {
         }
       },
       "required": [
-        "serverTime"
+        "serverTime",
+        "flows"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "SearchLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -432,9 +397,7 @@ export const flowProtocolJson = {
           ]
         },
         "total": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "logs": {
           "type": "array",
@@ -450,16 +413,15 @@ export const flowProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SearchSamplesResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -482,16 +444,14 @@ export const flowProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "ResaveFailedLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -501,14 +461,10 @@ export const flowProtocolJson = {
           ]
         },
         "savedCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "totalCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "error": {
           "type": "string"
@@ -518,8 +474,9 @@ export const flowProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SampleFrame": {
       "type": "object",
@@ -537,8 +494,7 @@ export const flowProtocolJson = {
       "required": [
         "time"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "FlowProtocol": {
       "type": "object",
@@ -550,8 +506,10 @@ export const flowProtocolJson = {
           }
         }
       },
-      "maxProperties": 1,
-      "minProperties": 0
+      "required": [
+        "flows"
+      ],
+      "additionalProperties": false
     },
     "Flow": {
       "type": "object",
@@ -573,8 +531,9 @@ export const flowProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false,
+      "minProperties": 2,
+      "maxProperties": 2
     },
     "Log": {
       "type": "object",
@@ -598,8 +557,7 @@ export const flowProtocolJson = {
         "filepath",
         "hostname"
       ],
-      "maxProperties": 4,
-      "minProperties": 4
+      "additionalProperties": false
     },
     "Sample": {
       "type": "object",
@@ -608,16 +566,12 @@ export const flowProtocolJson = {
           "type": "string"
         },
         "port": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "values": {
           "type": "object",
           "additionalProperties": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 4294967295
+            "type": "number"
           }
         }
       },
@@ -625,21 +579,18 @@ export const flowProtocolJson = {
         "hostname",
         "values"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false
     }
-  }
+  },
+  "$ref": "#/definitions/FlowProtocol"
 };
 export const requestProtocolJson = {
-  "$ref": "#/definitions/RequestProtocol",
   "definitions": {
     "RequestProtocol": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -660,8 +611,8 @@ export const requestProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "SearchLogs": {
       "type": "object",
@@ -676,14 +627,10 @@ export const requestProtocolJson = {
           "type": "string"
         },
         "from": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "size": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         }
       },
       "required": [
@@ -693,8 +640,7 @@ export const requestProtocolJson = {
         "from",
         "size"
       ],
-      "maxProperties": 5,
-      "minProperties": 5
+      "additionalProperties": false
     },
     "SearchSamples": {
       "type": "object",
@@ -710,8 +656,7 @@ export const requestProtocolJson = {
         "from",
         "to"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false
     },
     "ResponseProtocol": {
       "type": "object",
@@ -738,7 +683,7 @@ export const requestProtocolJson = {
         "searchLogsResult": {
           "$ref": "#/definitions/SearchLogsResult"
         },
-        "searchSampleResult": {
+        "searchSamplesResult": {
           "$ref": "#/definitions/SearchSamplesResult"
         },
         "resaveFailedLogsResult": {
@@ -748,8 +693,8 @@ export const requestProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false,
+      "maxProperties": 2
     },
     "Flows": {
       "type": "object",
@@ -765,18 +710,16 @@ export const requestProtocolJson = {
         }
       },
       "required": [
-        "serverTime"
+        "serverTime",
+        "flows"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "SearchLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -786,9 +729,7 @@ export const requestProtocolJson = {
           ]
         },
         "total": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "logs": {
           "type": "array",
@@ -804,16 +745,15 @@ export const requestProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SearchSamplesResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -836,16 +776,14 @@ export const requestProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "ResaveFailedLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -855,14 +793,10 @@ export const requestProtocolJson = {
           ]
         },
         "savedCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "totalCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "error": {
           "type": "string"
@@ -872,8 +806,9 @@ export const requestProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SampleFrame": {
       "type": "object",
@@ -891,8 +826,7 @@ export const requestProtocolJson = {
       "required": [
         "time"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "FlowProtocol": {
       "type": "object",
@@ -904,8 +838,10 @@ export const requestProtocolJson = {
           }
         }
       },
-      "maxProperties": 1,
-      "minProperties": 0
+      "required": [
+        "flows"
+      ],
+      "additionalProperties": false
     },
     "Flow": {
       "type": "object",
@@ -927,8 +863,9 @@ export const requestProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false,
+      "minProperties": 2,
+      "maxProperties": 2
     },
     "Log": {
       "type": "object",
@@ -952,8 +889,7 @@ export const requestProtocolJson = {
         "filepath",
         "hostname"
       ],
-      "maxProperties": 4,
-      "minProperties": 4
+      "additionalProperties": false
     },
     "Sample": {
       "type": "object",
@@ -962,16 +898,12 @@ export const requestProtocolJson = {
           "type": "string"
         },
         "port": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "values": {
           "type": "object",
           "additionalProperties": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 4294967295
+            "type": "number"
           }
         }
       },
@@ -979,21 +911,18 @@ export const requestProtocolJson = {
         "hostname",
         "values"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false
     }
-  }
+  },
+  "$ref": "#/definitions/RequestProtocol"
 };
 export const responseProtocolJson = {
-  "$ref": "#/definitions/ResponseProtocol",
   "definitions": {
     "RequestProtocol": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -1014,8 +943,8 @@ export const responseProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "SearchLogs": {
       "type": "object",
@@ -1030,14 +959,10 @@ export const responseProtocolJson = {
           "type": "string"
         },
         "from": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "size": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         }
       },
       "required": [
@@ -1047,8 +972,7 @@ export const responseProtocolJson = {
         "from",
         "size"
       ],
-      "maxProperties": 5,
-      "minProperties": 5
+      "additionalProperties": false
     },
     "SearchSamples": {
       "type": "object",
@@ -1064,8 +988,7 @@ export const responseProtocolJson = {
         "from",
         "to"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false
     },
     "ResponseProtocol": {
       "type": "object",
@@ -1092,7 +1015,7 @@ export const responseProtocolJson = {
         "searchLogsResult": {
           "$ref": "#/definitions/SearchLogsResult"
         },
-        "searchSampleResult": {
+        "searchSamplesResult": {
           "$ref": "#/definitions/SearchSamplesResult"
         },
         "resaveFailedLogsResult": {
@@ -1102,8 +1025,8 @@ export const responseProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false,
+      "maxProperties": 2
     },
     "Flows": {
       "type": "object",
@@ -1119,18 +1042,16 @@ export const responseProtocolJson = {
         }
       },
       "required": [
-        "serverTime"
+        "serverTime",
+        "flows"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "SearchLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -1140,9 +1061,7 @@ export const responseProtocolJson = {
           ]
         },
         "total": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "logs": {
           "type": "array",
@@ -1158,16 +1077,15 @@ export const responseProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SearchSamplesResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -1190,16 +1108,14 @@ export const responseProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false,
+      "maxProperties": 3
     },
     "ResaveFailedLogsResult": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "kind": {
           "type": "string",
@@ -1209,14 +1125,10 @@ export const responseProtocolJson = {
           ]
         },
         "savedCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "totalCount": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "error": {
           "type": "string"
@@ -1226,8 +1138,9 @@ export const responseProtocolJson = {
         "requestId",
         "kind"
       ],
-      "maxProperties": 4,
-      "minProperties": 3
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     },
     "SampleFrame": {
       "type": "object",
@@ -1245,8 +1158,7 @@ export const responseProtocolJson = {
       "required": [
         "time"
       ],
-      "maxProperties": 2,
-      "minProperties": 1
+      "additionalProperties": false
     },
     "FlowProtocol": {
       "type": "object",
@@ -1258,8 +1170,10 @@ export const responseProtocolJson = {
           }
         }
       },
-      "maxProperties": 1,
-      "minProperties": 0
+      "required": [
+        "flows"
+      ],
+      "additionalProperties": false
     },
     "Flow": {
       "type": "object",
@@ -1281,8 +1195,9 @@ export const responseProtocolJson = {
       "required": [
         "kind"
       ],
-      "maxProperties": 2,
-      "minProperties": 2
+      "additionalProperties": false,
+      "minProperties": 2,
+      "maxProperties": 2
     },
     "Log": {
       "type": "object",
@@ -1306,8 +1221,7 @@ export const responseProtocolJson = {
         "filepath",
         "hostname"
       ],
-      "maxProperties": 4,
-      "minProperties": 4
+      "additionalProperties": false
     },
     "Sample": {
       "type": "object",
@@ -1316,16 +1230,12 @@ export const responseProtocolJson = {
           "type": "string"
         },
         "port": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4294967295
+          "type": "number"
         },
         "values": {
           "type": "object",
           "additionalProperties": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 4294967295
+            "type": "number"
           }
         }
       },
@@ -1333,9 +1243,9 @@ export const responseProtocolJson = {
         "hostname",
         "values"
       ],
-      "maxProperties": 3,
-      "minProperties": 2
+      "additionalProperties": false
     }
-  }
+  },
+  "$ref": "#/definitions/ResponseProtocol"
 };
 // tslint:enable:object-literal-key-quotes trailing-comma

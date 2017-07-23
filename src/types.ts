@@ -1,3 +1,6 @@
+/**
+ * @entry request-protocol.json
+ */
 export type RequestProtocol = {
     requestId: number;
 } & (
@@ -31,6 +34,9 @@ type SearchSamples = {
     to: string;
 };
 
+/**
+ * @entry response-protocol.json
+ */
 export type ResponseProtocol =
     {
         kind: ProtocolKind.flows,
@@ -59,7 +65,7 @@ export const enum ProtocolKind {
 
 type Flows = {
     serverTime: string;
-    flows?: Flow[];
+    flows: Flow[];
 };
 
 export type SearchLogsResult = {
@@ -110,8 +116,11 @@ export type SampleFrame = {
     samples?: Sample[];
 };
 
+/**
+ * @entry flow-protocol.json
+ */
 export type FlowProtocol = {
-    flows?: Flow[];
+    flows: Flow[];
 };
 
 export type Flow =

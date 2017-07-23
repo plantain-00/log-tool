@@ -40,13 +40,11 @@ export function start() {
 }
 
 function handleMessage(protocol: types.FlowProtocol) {
-    if (protocol.flows) {
-        for (const flow of protocol.flows) {
-            if (flow.kind === types.FlowKind.log) {
-                libs.logSubject.next(flow.log);
-            } else if (flow.kind === types.FlowKind.sample) {
-                libs.sampleSubject.next(flow.sample);
-            }
+    for (const flow of protocol.flows) {
+        if (flow.kind === types.FlowKind.log) {
+            libs.logSubject.next(flow.log);
+        } else if (flow.kind === types.FlowKind.sample) {
+            libs.sampleSubject.next(flow.sample);
         }
     }
 }
