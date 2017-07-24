@@ -253,249 +253,8 @@ export const protocolProto = {
     }
 };
 export const flowProtocolJson = {
+  "$ref": "#/definitions/FlowProtocol",
   "definitions": {
-    "RequestProtocol": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "search logs",
-            "search samples",
-            "resave failed logs"
-          ]
-        },
-        "searchLogs": {
-          "$ref": "#/definitions/SearchLogs"
-        },
-        "searchSamples": {
-          "$ref": "#/definitions/SearchSamples"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 3
-    },
-    "SearchLogs": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string"
-        },
-        "hostname": {
-          "type": "string"
-        },
-        "from": {
-          "type": "number"
-        },
-        "size": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "content",
-        "time",
-        "hostname",
-        "from",
-        "size"
-      ],
-      "additionalProperties": false
-    },
-    "SearchSamples": {
-      "type": "object",
-      "properties": {
-        "from": {
-          "type": "string"
-        },
-        "to": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "from",
-        "to"
-      ],
-      "additionalProperties": false
-    },
-    "ResponseProtocol": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "flows",
-            "history samples",
-            "search logs result",
-            "search samples result",
-            "resave failed logs result"
-          ]
-        },
-        "flows": {
-          "$ref": "#/definitions/Flows"
-        },
-        "historySamples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SampleFrame"
-          }
-        },
-        "searchLogsResult": {
-          "$ref": "#/definitions/SearchLogsResult"
-        },
-        "searchSamplesResult": {
-          "$ref": "#/definitions/SearchSamplesResult"
-        },
-        "resaveFailedLogsResult": {
-          "$ref": "#/definitions/ResaveFailedLogsResult"
-        }
-      },
-      "required": [
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 2
-    },
-    "Flows": {
-      "type": "object",
-      "properties": {
-        "serverTime": {
-          "type": "string"
-        },
-        "flows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Flow"
-          }
-        }
-      },
-      "required": [
-        "serverTime",
-        "flows"
-      ],
-      "additionalProperties": false
-    },
-    "SearchLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "total": {
-          "type": "number"
-        },
-        "logs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Log"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SearchSamplesResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "searchSampleResult": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SampleFrame"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 3
-    },
-    "ResaveFailedLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "savedCount": {
-          "type": "number"
-        },
-        "totalCount": {
-          "type": "number"
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SampleFrame": {
-      "type": "object",
-      "properties": {
-        "time": {
-          "type": "string"
-        },
-        "samples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Sample"
-          }
-        }
-      },
-      "required": [
-        "time"
-      ],
-      "additionalProperties": false
-    },
     "FlowProtocol": {
       "type": "object",
       "properties": {
@@ -566,12 +325,16 @@ export const flowProtocolJson = {
           "type": "string"
         },
         "port": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
         },
         "values": {
           "type": "object",
           "additionalProperties": {
-            "type": "number"
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
           }
         }
       },
@@ -581,16 +344,18 @@ export const flowProtocolJson = {
       ],
       "additionalProperties": false
     }
-  },
-  "$ref": "#/definitions/FlowProtocol"
+  }
 };
 export const requestProtocolJson = {
+  "$ref": "#/definitions/RequestProtocol",
   "definitions": {
     "RequestProtocol": {
       "type": "object",
       "properties": {
         "requestId": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
         },
         "kind": {
           "type": "string",
@@ -627,10 +392,14 @@ export const requestProtocolJson = {
           "type": "string"
         },
         "from": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
         },
         "size": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
         }
       },
       "required": [
@@ -657,339 +426,12 @@ export const requestProtocolJson = {
         "to"
       ],
       "additionalProperties": false
-    },
-    "ResponseProtocol": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "flows",
-            "history samples",
-            "search logs result",
-            "search samples result",
-            "resave failed logs result"
-          ]
-        },
-        "flows": {
-          "$ref": "#/definitions/Flows"
-        },
-        "historySamples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SampleFrame"
-          }
-        },
-        "searchLogsResult": {
-          "$ref": "#/definitions/SearchLogsResult"
-        },
-        "searchSamplesResult": {
-          "$ref": "#/definitions/SearchSamplesResult"
-        },
-        "resaveFailedLogsResult": {
-          "$ref": "#/definitions/ResaveFailedLogsResult"
-        }
-      },
-      "required": [
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 2
-    },
-    "Flows": {
-      "type": "object",
-      "properties": {
-        "serverTime": {
-          "type": "string"
-        },
-        "flows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Flow"
-          }
-        }
-      },
-      "required": [
-        "serverTime",
-        "flows"
-      ],
-      "additionalProperties": false
-    },
-    "SearchLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "total": {
-          "type": "number"
-        },
-        "logs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Log"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SearchSamplesResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "searchSampleResult": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SampleFrame"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 3
-    },
-    "ResaveFailedLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "savedCount": {
-          "type": "number"
-        },
-        "totalCount": {
-          "type": "number"
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SampleFrame": {
-      "type": "object",
-      "properties": {
-        "time": {
-          "type": "string"
-        },
-        "samples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Sample"
-          }
-        }
-      },
-      "required": [
-        "time"
-      ],
-      "additionalProperties": false
-    },
-    "FlowProtocol": {
-      "type": "object",
-      "properties": {
-        "flows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Flow"
-          }
-        }
-      },
-      "required": [
-        "flows"
-      ],
-      "additionalProperties": false
-    },
-    "Flow": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "log",
-            "sample"
-          ]
-        },
-        "log": {
-          "$ref": "#/definitions/Log"
-        },
-        "sample": {
-          "$ref": "#/definitions/Sample"
-        }
-      },
-      "required": [
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 2,
-      "maxProperties": 2
-    },
-    "Log": {
-      "type": "object",
-      "properties": {
-        "time": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "filepath": {
-          "type": "string"
-        },
-        "hostname": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "time",
-        "content",
-        "filepath",
-        "hostname"
-      ],
-      "additionalProperties": false
-    },
-    "Sample": {
-      "type": "object",
-      "properties": {
-        "hostname": {
-          "type": "string"
-        },
-        "port": {
-          "type": "number"
-        },
-        "values": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number"
-          }
-        }
-      },
-      "required": [
-        "hostname",
-        "values"
-      ],
-      "additionalProperties": false
     }
-  },
-  "$ref": "#/definitions/RequestProtocol"
+  }
 };
 export const responseProtocolJson = {
+  "$ref": "#/definitions/ResponseProtocol",
   "definitions": {
-    "RequestProtocol": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "search logs",
-            "search samples",
-            "resave failed logs"
-          ]
-        },
-        "searchLogs": {
-          "$ref": "#/definitions/SearchLogs"
-        },
-        "searchSamples": {
-          "$ref": "#/definitions/SearchSamples"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 3
-    },
-    "SearchLogs": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string"
-        },
-        "hostname": {
-          "type": "string"
-        },
-        "from": {
-          "type": "number"
-        },
-        "size": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "content",
-        "time",
-        "hostname",
-        "from",
-        "size"
-      ],
-      "additionalProperties": false
-    },
-    "SearchSamples": {
-      "type": "object",
-      "properties": {
-        "from": {
-          "type": "string"
-        },
-        "to": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "from",
-        "to"
-      ],
-      "additionalProperties": false
-    },
     "ResponseProtocol": {
       "type": "object",
       "properties": {
@@ -1043,134 +485,6 @@ export const responseProtocolJson = {
       },
       "required": [
         "serverTime",
-        "flows"
-      ],
-      "additionalProperties": false
-    },
-    "SearchLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "total": {
-          "type": "number"
-        },
-        "logs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Log"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SearchSamplesResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "searchSampleResult": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SampleFrame"
-          }
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "maxProperties": 3
-    },
-    "ResaveFailedLogsResult": {
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "type": "number"
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "success",
-            "fail"
-          ]
-        },
-        "savedCount": {
-          "type": "number"
-        },
-        "totalCount": {
-          "type": "number"
-        },
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "requestId",
-        "kind"
-      ],
-      "additionalProperties": false,
-      "minProperties": 3,
-      "maxProperties": 4
-    },
-    "SampleFrame": {
-      "type": "object",
-      "properties": {
-        "time": {
-          "type": "string"
-        },
-        "samples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Sample"
-          }
-        }
-      },
-      "required": [
-        "time"
-      ],
-      "additionalProperties": false
-    },
-    "FlowProtocol": {
-      "type": "object",
-      "properties": {
-        "flows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Flow"
-          }
-        }
-      },
-      "required": [
         "flows"
       ],
       "additionalProperties": false
@@ -1230,12 +544,16 @@ export const responseProtocolJson = {
           "type": "string"
         },
         "port": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
         },
         "values": {
           "type": "object",
           "additionalProperties": {
-            "type": "number"
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
           }
         }
       },
@@ -1244,8 +562,132 @@ export const responseProtocolJson = {
         "values"
       ],
       "additionalProperties": false
+    },
+    "SampleFrame": {
+      "type": "object",
+      "properties": {
+        "time": {
+          "type": "string"
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Sample"
+          }
+        }
+      },
+      "required": [
+        "time"
+      ],
+      "additionalProperties": false
+    },
+    "SearchLogsResult": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "success",
+            "fail"
+          ]
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Log"
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "requestId",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
+    },
+    "SearchSamplesResult": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "success",
+            "fail"
+          ]
+        },
+        "searchSampleResult": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SampleFrame"
+          }
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "requestId",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "maxProperties": 3
+    },
+    "ResaveFailedLogsResult": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "success",
+            "fail"
+          ]
+        },
+        "savedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "totalCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "requestId",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "minProperties": 3,
+      "maxProperties": 4
     }
-  },
-  "$ref": "#/definitions/ResponseProtocol"
+  }
 };
 // tslint:enable:object-literal-key-quotes trailing-comma
