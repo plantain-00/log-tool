@@ -38,6 +38,6 @@ export function decodeResponse(data: string | ArrayBuffer, next: (protocol: type
             next(result);
         }
     } else {
-        next(ResponseProtocolType.decode(new Uint8Array(data)).toJSON() as types.ResponseProtocol);
+        next(ResponseProtocolType.toObject(ResponseProtocolType.decode(new Uint8Array(data))) as types.ResponseProtocol);
     }
 }

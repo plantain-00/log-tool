@@ -39,7 +39,7 @@ export function decodeRequest(protocol: ArrayBuffer | string): types.RequestProt
         }
         return result;
     }
-    return requestProtocolType.decode(new Buffer(protocol)).toJSON() as types.RequestProtocol;
+    return requestProtocolType.toObject(requestProtocolType.decode(new Buffer(protocol))) as types.RequestProtocol;
 }
 
 export function decodeFlow(protocol: ArrayBuffer | string): types.FlowProtocol {
@@ -51,5 +51,5 @@ export function decodeFlow(protocol: ArrayBuffer | string): types.FlowProtocol {
         }
         return result;
     }
-    return flowProtocolType.decode(new Buffer(protocol)).toJSON() as types.FlowProtocol;
+    return flowProtocolType.toObject(flowProtocolType.decode(new Buffer(protocol))) as types.FlowProtocol;
 }
