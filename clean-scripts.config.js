@@ -9,7 +9,7 @@ module.exports = {
     `tsc -p static`,
     `webpack --display-modules --config static/webpack.config.js`,
     `lessc ./static/index.less > ./static/index.css`,
-    `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/dist/tab-container.min.css -o ./static/vendor.bundle.css`,
+    `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
     `cleancss ./static/index.css -o ./static/index.bundle.css`,
     `rev-static --config static/rev-static.config.js`
   ],

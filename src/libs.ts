@@ -7,7 +7,7 @@ import * as express from "express";
 import * as http from "http";
 import fetch from "node-fetch";
 import * as types from "./types";
-import { Reconnector } from "reconnection/nodejs";
+import Reconnector from "reconnection/nodejs/nodejs";
 import * as moment from "moment";
 import { Server as WebSocketServer } from "uws";
 import * as protobuf from "protobufjs";

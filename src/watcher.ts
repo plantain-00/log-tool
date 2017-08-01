@@ -78,10 +78,10 @@ function fileOrDirectoryChanged(pathname: string) {
 
 function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
     const position = positions[filepath];
-    const start = position === undefined ? 0 : position;
-    if (end > start) {
+    const startPosition = position === undefined ? 0 : position;
+    if (end > startPosition) {
         libs.fs.createReadStream(filepath, {
-            start,
+            start: startPosition,
             end,
             encoding: "utf8",
         }).on("data", (fileContentChanged: string) => {
@@ -89,7 +89,7 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
             if (lines) {
                 for (const line of lines) {
                     try {
-                        const {skip, time, content} = config.watcher.parseLine(line, libs.moment, filepath);
+                        const { skip, time, content } = config.watcher.parseLine(line, libs.moment, filepath);
                         if (!skip) {
                             libs.logSubject.next({
                                 time,

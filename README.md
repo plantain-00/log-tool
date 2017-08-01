@@ -1,6 +1,7 @@
 [![Dependency Status](https://david-dm.org/plantain-00/log-tool.svg)](https://david-dm.org/plantain-00/log-tool)
 [![devDependency Status](https://david-dm.org/plantain-00/log-tool/dev-status.svg)](https://david-dm.org/plantain-00/log-tool#info=devDependencies)
-[![Build Status](https://travis-ci.org/plantain-00/log-tool.svg?branch=master)](https://travis-ci.org/plantain-00/log-tool)
+[![Build Status: Linux](https://travis-ci.org/plantain-00/log-tool.svg?branch=master)](https://travis-ci.org/plantain-00/log-tool)
+[![Build Status: Windows](https://ci.appveyor.com/api/projects/status/github/plantain-00/log-tool?branch=master&svg=true)](https://ci.appveyor.com/project/plantain-00/log-tool/branch/master)
 
 # log-tool
 

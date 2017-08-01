@@ -2,12 +2,12 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import * as moment from "moment";
 
-import { Reconnector } from "reconnection/browser";
-import { WsRpc } from "rpc-on-ws";
+import Reconnector from "reconnection/browser/browser";
+import WsRpc from "rpc-on-ws/browser";
 import { Subject } from "rxjs/Subject";
-import { Locale } from "relative-time-component/dist/vue";
+import { Locale } from "relative-time-component/vue";
 import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
-import { TabContainerData } from "tab-container-component/dist/common";
+import { TabContainerData } from "tab-container-component/common";
 
 import * as types from "../src/types";
 import * as format from "./format";
@@ -552,7 +552,7 @@ setInterval(() => {
     updateCharts();
 }, 1000);
 
-import { locale as zhCNLocale } from "relative-time-component/dist/locales/zh-CN.js";
+import { locale as zhCNLocale } from "relative-time-component/locales/zh-CN.js";
 
 if (navigator.language === "zh-CN") {
     locale = zhCNLocale;
