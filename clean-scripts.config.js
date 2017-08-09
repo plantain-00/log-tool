@@ -39,6 +39,7 @@ module.exports = {
     ]
   },
   fix: {
+    ts: `tslint --fix "src/*.ts" "static/*.ts"`,
     js: `standard --fix "**/*.config.js"`,
     less: `stylelint --fix "online/**/*.less"`
   },
