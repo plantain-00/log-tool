@@ -169,7 +169,7 @@ class SearchLogs extends Vue {
         }
         if (ws) {
             wsRpc.send(requestId => {
-                ws!.send(format.encodeRequest({
+                const data = format.encodeRequest({
                     kind: types.RequestProtocolKind.searchLogs,
                     requestId,
                     searchLogs: {
@@ -179,7 +179,10 @@ class SearchLogs extends Vue {
                         from: this.from,
                         size: this.size,
                     },
-                }));
+                });
+                if (data) {
+                    ws!.send(data);
+                }
             }).then(protocol => {
                 if (protocol.kind === types.ProtocolKind.searchLogsResult
                     && protocol.searchLogsResult

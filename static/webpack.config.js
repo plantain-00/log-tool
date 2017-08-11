@@ -20,8 +20,8 @@ module.exports = {
       output: {
         comments: false
       },
-    exclude: [
-    ]
+      exclude: [
+      ]
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: ['index', 'vendor']

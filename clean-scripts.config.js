@@ -9,7 +9,7 @@ module.exports = {
       ],
       front: {
         js: [
-          `file2variable-cli static/*.template.html static/protocol.proto static/*-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static`,
+          `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static`,
           `tsc -p static`,
           `webpack --display-modules --config static/webpack.config.js`
         ],
@@ -24,9 +24,10 @@ module.exports = {
     `rev-static --config static/rev-static.config.js`
   ],
   lint: {
-    ts: `tslint "src/*.ts" "static/*.ts"`,
+    ts: `tslint "src/**/*.ts" "static/**/*.ts"`,
     js: `standard "**/*.config.js"`,
-    less: `stylelint "online/**/*.less"`
+    less: `stylelint "online/**/*.less"`,
+    export: `no-unused-export "src/**/*.ts" "static/**/*.ts"`
   },
   test: {
     jasmine: [
@@ -39,9 +40,10 @@ module.exports = {
     ]
   },
   fix: {
-    ts: `tslint --fix "src/*.ts" "static/*.ts"`,
+    ts: `tslint --fix "src/**/*.ts" "static/**/*.ts"`,
     js: `standard --fix "**/*.config.js"`,
     less: `stylelint --fix "online/**/*.less"`
   },
-  release: `clean-release`
+  release: `clean-release`,
+  watch: `watch-then-execute "src/**/*.ts" "static/**/*.ts" "static/*.less" "static/*.template.html" --exclude "static/variables.ts" --script "npm run build"`
 }
