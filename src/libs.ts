@@ -24,7 +24,7 @@ export const validateRequestProtocol = ajv.compile(requestProtocolJsonSchema);
 import flowProtocolJsonSchema = require("../static/flow-protocol.json");
 export const validateFlowProtocol = ajv.compile(flowProtocolJsonSchema);
 
-export function print(message: any) {
+export function printInConsole(message: any) {
     // tslint:disable-next-line:no-console
     console.log(message);
 }

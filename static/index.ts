@@ -43,9 +43,9 @@ protocolDataSubject.subscribe(protocol => {
             for (const flow of protocol.flows.flows) {
                 if (flow.kind === "log") {
                     const log: Log = flow.log;
+                    log.visible = true;
+                    log.visibilityButtonExtraBottom = 0;
                     try {
-                        log.visible = true;
-                        log.visibilityButtonExtraBottom = 0;
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
                         // tslint:disable-next-line:no-console
@@ -131,11 +131,12 @@ class SearchLogs extends Vue {
     content = initialContent;
     time = initialTime;
     hostname = initialHostname;
-    from = 0;
-    size = 10;
     showRawLogResult = false;
     showFormattedLogResult = true;
     locale = locale;
+
+    private from = 0;
+    private size = 10;
 
     get leftCount() {
         return this.logsSearchResultCount - this.from - this.size;
@@ -191,9 +192,9 @@ class SearchLogs extends Vue {
                     for (const h of protocol.searchLogsResult.logs) {
                         const log: Log = h;
                         log.timeValue = moment(log.time).valueOf();
+                        log.visible = true;
+                        log.visibilityButtonExtraBottom = 0;
                         try {
-                            log.visible = true;
-                            log.visibilityButtonExtraBottom = 0;
                             log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
                         } catch (error) {
                             // tslint:disable-next-line:no-console
@@ -385,7 +386,7 @@ Vue.component("search-samples", SearchSamples);
 })
 class RealtimeSamples extends Vue {
     chartConfigs = defaultConfig.chart;
-    chartWidth = 0;
+    private chartWidth = 0;
 
     beforeMount() {
         updateChartWidthSubject.subscribe(chartWidth => {

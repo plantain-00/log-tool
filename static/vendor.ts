@@ -1,11 +1,11 @@
 import "vue";
 import "vue-class-component";
 import { __decorate, __extends } from "tslib";
-(global as any).__decorate = __decorate;
-(global as any).__extends = __extends;
+window.__decorate = __decorate;
+window.__extends = __extends;
 import "reconnection/browser/browser";
 import * as moment from "moment";
-(global as any).moment = moment;
+window.moment = moment;
 import "chart.js";
 import "protobufjs";
 import "ajv";

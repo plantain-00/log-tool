@@ -54,12 +54,8 @@ const defaultConfig = {
     },
 };
 
-try {
-    const configurationFilePath = process.argv[2] || "../log-tool.config.js";
-    // tslint:disable-next-line:no-var-requires
-    require(configurationFilePath)(defaultConfig);
-} catch (error) {
-    libs.print(error);
-}
+const configurationFilePath = process.argv[2] || "../log-tool.config.js";
+// tslint:disable-next-line:no-var-requires
+require(configurationFilePath)(defaultConfig);
 
 export = defaultConfig;
