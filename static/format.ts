@@ -13,14 +13,18 @@ const ajv = new Ajv();
 const validateRequestProtocol = ajv.compile(requestProtocolJson);
 const validateResponseProtocol = ajv.compile(responseProtocolJson);
 
+export function printInConsole(message: any) {
+    // tslint:disable-next-line:no-console
+    console.log(message);
+}
+
 export function encodeRequest(protocol: types.RequestProtocol): string | Uint8Array | undefined {
     if (defaultConfig.protobuf.enabled) {
         return RequestProtocolType.encode(protocol).finish();
     }
     const isValidJson = validateRequestProtocol(protocol);
     if (!isValidJson) {
-        // tslint:disable-next-line:no-console
-        console.log(validateRequestProtocol.errors![0].message);
+        printInConsole(validateRequestProtocol.errors![0].message);
         return undefined;
     } else {
         return JSON.stringify(protocol);
@@ -40,8 +44,7 @@ export function decodeResponse(data: string | ArrayBuffer, next: (protocol: type
         const result = JSON.parse(data);
         const isValidJson = validateResponseProtocol(result);
         if (!isValidJson) {
-            // tslint:disable-next-line:no-console
-            console.log(validateResponseProtocol.errors![0].message);
+            printInConsole(validateResponseProtocol.errors![0].message);
         } else {
             next(result);
         }

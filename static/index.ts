@@ -48,8 +48,7 @@ protocolDataSubject.subscribe(protocol => {
                     try {
                         log.formattedContent = JSON.stringify(JSON.parse(log.content), null, "  ");
                     } catch (error) {
-                        // tslint:disable-next-line:no-console
-                        console.log(error);
+                        format.printInConsole(error);
                     }
                     logsPushSubject.next(log);
                     updateNewLogsCountSubject.next();
@@ -127,13 +126,13 @@ function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeig
 })
 class SearchLogs extends Vue {
     logsSearchResult: Log[] = [];
-    logsSearchResultCount = 0;
     content = initialContent;
     time = initialTime;
     hostname = initialHostname;
     showRawLogResult = false;
     showFormattedLogResult = true;
     locale = locale;
+    private logsSearchResultCount = 0;
 
     private from = 0;
     private size = 10;
@@ -197,8 +196,7 @@ class SearchLogs extends Vue {
                         try {
                             log.formattedContent = JSON.stringify(JSON.parse(h.content), null, "  ");
                         } catch (error) {
-                            // tslint:disable-next-line:no-console
-                            console.log(error);
+                            format.printInConsole(error);
                         }
                         if (this.content && this.content !== "*") {
                             log.content = log.content.split(this.content).join(`<span class="highlighted">${this.content}</span>`);
@@ -519,7 +517,6 @@ class App extends Vue {
 }
 
 function start() {
-    // tslint:disable-next-line:no-unused-expression
     new App({ el: "#body" });
 }
 

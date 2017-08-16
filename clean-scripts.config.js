@@ -1,3 +1,5 @@
+const childProcess = require('child_process')
+
 module.exports = {
   build: [
     `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`,
@@ -32,7 +34,20 @@ module.exports = {
   test: {
     jasmine: [
       'tsc -p spec',
-      'jasmine'
+      'jasmine',
+      () => new Promise((resolve, reject) => {
+        childProcess.exec('git status -s', (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          } else {
+            if (stdout) {
+              reject(new Error(`generated files doesn't match.`))
+            } else {
+              resolve()
+            }
+          }
+        }).stdout.pipe(process.stdout)
+      })
     ],
     karma: [
       'tsc -p static_spec',
