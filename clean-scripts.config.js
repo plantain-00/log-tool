@@ -15,11 +15,13 @@ module.exports = {
           `tsc -p static`,
           `webpack --display-modules --config static/webpack.config.js`
         ],
-        css: [
-          `lessc ./static/index.less > ./static/index.css`,
-          `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
-          `cleancss ./static/index.css -o ./static/index.bundle.css`
-        ],
+        css: {
+          vendor: `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
+          index: [
+            `lessc ./static/index.less > ./static/index.css`,
+            `cleancss ./static/index.css -o ./static/index.bundle.css`
+          ]
+        },
         clean: `rimraf static/*.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css`
       }
     },
@@ -60,5 +62,14 @@ module.exports = {
     less: `stylelint --fix "online/**/*.less"`
   },
   release: `clean-release`,
-  watch: `watch-then-execute "src/**/*.ts" "static/**/*.ts" "static/*.less" "static/*.template.html" --exclude "static/variables.ts" --script "npm run build"`
+  watch: {
+    schema: `watch-then-execute "src/types.ts" --script "clean-scripts build[0]"`,
+    sql: `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql --watch`,
+    back: `tsc -p src --watch`,
+    template: `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static --watch`,
+    front: `tsc -p static`,
+    webpack: `webpack --config static/webpack.config.js --watch`,
+    less: `watch-then-execute "./static/index.less" --script "clean-scripts build[1].front.css.index"`,
+    rev: `rev-static --config static/rev-static.config.js --watch`
+  }
 }
