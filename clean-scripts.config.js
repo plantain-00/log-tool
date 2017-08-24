@@ -67,9 +67,20 @@ module.exports = {
     sql: `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql --watch`,
     back: `tsc -p src --watch`,
     template: `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static --watch`,
-    front: `tsc -p static`,
+    front: `tsc -p static --watch`,
     webpack: `webpack --config static/webpack.config.js --watch`,
     less: `watch-then-execute "./static/index.less" --script "clean-scripts build[1].front.css.index"`,
     rev: `rev-static --config static/rev-static.config.js --watch`
-  }
+  },
+  prerender: [
+    async () => {
+      const { createServer } = require('http-server')
+      const { prerender } = require('prerender-js')
+      const server = createServer()
+      server.listen(8000)
+      await prerender('http://localhost:8000/static', '#prerender-container', 'static/prerender.html')
+      server.close()
+    },
+    `clean-scripts build[2]`
+  ]
 }
