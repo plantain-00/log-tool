@@ -25,7 +25,21 @@ module.exports = {
         clean: `rimraf static/*.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css`
       }
     },
-    `rev-static --config static/rev-static.config.js`
+    `rev-static --config static/rev-static.config.js`,
+    async () => {
+      const puppeteer = require('puppeteer')
+      const server = childProcess.exec('node ./dist/index.js')
+      server.stdout.pipe(process.stdout)
+      server.stderr.pipe(process.stderr)
+      const browser = await puppeteer.launch()
+      const page = await browser.newPage()
+      await page.waitFor(1000)
+      await page.goto(`http://localhost:9000`)
+      await page.waitFor(1000)
+      await page.screenshot({ path: `static/screenshot.png`, fullPage: true })
+      server.kill()
+      browser.close()
+    }
   ],
   lint: {
     ts: `tslint "src/**/*.ts" "static/**/*.ts"`,
@@ -37,6 +51,7 @@ module.exports = {
     jasmine: [
       'tsc -p spec',
       'jasmine',
+      'git checkout static/screenshot.png',
       () => new Promise((resolve, reject) => {
         childProcess.exec('git status -s', (error, stdout, stderr) => {
           if (error) {
@@ -74,12 +89,23 @@ module.exports = {
   },
   prerender: [
     async () => {
-      const { createServer } = require('http-server')
-      const { prerender } = require('prerender-js')
-      const server = createServer()
-      server.listen(8000)
-      await prerender('http://localhost:8000/static', '#prerender-container', 'static/prerender.html')
-      server.close()
+      const puppeteer = require('puppeteer')
+      const fs = require('fs')
+      const server = childProcess.exec('node ./dist/index.js')
+      server.stdout.pipe(process.stdout)
+      server.stderr.pipe(process.stderr)
+      const browser = await puppeteer.launch()
+      const page = await browser.newPage()
+      await page.waitFor(1000)
+      await page.goto('http://localhost:9000')
+      await page.waitFor(1000)
+      const content = await page.evaluate(() => {
+        const element = document.querySelector('#prerender-container')
+        return element ? element.innerHTML : ''
+      })
+      fs.writeFileSync('static/prerender.html', content)
+      server.kill()
+      browser.close()
     },
     `clean-scripts build[2]`
   ]
