@@ -28,7 +28,7 @@ module.exports = {
     `rev-static --config static/rev-static.config.js`,
     async () => {
       const puppeteer = require('puppeteer')
-      const server = childProcess.exec('node ./dist/index.js')
+      const server = childProcess.spawn('node', ['./dist/index.js'])
       server.stdout.pipe(process.stdout)
       server.stderr.pipe(process.stderr)
       const browser = await puppeteer.launch()
