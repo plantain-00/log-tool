@@ -37,7 +37,7 @@ module.exports = {
       await page.goto(`http://localhost:9000`)
       await page.waitFor(1000)
       await page.screenshot({ path: `static/screenshot.png`, fullPage: true })
-      server.kill()
+      server.kill('SIGINT')
       browser.close()
     }
   ],
