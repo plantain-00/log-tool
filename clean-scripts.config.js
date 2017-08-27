@@ -28,6 +28,7 @@ module.exports = {
     `rev-static --config static/rev-static.config.js`,
     async () => {
       const puppeteer = require('puppeteer')
+      const fs = require('fs')
       const server = childProcess.spawn('node', ['./dist/index.js'])
       server.stdout.pipe(process.stdout)
       server.stderr.pipe(process.stderr)
@@ -37,6 +38,8 @@ module.exports = {
       await page.goto(`http://localhost:9000`)
       await page.waitFor(1000)
       await page.screenshot({ path: `static/screenshot.png`, fullPage: true })
+      const content = await page.content()
+      fs.writeFileSync(`static/screenshot-src.html`, content)
       server.kill('SIGINT')
       browser.close()
     }
@@ -91,7 +94,7 @@ module.exports = {
     async () => {
       const puppeteer = require('puppeteer')
       const fs = require('fs')
-      const server = childProcess.exec('node ./dist/index.js')
+      const server = childProcess.spawn('node', ['./dist/index.js'])
       server.stdout.pipe(process.stdout)
       server.stderr.pipe(process.stderr)
       const browser = await puppeteer.launch()
@@ -104,7 +107,7 @@ module.exports = {
         return element ? element.innerHTML : ''
       })
       fs.writeFileSync('static/prerender.html', content)
-      server.kill()
+      server.kill('SIGINT')
       browser.close()
     },
     `clean-scripts build[2]`
