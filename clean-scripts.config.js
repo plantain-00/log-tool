@@ -1,5 +1,7 @@
 const childProcess = require('child_process')
 
+const elasticVersion = '5.5.2'
+
 module.exports = {
   build: [
     `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`,
@@ -55,7 +57,74 @@ module.exports = {
   test: {
     jasmine: [
       'tsc -p spec',
-      'jasmine',
+      'jasmine'
+    ],
+    karma: [
+      'tsc -p static_spec',
+      'karma start static_spec/karma.config.js'
+    ],
+    check: [
+      'mkdirp vendors',
+      () => new Promise((resolve, reject) => {
+        const https = require('https')
+        const fs = require('fs')
+        const decompress = require('decompress')
+        const req = https.request(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`, res => {
+          const contentLength = res.headers['content-length']
+          let size = 0
+          res.on('data', d => {
+            size += d.length
+            console.log((size * 100.0 / contentLength).toFixed(1) + ' % ' + size)
+          })
+          res.pipe(fs.createWriteStream(`vendors/elasticsearch-${elasticVersion}.zip`))
+          res.on('end', () => {
+            decompress(`vendors/elasticsearch-${elasticVersion}.zip`, 'vendors').then(files => {
+              resolve()
+            })
+          })
+        })
+        req.end()
+      }),
+      () => new Promise((resolve, reject) => {
+        const elasticsearch = childProcess.spawn(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`)
+        elasticsearch.stdout.pipe(process.stdout)
+        elasticsearch.stderr.pipe(process.stderr)
+        setTimeout(() => {
+          const http = require('http')
+          const req = http.request({
+            method: 'PUT',
+            port: 9200,
+            path: '/tool'
+          })
+          req.write(`{
+            "mappings" : {
+              "logs" : {
+                "properties" : {
+                  "time": {
+                    "type": "date", 
+                    "format": "yyyy-MM-dd HH:mm:ss"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "filepath": {
+                    "type": "string"
+                  },
+                  "hostname": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }`)
+          req.end()
+
+          setTimeout(() => {
+            elasticsearch.kill('SIGINT')
+            resolve()
+          }, 5000)
+        }, 15000)
+      }),
       'git checkout static/screenshot.png',
       () => new Promise((resolve, reject) => {
         childProcess.exec('git status -s', (error, stdout, stderr) => {
@@ -70,10 +139,6 @@ module.exports = {
           }
         }).stdout.pipe(process.stdout)
       })
-    ],
-    karma: [
-      'tsc -p static_spec',
-      'karma start static_spec/karma.config.js'
     ]
   },
   fix: {

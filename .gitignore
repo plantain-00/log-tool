@@ -50,3 +50,4 @@ service-worker.js
 index.html
 *.data
 *.db
+vendors/
