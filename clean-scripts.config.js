@@ -1,4 +1,5 @@
 const childProcess = require('child_process')
+const { sleep } = require('clean-scripts')
 
 const elasticVersion = '5.5.2'
 
@@ -85,46 +86,43 @@ module.exports = {
         })
         req.end()
       }),
-      () => new Promise((resolve, reject) => {
+      async () => {
         const elasticsearch = childProcess.spawn(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`)
         elasticsearch.stdout.pipe(process.stdout)
         elasticsearch.stderr.pipe(process.stderr)
-        setTimeout(() => {
-          const http = require('http')
-          const req = http.request({
-            method: 'PUT',
-            port: 9200,
-            path: '/tool'
-          })
-          req.write(`{
-            "mappings" : {
-              "logs" : {
-                "properties" : {
-                  "time": {
-                    "type": "date", 
-                    "format": "yyyy-MM-dd HH:mm:ss"
-                  },
-                  "content": {
-                    "type": "string"
-                  },
-                  "filepath": {
-                    "type": "string"
-                  },
-                  "hostname": {
-                    "type": "string"
-                  }
+        await sleep(30000)
+        const http = require('http')
+        const req = http.request({
+          method: 'PUT',
+          port: 9200,
+          path: '/tool'
+        })
+        req.write(`{
+          "mappings" : {
+            "logs" : {
+              "properties" : {
+                "time": {
+                  "type": "date", 
+                  "format": "yyyy-MM-dd HH:mm:ss"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "filepath": {
+                  "type": "string"
+                },
+                "hostname": {
+                  "type": "string"
                 }
               }
             }
-          }`)
-          req.end()
+          }
+        }`)
+        req.end()
 
-          setTimeout(() => {
-            elasticsearch.kill('SIGINT')
-            resolve()
-          }, 5000)
-        }, 15000)
-      }),
+        await sleep(5000)
+        elasticsearch.kill('SIGINT')
+      },
       'git checkout static/screenshot.png',
       () => new Promise((resolve, reject) => {
         childProcess.exec('git status -s', (error, stdout, stderr) => {
