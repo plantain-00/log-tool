@@ -1,5 +1,5 @@
 const childProcess = require('child_process')
-const { sleep } = require('clean-scripts')
+const { sleep, readableStreamEnd } = require('clean-scripts')
 const util = require('util')
 
 const execAsync = util.promisify(childProcess.exec)
@@ -69,26 +69,21 @@ module.exports = {
     ],
     check: [
       'mkdirp vendors',
-      () => new Promise((resolve, reject) => {
-        const https = require('https')
+      async () => {
         const fs = require('fs')
         const decompress = require('decompress')
-        const req = https.request(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`, res => {
-          const contentLength = res.headers['content-length']
-          let size = 0
-          res.on('data', d => {
-            size += d.length
-            console.log((size * 100.0 / contentLength).toFixed(1) + ' % ' + size)
-          })
-          res.pipe(fs.createWriteStream(`vendors/elasticsearch-${elasticVersion}.zip`))
-          res.on('end', () => {
-            decompress(`vendors/elasticsearch-${elasticVersion}.zip`, 'vendors').then(files => {
-              resolve()
-            })
-          })
+        const fetch = require('node-fetch')
+        const res = await fetch(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`)
+        const contentLength = res.headers.get('content-length')
+        let size = 0
+        res.body.on('data', d => {
+          size += d.length
+          console.log((size * 100.0 / contentLength).toFixed(1) + ' % ' + size)
         })
-        req.end()
-      }),
+        res.body.pipe(fs.createWriteStream(`vendors/elasticsearch-${elasticVersion}.zip`))
+        await readableStreamEnd(res.body)
+        await decompress(`vendors/elasticsearch-${elasticVersion}.zip`, 'vendors')
+      },
       async () => {
         const elasticsearch = childProcess.spawn(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`)
         elasticsearch.stdout.pipe(process.stdout)
