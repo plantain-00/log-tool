@@ -1,6 +1,7 @@
 const childProcess = require('child_process')
 const { sleep, readableStreamEnd } = require('clean-scripts')
 const util = require('util')
+const fetch = require('node-fetch')
 
 const execAsync = util.promisify(childProcess.exec)
 
@@ -72,7 +73,6 @@ module.exports = {
       async () => {
         const fs = require('fs')
         const decompress = require('decompress')
-        const fetch = require('node-fetch')
         const res = await fetch(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`)
         const contentLength = res.headers.get('content-length')
         let size = 0
@@ -88,38 +88,100 @@ module.exports = {
         const elasticsearch = childProcess.spawn(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`)
         elasticsearch.stdout.pipe(process.stdout)
         elasticsearch.stderr.pipe(process.stderr)
+
+        const server = childProcess.spawn('node', ['./dist/index.js'])
+        server.stdout.pipe(process.stdout)
+        server.stderr.pipe(process.stderr)
+
         await sleep(30000)
-        const http = require('http')
-        const req = http.request({
-          method: 'PUT',
-          port: 9200,
-          path: '/tool'
-        })
-        req.write(`{
-          "mappings" : {
-            "logs" : {
-              "properties" : {
-                "time": {
-                  "type": "date", 
-                  "format": "yyyy-MM-dd HH:mm:ss"
-                },
-                "content": {
-                  "type": "string"
-                },
-                "filepath": {
-                  "type": "string"
-                },
-                "hostname": {
-                  "type": "string"
+
+        try {
+          const initializeElasticResponse = await fetch('http://localhost:9200/tool', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              'mappings': {
+                'logs': {
+                  'properties': {
+                    'time': {
+                      'type': 'date',
+                      'format': 'yyyy-MM-dd HH:mm:ss'
+                    },
+                    'content': {
+                      'type': 'string'
+                    },
+                    'filepath': {
+                      'type': 'string'
+                    },
+                    'hostname': {
+                      'type': 'string'
+                    }
+                  }
                 }
               }
-            }
-          }
-        }`)
-        req.end()
+            })
+          })
+          console.log(await initializeElasticResponse.text())
 
-        await sleep(5000)
-        elasticsearch.kill('SIGINT')
+          await sleep(5000)
+
+          const saveLogByHTTPResponse = await fetch('http://localhost:8001/logs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              flows: [
+                {
+                  kind: 'log',
+                  log: {
+                    time: '2010-10-10 01:01:01',
+                    content: 'Hello world',
+                    filepath: 'test.log',
+                    hostname: 'test'
+                  }
+                }
+              ]
+            })
+          })
+          const text = await saveLogByHTTPResponse.text()
+          if (text !== 'accepted') {
+            throw new Error('Can not save by HTTP.')
+          }
+
+          const WebSocket = require('ws')
+          const ws = new WebSocket('http://localhost:8001/')
+          ws.on('open', () => {
+            ws.send(JSON.stringify({
+              flows: [
+                {
+                  kind: 'log',
+                  log: {
+                    time: '2010-10-10 01:01:01',
+                    content: 'Hello world',
+                    filepath: 'test.log',
+                    hostname: 'test'
+                  }
+                }
+              ]
+            }), error => {
+              if (error) {
+                throw error
+              }
+            })
+          })
+
+          await sleep(5000)
+
+          elasticsearch.kill('SIGINT')
+          server.kill('SIGINT')
+        } catch (error) {
+          elasticsearch.kill('SIGINT')
+          server.kill('SIGINT')
+          throw error
+        }
       },
       'git checkout static/screenshot.png',
       async () => {

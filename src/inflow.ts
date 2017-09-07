@@ -25,7 +25,7 @@ export function start() {
     });
 
     wss.on("connection", ws => {
-        ws.on("message", (inflowString: string, flag) => {
+        ws.on("message", (inflowString: string) => {
             try {
                 const protocol = format.decodeFlow(inflowString);
                 handleMessage(protocol);
