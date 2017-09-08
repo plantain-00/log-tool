@@ -51,3 +51,4 @@ index.html
 *.data
 *.db
 vendors/
+*.db-journal
