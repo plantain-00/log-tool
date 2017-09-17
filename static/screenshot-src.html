@@ -391,6 +391,32 @@
             background-color: #337ab7
         }
     </style>
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
 </head>
 
 <body>
@@ -480,8 +506,8 @@
         </div>
     </div>
     <script defer="defer" src="./index.config.js"></script>
-    <script defer="defer" src="./vendor.bundle-6fc8aaa8387d2b901c5837881ed42362.js" crossorigin="anonymous" integrity="sha256-g1ukc6By3BlVpRMcwFsIccmeSq8Mj+pQD22RhvdqMGQ="></script>
-    <script defer="defer" src="./index.bundle-82a30bc27f6488c1e9b8f6885df63371.js" crossorigin="anonymous" integrity="sha256-2mjbhaZjPaQabXIkrdF56Uo73D+8cdl8hWzU/+Wcwf0="></script>
+    <script defer="defer" src="./vendor.bundle-407f1dbda8c2633d4edadda032be078a.js" crossorigin="anonymous" integrity="sha256-ToBVjPqlmP1Fs0tJy/X82NKApRaEisTvzO7KSHtptDk="></script>
+    <script defer="defer" src="./index.bundle-ec252c2d78a54ae9993e89f89887f6a0.js" crossorigin="anonymous" integrity="sha256-OB5R2/LLIpYEMillT0PTBSsF3AouAY8BSlNRWZdZDdw="></script>
 </body>
 
 </html>
