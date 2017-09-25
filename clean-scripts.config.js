@@ -26,7 +26,8 @@ module.exports = {
           vendor: `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
           index: [
             `lessc ./static/index.less > ./static/index.css`,
-            `cleancss ./static/index.css -o ./static/index.bundle.css`
+            `postcss ./static/index.css -o ./static/index.postcss.css`,
+            `cleancss ./static/index.postcss.css -o ./static/index.bundle.css`
           ]
         },
         clean: `rimraf static/*.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css`
