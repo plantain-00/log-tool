@@ -26,3 +26,11 @@ libs.printInConsole("log tool started.");
 libs.logSubject.subscribe(log => {
     libs.printInConsole(log);
 });
+
+process.on("SIGINT", () => {
+    process.exit();
+});
+
+process.on("SIGTERM", () => {
+    process.exit();
+});
