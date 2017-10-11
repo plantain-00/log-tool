@@ -1,7 +1,6 @@
 const childProcess = require('child_process')
-const { sleep, readableStreamEnd, Service } = require('clean-scripts')
+const { sleep, Service } = require('clean-scripts')
 const util = require('util')
-const fetch = require('node-fetch')
 
 const execAsync = util.promisify(childProcess.exec)
 
@@ -52,119 +51,17 @@ module.exports = {
     ],
     check: [
       'mkdirp vendors',
-      async () => {
-        const fs = require('fs')
-        const decompress = require('decompress')
-        const res = await fetch(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`)
-        const contentLength = res.headers.get('content-length')
-        let size = 0
-        res.body.on('data', d => {
-          size += d.length
-          console.log((size * 100.0 / contentLength).toFixed(1) + ' % ' + size)
-        })
-        res.body.pipe(fs.createWriteStream(`vendors/elasticsearch-${elasticVersion}.zip`))
-        await readableStreamEnd(res.body)
-        await decompress(`vendors/elasticsearch-${elasticVersion}.zip`, 'vendors')
-      },
-      async () => {
-        const elasticsearch = childProcess.spawn(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`)
-        elasticsearch.stdout.pipe(process.stdout)
-        elasticsearch.stderr.pipe(process.stderr)
-
-        const server = childProcess.spawn('node', ['./dist/index.js'])
-        server.stdout.pipe(process.stdout)
-        server.stderr.pipe(process.stderr)
-
-        await sleep(30000)
-
-        try {
-          const initializeElasticResponse = await fetch('http://localhost:9200/tool', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              'mappings': {
-                'logs': {
-                  'properties': {
-                    'time': {
-                      'type': 'date',
-                      'format': 'yyyy-MM-dd HH:mm:ss'
-                    },
-                    'content': {
-                      'type': 'string'
-                    },
-                    'filepath': {
-                      'type': 'string'
-                    },
-                    'hostname': {
-                      'type': 'string'
-                    }
-                  }
-                }
-              }
-            })
-          })
-          console.log(await initializeElasticResponse.text())
-
-          await sleep(5000)
-
-          const saveLogByHTTPResponse = await fetch('http://localhost:8001/logs', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              flows: [
-                {
-                  kind: 'log',
-                  log: {
-                    time: '2010-10-10 01:01:01',
-                    content: 'Hello world',
-                    filepath: 'test.log',
-                    hostname: 'test'
-                  }
-                }
-              ]
-            })
-          })
-          const text = await saveLogByHTTPResponse.text()
-          if (text !== 'accepted') {
-            throw new Error('Can not save by HTTP.')
-          }
-
-          const WebSocket = require('ws')
-          const ws = new WebSocket('http://localhost:8001/')
-          ws.on('open', () => {
-            ws.send(JSON.stringify({
-              flows: [
-                {
-                  kind: 'log',
-                  log: {
-                    time: '2010-10-10 01:01:01',
-                    content: 'Hello world',
-                    filepath: 'test.log',
-                    hostname: 'test'
-                  }
-                }
-              ]
-            }), error => {
-              if (error) {
-                throw error
-              }
-            })
-          })
-
-          await sleep(5000)
-
-          elasticsearch.kill('SIGINT')
-          server.kill('SIGINT')
-        } catch (error) {
-          elasticsearch.kill('SIGINT')
-          server.kill('SIGINT')
-          throw error
-        }
-      },
+      `tsc -p test`,
+      `node test/vendor.js`,
+      new Service(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`),
+      () => sleep(60000),
+      new Service(`node ./dist/index.js`),
+      () => sleep(10000),
+      `node test/initialize.js`,
+      () => sleep(5000),
+      `node test/save-log-by-http.js`,
+      () => sleep(5000),
+      `node test/save-log-by-ws.js`,
       async () => {
         const { stdout } = await execAsync('git status -s')
         if (stdout) {
