@@ -1,7 +1,6 @@
 import { readableStreamEnd } from "clean-scripts";
 import * as fs from "fs";
-// tslint:disable-next-line:no-var-requires
-const decompress = require("decompress");
+import decompress from "decompress";
 import fetch from "node-fetch";
 import * as stream from "stream";
 

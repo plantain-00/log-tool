@@ -66,6 +66,12 @@
   dependencies:
     "@types/d3-path" "*"
 
+"@types/decompress@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@types/decompress/-/decompress-4.2.0.tgz#ce067d27c7edeb418138f348a5b5eed2abb82315"
+  dependencies:
+    "@types/node" "*"
+
 "@types/express-serve-static-core@*":
   version "4.0.51"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.51.tgz#6b436955b8d01b9bc0908f59785c9d44268e91fc"
