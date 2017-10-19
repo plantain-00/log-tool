@@ -57,7 +57,9 @@ module.exports = {
       'mkdirp vendors',
       `tsc -p test`,
       `node test/vendor.js`,
-      new Service(`./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`),
+      new Service(process.platform === 'win32'
+        ? `.\\vendors\\elasticsearch-${elasticVersion}\\bin\\elasticsearch.bat`
+        : `./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`),
       () => sleep(60000),
       new Service(`node ./dist/index.js`),
       () => sleep(10000),
