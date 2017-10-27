@@ -1,8 +1,4 @@
-const childProcess = require('child_process')
-const { sleep, Service } = require('clean-scripts')
-const util = require('util')
-
-const execAsync = util.promisify(childProcess.exec)
+const { sleep, Service, execAsync } = require('clean-scripts')
 
 const elasticVersion = '5.5.2'
 
