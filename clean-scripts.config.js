@@ -6,20 +6,28 @@ const tsFiles = `"src/**/*.ts" "spec/**/*.ts" "static/**/*.ts" "static_spec/**/*
 const jsFiles = `"*.config.js" "static/**/*.config.js" "static_spec/**/*.config.js"`
 const lessFiles = `"static/**/*.less"`
 
+const schemaCommand = `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`
+const sqlCommand = `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql`
+const tscSrcCommand = `tsc -p src`
+const templateCommand = `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static`
+const tscStaticCommand = `tsc -p static`
+const webpackCommand = `webpack --display-modules --config static/webpack.config.js`
+const revStaticCommand = `rev-static --config static/rev-static.config.js`
+
 module.exports = {
   build: [
-    `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`,
+    schemaCommand,
     {
       back: [
-        `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql`,
+        sqlCommand,
         `rimraf dist/`,
-        `tsc -p src`
+        tscSrcCommand
       ],
       front: {
         js: [
-          `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static`,
-          `tsc -p static`,
-          `webpack --display-modules --config static/webpack.config.js`
+          templateCommand,
+          tscStaticCommand,
+          webpackCommand
         ],
         css: {
           vendor: `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
@@ -32,7 +40,7 @@ module.exports = {
         clean: `rimraf static/*.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css`
       }
     },
-    `rev-static --config static/rev-static.config.js`
+    revStaticCommand
   ],
   lint: {
     ts: `tslint ${tsFiles}`,
@@ -80,14 +88,14 @@ module.exports = {
   },
   release: `clean-release`,
   watch: {
-    schema: `watch-then-execute "src/types.ts" --script "clean-scripts build[0]"`,
-    sql: `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql --watch`,
-    back: `tsc -p src --watch`,
-    template: `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static --watch`,
-    front: `tsc -p static --watch`,
-    webpack: `webpack --config static/webpack.config.js --watch`,
-    less: `watch-then-execute "./static/index.less" --script "clean-scripts build[1].front.css.index"`,
-    rev: `rev-static --config static/rev-static.config.js --watch`
+    schema: `${schemaCommand} --watch`,
+    sql: `${sqlCommand} --watch`,
+    back: `${tscSrcCommand} --watch`,
+    template: `${templateCommand} --watch`,
+    front: `${tscStaticCommand} --watch`,
+    webpack: `${webpackCommand} --watch`,
+    less: `watch-then-execute ${lessFiles} --script "clean-scripts build[1].front.css.index"`,
+    rev: `${revStaticCommand} --watch`
   },
   screenshot: [
     new Service(`node ./dist/index.js`),
