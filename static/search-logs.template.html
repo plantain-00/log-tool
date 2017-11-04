@@ -18,7 +18,7 @@
         <li class="li-result-item" v-if="logsSearchResult.length === 0">
             <pre class="pre">not started or nothing found.</pre>
         </li>
-        <li class="hide-button-container li-result-item" v-for="(log, index) in logsSearchResult">
+        <li class="hide-button-container li-result-item" v-for="(log, index) in logsSearchResult" :key="index">
             <span class="label label-primary"><relative-time :time="log.timeValue" :locale="locale"></relative-time></span>
             <span class="label label-default">{{log.hostname}}</span>
             <span class="label label-default">{{log.filepath}}</span>

@@ -384,7 +384,7 @@ Vue.component("search-samples", SearchSamples);
 })
 class RealtimeSamples extends Vue {
     chartConfigs = defaultConfig.chart;
-    private chartWidth = 0;
+    chartWidth = 0;
 
     beforeMount() {
         updateChartWidthSubject.subscribe(chartWidth => {

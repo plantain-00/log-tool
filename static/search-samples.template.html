@@ -5,11 +5,11 @@
         <button class="btn btn-primary btn-lg primary-button" @click="searchSamples()" :disabled="!searchFrom || !searchTo">search</button>
     </div>
     <ul class="menu list-unstyled">
-        <li v-for="(config, index) in chartConfigs">
+        <li v-for="(config, index) in chartConfigs" :key="config.name">
             <a :href="'#' + config.name">{{config.description}}</a>
         </li>
     </ul>
-    <div v-for="(config, index) in chartConfigs">
+    <div v-for="(config, index) in chartConfigs" :key="config.name">
         <h4 :id="config.name" style="padding-top: 10px;">
             {{config.description}}
             {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}

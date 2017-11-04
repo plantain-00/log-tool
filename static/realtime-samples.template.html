@@ -1,10 +1,10 @@
 <div class="panel">
     <ul class="menu">
-        <li v-for="(config, index) in chartConfigs">
+        <li v-for="(config, index) in chartConfigs" :key="config.name">
             <a href="javascript:void(0)" @click="scrollBy(config.name)">{{config.description}}</a>
         </li>
     </ul>
-    <div v-for="(config, index) in chartConfigs">
+    <div v-for="(config, index) in chartConfigs" :key="config.name">
         <h4 style="padding-top: 10px;">
             {{config.description}}
             {{config.unit !== undefined ? ("(" + config.unit + ")") : ""}}

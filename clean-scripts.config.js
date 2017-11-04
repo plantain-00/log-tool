@@ -1,4 +1,5 @@
-const { sleep, Service, execAsync } = require('clean-scripts')
+const { sleep, Service, execAsync, executeScriptAsync } = require('clean-scripts')
+const { watch } = require('watch-then-execute')
 
 const elasticVersion = '5.5.2'
 
@@ -13,6 +14,11 @@ const templateCommand = `file2variable-cli static/*.template.html static/protoco
 const tscStaticCommand = `tsc -p static`
 const webpackCommand = `webpack --display-modules --config static/webpack.config.js`
 const revStaticCommand = `rev-static --config static/rev-static.config.js`
+const cssCommand = [
+  `lessc ./static/index.less > ./static/index.css`,
+  `postcss ./static/index.css -o ./static/index.postcss.css`,
+  `cleancss ./static/index.postcss.css -o ./static/index.bundle.css`
+]
 
 module.exports = {
   build: [
@@ -31,11 +37,7 @@ module.exports = {
         ],
         css: {
           vendor: `cleancss ./node_modules/github-fork-ribbon-css/gh-fork-ribbon.css ./node_modules/tab-container-component/tab-container.min.css -o ./static/vendor.bundle.css`,
-          index: [
-            `lessc ./static/index.less > ./static/index.css`,
-            `postcss ./static/index.css -o ./static/index.postcss.css`,
-            `cleancss ./static/index.postcss.css -o ./static/index.bundle.css`
-          ]
+          index: cssCommand
         },
         clean: `rimraf static/*.bundle-*.js static/vendor.bundle-*.css static/index.bundle-*.css`
       }
@@ -94,7 +96,7 @@ module.exports = {
     template: `${templateCommand} --watch`,
     front: `${tscStaticCommand} --watch`,
     webpack: `${webpackCommand} --watch`,
-    less: `watch-then-execute ${lessFiles} --script "clean-scripts build[1].front.css.index"`,
+    less: () => watch(['static/**/*.less'], [], () => executeScriptAsync(cssCommand)),
     rev: `${revStaticCommand} --watch`
   },
   screenshot: [
@@ -106,6 +108,6 @@ module.exports = {
     new Service(`node ./dist/index.js`),
     `tsc -p prerender`,
     `node prerender/index.js`,
-    `clean-scripts build[2]`
+    revStaticCommand
   ]
 }
