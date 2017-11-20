@@ -1,4 +1,4 @@
-const { sleep, Service, execAsync, executeScriptAsync } = require('clean-scripts')
+const { sleep, Service, checkGitStatus, executeScriptAsync } = require('clean-scripts')
 const { watch } = require('watch-then-execute')
 
 const elasticVersion = '5.5.2'
@@ -74,13 +74,7 @@ module.exports = {
       `node test/save-log-by-http.js`,
       () => sleep(5000),
       `node test/save-log-by-ws.js`,
-      async () => {
-        const { stdout } = await execAsync('git status -s')
-        if (stdout) {
-          console.log(stdout)
-          throw new Error(`generated files doesn't match.`)
-        }
-      }
+      () => checkGitStatus()
     ]
   },
   fix: {
