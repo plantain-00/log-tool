@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/plantain-00/log-tool#readme",
   "devDependencies": {
+    "@commitlint/cli": "5.0.1",
+    "@commitlint/config-angular": "5.0.1",
     "@types/body-parser": "1.16.8",
     "@types/chart.js": "2.7.0",
     "@types/d3-shape": "1.2.1",
