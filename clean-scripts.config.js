@@ -12,7 +12,7 @@ const sqlCommand = `file2variable-cli src/sql/*.sql -o src/variables.ts --base s
 const tscSrcCommand = `tsc -p src`
 const templateCommand = `file2variable-cli static/*.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static`
 const tscStaticCommand = `tsc -p static`
-const webpackCommand = `webpack --display-modules --config static/webpack.config.js`
+const webpackCommand = `webpack --config static/webpack.config.js`
 const revStaticCommand = `rev-static --config static/rev-static.config.js`
 const cssCommand = [
   `lessc ./static/index.less > ./static/index.css`,
@@ -83,7 +83,6 @@ module.exports = {
     js: `standard --fix ${jsFiles}`,
     less: `stylelint --fix ${lessFiles}`
   },
-  release: `clean-release`,
   watch: {
     schema: `${schemaCommand} --watch`,
     sql: `${sqlCommand} --watch`,
