@@ -10,6 +10,6 @@ import "chart.js";
 import "protobufjs";
 import "ajv";
 import "rpc-on-ws/browser";
-import "relative-time-component/vue";
-import "tab-container-component/vue";
+import "relative-time-vue-component";
+import "tab-container-vue-component";
 import "rxjs/Subject";

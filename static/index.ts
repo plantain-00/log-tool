@@ -5,9 +5,11 @@ import * as moment from "moment";
 import Reconnector from "reconnection/browser/browser";
 import WsRpc from "rpc-on-ws/browser";
 import { Subject } from "rxjs/Subject";
-import { Locale } from "relative-time-component/vue";
+import { Locale } from "relative-time-vue-component";
 import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
-import { TabContainerData } from "tab-container-component/common";
+import { TabContainerData } from "tab-container-vue-component";
+// tslint:disable-next-line:no-duplicate-imports
+import "tab-container-vue-component";
 
 import * as types from "../src/types";
 import * as format from "./format";
@@ -553,7 +555,8 @@ setInterval(() => {
     updateCharts();
 }, 1000);
 
-import { locale as zhCNLocale } from "relative-time-component/locales/zh-CN.js";
+// tslint:disable-next-line:no-implicit-dependencies
+import { locale as zhCNLocale } from "relative-time-component/dist/locales/zh-CN";
 
 if (navigator.language === "zh-CN") {
     locale = zhCNLocale;
