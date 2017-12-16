@@ -6,7 +6,12 @@ import Reconnector from "reconnection/browser/browser";
 import WsRpc from "rpc-on-ws/browser";
 import { Subject } from "rxjs/Subject";
 import { Locale } from "relative-time-vue-component";
-import { appTemplateHtml, searchLogsTemplateHtml, realtimeLogsTemplateHtml, searchSamplesTemplateHtml, realtimeSamplesTemplateHtml, othersTemplateHtml } from "./variables";
+import { appTemplateHtml, appTemplateHtmlStatic } from "./variables";
+import { searchLogsTemplateHtml, searchLogsTemplateHtmlStatic } from "./search.logs.variables";
+import { realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic } from "./realtime.logs.variables";
+import { searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic } from "./search.samples.variables";
+import { realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic } from "./realtime.samples.variables";
+import { othersTemplateHtml, othersTemplateHtmlStatic } from "./others.variables";
 import { TabContainerData } from "tab-container-vue-component";
 // tslint:disable-next-line:no-duplicate-imports
 import "tab-container-vue-component";
@@ -123,10 +128,11 @@ function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeig
 }
 
 @Component({
-    template: searchLogsTemplateHtml,
+    render: searchLogsTemplateHtml,
+    staticRenderFns: searchLogsTemplateHtmlStatic,
     props: ["data"],
 })
-class SearchLogs extends Vue {
+export class SearchLogs extends Vue {
     logsSearchResult: Log[] = [];
     content = initialContent;
     time = initialTime;
@@ -242,10 +248,11 @@ class SearchLogs extends Vue {
 Vue.component("search-logs", SearchLogs);
 
 @Component({
-    template: realtimeLogsTemplateHtml,
+    render: realtimeLogsTemplateHtml,
+    staticRenderFns: realtimeLogsTemplateHtmlStatic,
     props: ["data"],
 })
-class RealtimeLogs extends Vue {
+export class RealtimeLogs extends Vue {
     logsPush: Log[] = [];
     showRawLogPush = false;
     showFormattedLogPush = true;
@@ -293,10 +300,11 @@ class RealtimeLogs extends Vue {
 Vue.component("realtime-logs", RealtimeLogs);
 
 @Component({
-    template: searchSamplesTemplateHtml,
+    render: searchSamplesTemplateHtml,
+    staticRenderFns: searchSamplesTemplateHtmlStatic,
     props: ["data"],
 })
-class SearchSamples extends Vue {
+export class SearchSamples extends Vue {
     searchFrom = moment().clone().add(-1, "minute").format("YYYY-MM-DD HH:mm:ss");
     searchTo = moment().format("YYYY-MM-DD HH:mm:ss");
     chartConfigs = defaultConfig.chart;
@@ -381,10 +389,11 @@ class SearchSamples extends Vue {
 Vue.component("search-samples", SearchSamples);
 
 @Component({
-    template: realtimeSamplesTemplateHtml,
+    render: realtimeSamplesTemplateHtml,
+    staticRenderFns: realtimeSamplesTemplateHtmlStatic,
     props: ["data"],
 })
-class RealtimeSamples extends Vue {
+export class RealtimeSamples extends Vue {
     chartConfigs = defaultConfig.chart;
     chartWidth = 0;
 
@@ -410,10 +419,11 @@ class RealtimeSamples extends Vue {
 Vue.component("realtime-samples", RealtimeSamples);
 
 @Component({
-    template: othersTemplateHtml,
+    render: othersTemplateHtml,
+    staticRenderFns: othersTemplateHtmlStatic,
     props: ["data"],
 })
-class Others extends Vue {
+export class Others extends Vue {
     resaveFailedLogs() {
         if (ws) {
             wsRpc.send(requestId => {
@@ -459,14 +469,23 @@ class Others extends Vue {
 Vue.component("others", Others);
 
 Vue.component("realtime-logs-title", {
-    template: `<a href="javascript:void">Realtime Logs<span class="badge" v-if="data > 0">{{data}}</span></a>`,
+    render(this: { data: number }, createElement) {
+        const children: any[] = ["Realtime Logs"];
+        if (this.data > 0) {
+            children.push(createElement("span", { attrs: { class: "badge" } }, [
+                this.data.toString(),
+            ]));
+        }
+        return createElement("a", children);
+    },
     props: ["data"],
 });
 
 @Component({
-    template: appTemplateHtml,
+    render: appTemplateHtml,
+    staticRenderFns: appTemplateHtmlStatic,
 })
-class App extends Vue {
+export class App extends Vue {
     data: TabContainerData[] = [
         {
             isActive: true,

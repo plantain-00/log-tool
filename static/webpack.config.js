@@ -29,7 +29,6 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js',
       'moment': 'moment/min/moment.min.js',
       'protobufjs': 'protobufjs/dist/protobuf.min.js'
     }
