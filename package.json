@@ -45,7 +45,7 @@
     "clean-scripts": "1.7.0",
     "d3-shape": "1.2.0",
     "decompress": "4.2.0",
-    "file2variable-cli": "1.7.4",
+    "file2variable-cli": "1.8.0",
     "github-fork-ribbon-css": "0.2.1",
     "jasmine": "2.8.0",
     "karma": "1.7.1",

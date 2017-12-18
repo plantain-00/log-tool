@@ -6,12 +6,14 @@ import Reconnector from "reconnection/browser/browser";
 import WsRpc from "rpc-on-ws/browser";
 import { Subject } from "rxjs/Subject";
 import { Locale } from "relative-time-vue-component";
-import { appTemplateHtml, appTemplateHtmlStatic } from "./variables";
-import { searchLogsTemplateHtml, searchLogsTemplateHtmlStatic } from "./search.logs.variables";
-import { realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic } from "./realtime.logs.variables";
-import { searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic } from "./search.samples.variables";
-import { realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic } from "./realtime.samples.variables";
-import { othersTemplateHtml, othersTemplateHtmlStatic } from "./others.variables";
+import {
+    appTemplateHtml, appTemplateHtmlStatic,
+    searchLogsTemplateHtml, searchLogsTemplateHtmlStatic,
+    realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic,
+    searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic,
+    realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic,
+    othersTemplateHtml, othersTemplateHtmlStatic,
+} from "./variables";
 import { TabContainerData } from "tab-container-vue-component";
 // tslint:disable-next-line:no-duplicate-imports
 import "tab-container-vue-component";

@@ -10,12 +10,7 @@ const lessFiles = `"static/**/*.less"`
 const schemaCommand = `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`
 const sqlCommand = `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql`
 const tscSrcCommand = `tsc -p src`
-const templateCommand = `file2variable-cli static/app.template.html static/protocol.proto static/request-protocol.json static/response-protocol.json -o static/variables.ts --html-minify --json --protobuf --base static --vue --vue-type-name "App" --vue-type-path "./index"`
-const searchLogsTemplateCommand = `file2variable-cli static/search-logs.template.html -o static/search.logs.variables.ts --html-minify --base static --vue --vue-type-name "SearchLogs" --vue-type-path "./index"`
-const realtimeLogsTemplateCommand = `file2variable-cli static/realtime-logs.template.html -o static/realtime.logs.variables.ts --html-minify --base static --vue --vue-type-name "RealtimeLogs" --vue-type-path "./index"`
-const searchSamplesTemplateCommand = `file2variable-cli static/search-samples.template.html -o static/search.samples.variables.ts --html-minify --base static --vue --vue-type-name "SearchSamples" --vue-type-path "./index"`
-const realtimeSamplesTemplateCommand = `file2variable-cli static/realtime-samples.template.html -o static/realtime.samples.variables.ts --html-minify --base static --vue --vue-type-name "RealtimeSamples" --vue-type-path "./index"`
-const othersTemplateCommand = `file2variable-cli static/others.template.html -o static/others.variables.ts --html-minify --base static --vue --vue-type-name "Others" --vue-type-path "./index"`
+const templateCommand = `file2variable-cli --config static/file2variable.config.js`
 const tscStaticCommand = `tsc -p static`
 const webpackCommand = `webpack --config static/webpack.config.js`
 const revStaticCommand = `rev-static --config static/rev-static.config.js`
@@ -37,11 +32,6 @@ module.exports = {
       front: {
         js: [
           templateCommand,
-          searchLogsTemplateCommand,
-          realtimeLogsTemplateCommand,
-          searchSamplesTemplateCommand,
-          realtimeSamplesTemplateCommand,
-          othersTemplateCommand,
           tscStaticCommand,
           webpackCommand
         ],
@@ -98,11 +88,6 @@ module.exports = {
     sql: `${sqlCommand} --watch`,
     back: `${tscSrcCommand} --watch`,
     template: `${templateCommand} --watch`,
-    searchLogsTemplateCommand: `${searchLogsTemplateCommand} --watch`,
-    realtimeLogsTemplateCommand: `${realtimeLogsTemplateCommand} --watch`,
-    searchSamplesTemplateCommand: `${searchSamplesTemplateCommand} --watch`,
-    realtimeSamplesTemplateCommand: `${realtimeSamplesTemplateCommand} --watch`,
-    othersTemplateCommand: `${othersTemplateCommand} --watch`,
     front: `${tscStaticCommand} --watch`,
     webpack: `${webpackCommand} --watch`,
     less: () => watch(['static/**/*.less'], [], () => executeScriptAsync(cssCommand)),
