@@ -3,12 +3,7 @@
  * It is not mean to be edited by hand
  */
 // tslint:disable
-import { App } from "./index";
-import { Others } from "./index";
-import { RealtimeLogs } from "./index";
-import { RealtimeSamples } from "./index";
-import { SearchLogs } from "./index";
-import { SearchSamples } from "./index";
+import { App, Others, RealtimeLogs, RealtimeSamples, SearchLogs, SearchSamples } from "./index";
 
 // @ts-ignore
 export function appTemplateHtml(this: App) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('h4',[_vm._v("Log Tool")]),_vm._v(" "),_c('tab-container',{attrs:{"data":_vm.data},on:{"switching":function($event){_vm.switching($event)}}})],1)}
