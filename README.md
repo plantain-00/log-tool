@@ -42,7 +42,7 @@ The message should be a string from `JSON.stringify(protocol)`(json schema: [./s
 
 Or a protobuf encoded binary(protobuf file: [./static/protocol.proto](https://github.com/plantain-00/log-tool/blob/master/static/protocol.proto)).
 
-Or just see the type: [./src/types.d.ts](https://github.com/plantain-00/log-tool/blob/master/src/types.d.ts)
+Or just see the type: [./src/types.ts](https://github.com/plantain-00/log-tool/blob/master/src/types.ts)
 
 ## create index for elastic
 
