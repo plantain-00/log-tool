@@ -19,7 +19,7 @@ export function start() {
 
     app.use(libs.express.static(libs.path.resolve(__dirname, "../static")));
 
-    libs.bufferedSampleSubject.subscribe((samples: types.Sample[]) => {
+    libs.bufferedSampleSubject.subscribe(samples => {
         historySamples.push({
             time: libs.getNow(),
             samples,

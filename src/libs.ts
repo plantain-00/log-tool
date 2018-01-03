@@ -34,12 +34,12 @@ export const hostname = os.hostname();
 export const logSubject = new Subject<types.Log>();
 export const sampleSubject = new Subject<types.Sample>();
 
-export const bufferedLogSubject = (logSubject as Observable<types.Log>).bufferTime(1000);
+export const bufferedLogSubject = logSubject.bufferTime(1000);
 
-export const bufferedSampleSubject = (sampleSubject as Observable<types.Sample>)
+export const bufferedSampleSubject = sampleSubject
     .bufferTime(1000)
-    .filter((s: types.Sample[]) => s.length > 0)
-    .map((samples: types.Sample[]) => {
+    .filter(s => s.length > 0)
+    .map(samples => {
         const result: types.Sample[] = [];
         for (const sample of samples) {
             const resultSample = result.find(r => r.hostname === sample.hostname && r.port === sample.port);
@@ -54,20 +54,16 @@ export const bufferedSampleSubject = (sampleSubject as Observable<types.Sample>)
 
 export const bufferedFlowObservable = Observable.merge(
     bufferedLogSubject
-        .filter((logs: types.Log[]) => logs.length > 0)
-        .map((logs: types.Log[]) => logs.map(log => {
-            return {
-                kind: types.FlowKind.log,
-                log,
-            };
-        }),
+        .filter(logs => logs.length > 0)
+        .map(logs => logs.map(log => ({
+            kind: types.FlowKind.log as types.FlowKind.log,
+            log,
+        })),
     ),
     bufferedSampleSubject
-        .map((samples: types.Sample[]) => (samples.map((sample: types.Sample) => {
-            return {
-                kind: types.FlowKind.sample,
-                sample,
-            };
+        .map(samples => samples.map(sample => ({
+            kind: types.FlowKind.sample as types.FlowKind.sample,
+            sample,
         })),
     ))
     .bufferTime(1000)
@@ -75,7 +71,7 @@ export const bufferedFlowObservable = Observable.merge(
     .map(logsOrSamplesArray => {
         let result: types.Flow[] = [];
         for (const logsOrSamples of logsOrSamplesArray) {
-            result = result.concat(logsOrSamples as types.Flow[]);
+            result = result.concat(logsOrSamples);
         }
         return result;
     });

@@ -14,7 +14,7 @@ export function start() {
         }
     });
     if (config.sqlite.samples) {
-        libs.bufferedSampleSubject.subscribe((samples: types.Sample[]) => {
+        libs.bufferedSampleSubject.subscribe(samples => {
             const time = Math.round(Date.now() / 1000);
             db.run(sql.saveSampleSql, [time, JSON.stringify(samples)], error => {
                 if (error) {
@@ -82,7 +82,7 @@ export function querySamples(from: number, to: number) {
                 resolve(rows.map(r => {
                     return {
                         time: libs.moment(r.time * 1000).format("YYYY-MM-DD HH:mm:ss"),
-                        samples: JSON.parse(r.value) as types.Sample[],
+                        samples: JSON.parse(r.value),
                     };
                 }));
             }
