@@ -1,8 +1,6 @@
 import { sleep } from 'clean-scripts'
 import * as WebSocket from 'ws'
 
-// tslint:disable:no-console
-
 (async () => {
   const ws = new WebSocket('http://localhost:8001/')
   ws.on('open', () => {

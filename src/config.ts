@@ -31,7 +31,7 @@ const defaultConfig = {
   },
   elastic: { // transport logs to elastic search server for searching old logs purpose.
     enabled: true,
-        // `tool` is the index name, `logs` is the type name, they are all needed.
+    // `tool` is the index name, `logs` is the type name, they are all needed.
     url: 'http://localhost:9200/tool/logs'
   },
   protobuf: { // transport data by protobuf binary, rather than json string.
@@ -39,7 +39,6 @@ const defaultConfig = {
   },
   folderSizeWatcher: { // watch the size of folder.
     enabled: true,
-        // tslint:disable-next-line:no-object-literal-type-assertion
     folders: {} as { [name: string]: string }
   },
   countLogs: { // count the logs.
@@ -55,7 +54,6 @@ const defaultConfig = {
 }
 
 const configurationFilePath = process.argv[2] || '../log-tool.config.js'
-// tslint:disable-next-line:no-var-requires
 require(configurationFilePath)(defaultConfig)
 
 export = defaultConfig

@@ -577,7 +577,6 @@ setInterval(() => {
   updateCharts()
 }, 1000)
 
-// tslint:disable-next-line:no-implicit-dependencies
 import { locale as zhCNLocale } from 'relative-time-component/dist/locales/zh-CN'
 
 if (navigator.language === 'zh-CN') {

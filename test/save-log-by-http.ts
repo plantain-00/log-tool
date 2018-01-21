@@ -1,7 +1,5 @@
 import fetch from 'node-fetch'
 
-// tslint:disable:no-console
-
 (async () => {
   const response = await fetch('http://localhost:8001/logs', {
     method: 'POST',

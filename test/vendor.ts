@@ -4,8 +4,6 @@ import decompress = require('decompress')
 import fetch from 'node-fetch'
 import * as stream from 'stream'
 
-// tslint:disable:no-console
-
 const elasticVersion = '5.5.2';
 
 (async () => {

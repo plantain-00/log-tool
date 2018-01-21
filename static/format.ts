@@ -14,7 +14,6 @@ const validateRequestProtocol = ajv.compile(requestProtocolJson)
 const validateResponseProtocol = ajv.compile(responseProtocolJson)
 
 export function printInConsole (message: any) {
-    // tslint:disable-next-line:no-console
   console.log(message)
 }
 
