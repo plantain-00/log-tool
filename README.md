@@ -14,7 +14,7 @@
 + on the web page, search old logs
 + operate(filter, parse) logs as custom scripts
 
-![](./architecture.png)
+![architecture](./architecture.png)
 
 ## install
 

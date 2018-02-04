@@ -4,18 +4,18 @@
  */
 // tslint:disable
 
-export const createTableElasticLogsSql = `CREATE TABLE elastic_logs (value)`;
-export const createTableOutflowLogsSql = `CREATE TABLE outflow_logs (value)`;
-export const createTableSampleSql = `CREATE TABLE samples (time, value)`;
-export const deleteElasticLogsSql = `DELETE FROM elastic_logs WHERE ROWID = ?`;
-export const deleteOutflowLogsSql = `DELETE FROM outflow_logs WHERE ROWID = ?`;
-export const queryElasticLogsSql = `SELECT ROWID, value from elastic_logs`;
-export const queryOutflowLogsSql = `SELECT ROWID, value from outflow_logs`;
-export const querySamplesSql = `SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC`;
-export const queryTableElasticLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'`;
-export const queryTableOutflowLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'`;
-export const queryTableSamplesExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'`;
-export const saveElasticLogsSql = `INSERT INTO elastic_logs (value) values (?)`;
-export const saveOutflowLogsSql = `INSERT INTO outflow_logs (value) values (?)`;
-export const saveSampleSql = `INSERT INTO samples (time, value) VALUES (?, ?);`;
+export const createTableElasticLogsSql = `CREATE TABLE elastic_logs (value)`
+export const createTableOutflowLogsSql = `CREATE TABLE outflow_logs (value)`
+export const createTableSampleSql = `CREATE TABLE samples (time, value)`
+export const deleteElasticLogsSql = `DELETE FROM elastic_logs WHERE ROWID = ?`
+export const deleteOutflowLogsSql = `DELETE FROM outflow_logs WHERE ROWID = ?`
+export const queryElasticLogsSql = `SELECT ROWID, value from elastic_logs`
+export const queryOutflowLogsSql = `SELECT ROWID, value from outflow_logs`
+export const querySamplesSql = `SELECT time, value from samples WHERE time >= ? and time <= ? ORDER BY time ASC`
+export const queryTableElasticLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'elastic_logs'`
+export const queryTableOutflowLogsExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'outflow_logs'`
+export const queryTableSamplesExistsSql = `SELECT COUNT(*) as count FROM sqlite_master WHERE type = 'table' AND name = 'samples'`
+export const saveElasticLogsSql = `INSERT INTO elastic_logs (value) values (?)`
+export const saveOutflowLogsSql = `INSERT INTO outflow_logs (value) values (?)`
+export const saveSampleSql = `INSERT INTO samples (time, value) VALUES (?, ?);`
 // tslint:enable
