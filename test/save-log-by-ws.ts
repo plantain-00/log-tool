@@ -1,5 +1,5 @@
 import { sleep } from 'clean-scripts'
-import * as WebSocket from 'ws'
+import WebSocket from 'ws'
 
 (async () => {
   const ws = new WebSocket('http://localhost:8001/')
