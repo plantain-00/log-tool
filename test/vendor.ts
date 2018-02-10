@@ -1,6 +1,6 @@
 import { readableStreamEnd } from 'clean-scripts'
 import * as fs from 'fs'
-import decompress = require('decompress')
+import decompress from 'decompress'
 import fetch from 'node-fetch'
 import * as stream from 'stream'
 

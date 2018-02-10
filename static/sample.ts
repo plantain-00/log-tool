@@ -1,4 +1,4 @@
-import * as Chart from 'chart.js'
+import Chart from 'chart.js'
 
 import { getColor } from './color'
 import * as types from '../src/types'

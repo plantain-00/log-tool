@@ -1,5 +1,5 @@
 import * as protobuf from 'protobufjs'
-import * as Ajv from 'ajv'
+import Ajv from 'ajv'
 
 import * as types from '../src/types'
 import { defaultConfig } from './config'

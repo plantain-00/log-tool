@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import * as moment from 'moment'
+import moment from 'moment'
 
 import Reconnector from 'reconnection/browser/browser'
 import WsRpc from 'rpc-on-ws/browser'
