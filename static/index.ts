@@ -354,7 +354,7 @@ export class SearchSamples extends Vue {
             from: this.searchFrom,
             to: this.searchTo
           }
-        }))
+        }) as any)
       }).then(protocol => {
         if (protocol.kind === types.ProtocolKind.searchSamplesResult) {
           if (protocol.searchSamplesResult.kind === types.ResultKind.success) {
@@ -432,7 +432,7 @@ export class Others extends Vue {
         ws!.send(format.encodeRequest({
           kind: types.RequestProtocolKind.resaveFailedLogs,
           requestId
-        }))
+        }) as any)
       }).then(protocol => {
         if (protocol.kind === types.ProtocolKind.resaveFailedLogsResult) {
           if (protocol.resaveFailedLogsResult.kind === types.ResultKind.success) {
