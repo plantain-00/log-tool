@@ -11,5 +11,6 @@ module.exports = {
   ],
   exclude: [
   ],
+  askVersion: true,
   releaseRepository: 'https://github.com/plantain-00/log-tool-release.git'
 }
