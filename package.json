@@ -6,6 +6,7 @@
   "scripts": {
     "doc": "dot -Tpng architecture.dot > architecture.png",
     "build": "clean-scripts build",
+    "test:run": "clean-release --config clean-run.config.js",
     "lint": "clean-scripts lint",
     "test": "clean-scripts test",
     "fix": "clean-scripts fix",

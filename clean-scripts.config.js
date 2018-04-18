@@ -1,4 +1,4 @@
-const { sleep, Service, checkGitStatus, executeScriptAsync } = require('clean-scripts')
+const { sleep, Service, executeScriptAsync } = require('clean-scripts')
 const { watch } = require('watch-then-execute')
 
 const elasticVersion = '5.5.2'
@@ -75,8 +75,7 @@ module.exports = {
       () => sleep(5000),
       `node test/save-log-by-http.js`,
       () => sleep(5000),
-      `node test/save-log-by-ws.js`,
-      () => checkGitStatus()
+      `node test/save-log-by-ws.js`
     ]
   },
   fix: {
