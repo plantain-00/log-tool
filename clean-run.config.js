@@ -3,6 +3,7 @@ module.exports = {
     'dist/*.js',
     'static/protocol.proto',
     'static/*-protocol.json',
+    'log-tool.config.js',
     'package.json',
     'yarn.lock'
   ],
