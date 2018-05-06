@@ -8,7 +8,7 @@ const elasticVersion = '5.5.2';
 
 (async () => {
   const res = await fetch(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`)
-  const contentLength = +res.headers.get('content-length')
+  const contentLength = +res.headers.get('content-length')!
   let size = 0
   res.body.on('data', d => {
     size += d.length
