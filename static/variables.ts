@@ -280,7 +280,6 @@ export const requestProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "search logs",
                         "search samples",
@@ -358,7 +357,6 @@ export const responseProtocolJson = {
             "type": "object",
             "properties": {
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "flows",
                         "history samples",
@@ -415,7 +413,6 @@ export const responseProtocolJson = {
             "type": "object",
             "properties": {
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "log",
                         "sample"
@@ -512,7 +509,6 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
@@ -550,7 +546,6 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
@@ -582,7 +577,6 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
-                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
