@@ -30,7 +30,7 @@ for (const config of defaultConfig.chart) {
   }
 }
 
-function find<T> (array: T[], condition: (element: T) => boolean): T | undefined {
+function find<T>(array: T[], condition: (element: T) => boolean): T | undefined {
   for (const element of array) {
     if (condition(element)) {
       return element
@@ -39,22 +39,23 @@ function find<T> (array: T[], condition: (element: T) => boolean): T | undefined
   return undefined
 }
 
-export function trimHistory<T> (array: T[]) {
+export function trimHistory<T>(array: T[]) {
   if (array.length > maxCount) {
     array.splice(0, array.length - maxCount)
   }
 }
 
-function getSampleName (sample: types.Sample) {
+function getSampleName(sample: types.Sample) {
   return sample.port !== undefined ? `${sample.hostname}:${sample.port}` : sample.hostname
 }
 
-function getValue (config: ChartConfig, sample: types.Sample) {
+function getValue(config: ChartConfig, sample: types.Sample) {
   const count = config.compute ? config.compute(sample.values) : sample.values[config.name]
   return config.unitScale === undefined ? count : Math.round(count / config.unitScale)
 }
 
-export function appendChartData (sampleFrame: types.SampleFrame) {
+// tslint:disable-next-line:cognitive-complexity
+export function appendChartData(sampleFrame: types.SampleFrame) {
   const time = sampleFrame.time // .split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
   for (const config of defaultConfig.chart) {
@@ -67,10 +68,10 @@ export function appendChartData (sampleFrame: types.SampleFrame) {
 
         const tempChartDataset = find(tempChartDatas[config.name].datasets!, d => d.label === seriesName)
         if (tempChartDataset) {
-                    // found it in tempChartDatas, so just push the number to tempChartDatas
+          // found it in tempChartDatas, so just push the number to tempChartDatas
           (tempChartDataset.data as number[]).push(count)
         } else {
-                    // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+          // can not find it, create a new series, and push:0,0,0,0...,0,0,count
           const length = chartDatas[config.name].labels!.length + tempChartDatas[config.name].labels!.length - 1
           const data: number[] = []
           for (let j = 0; j < length; j++) {
@@ -101,18 +102,19 @@ export function appendChartData (sampleFrame: types.SampleFrame) {
   }
 }
 
-function isElementInViewport (element: HTMLElement) {
+function isElementInViewport(element: HTMLElement) {
   if (element) {
     const rect = element.getBoundingClientRect()
     return rect.bottom > 0
-            && rect.right > 0
-            && rect.left < (window.innerWidth || document.documentElement.clientWidth)
-            && rect.top < (window.innerHeight || document.documentElement.clientHeight)
+      && rect.right > 0
+      && rect.left < (window.innerWidth || document.documentElement.clientWidth)
+      && rect.top < (window.innerHeight || document.documentElement.clientHeight)
   }
   return false
 }
 
-export function updateCharts () {
+// tslint:disable-next-line:cognitive-complexity
+export function updateCharts() {
   for (const config of defaultConfig.chart) {
     const isInViewport = isElementInViewport(allChartElements[config.name])
     if (isInViewport && mouseOverChartName !== config.name) {
@@ -143,7 +145,7 @@ export function updateCharts () {
   }
 }
 
-export function initializeCharts () {
+export function initializeCharts() {
   for (const config of defaultConfig.chart) {
     const element = document.getElementById('current-' + config.name) as HTMLCanvasElement
     element.onmouseover = () => {
@@ -175,7 +177,7 @@ export function initializeCharts () {
           xAxes: [{
             type: 'time',
             time: {
-                            // format: "HH:mm:ss",
+              // format: "HH:mm:ss",
               tooltipFormat: 'HH:mm:ss'
             },
             scaleLabel: {
@@ -217,7 +219,7 @@ export function initializeCharts () {
           xAxes: [{
             type: 'time',
             time: {
-                            // format: "YYYY-MM-DD HH:mm:ss",
+              // format: "YYYY-MM-DD HH:mm:ss",
               tooltipFormat: 'YYYY-MM-DD HH:mm:ss'
             },
             scaleLabel: {
@@ -237,7 +239,8 @@ export function initializeCharts () {
   }
 }
 
-export function showSearchResult (sampleFrames: types.SampleFrame[]) {
+// tslint:disable-next-line:cognitive-complexity
+export function showSearchResult(sampleFrames: types.SampleFrame[]) {
   for (const config of defaultConfig.chart) {
     searchResultChartDatas[config.name].labels = []
     searchResultChartDatas[config.name].datasets = []
@@ -254,10 +257,10 @@ export function showSearchResult (sampleFrames: types.SampleFrame[]) {
 
           const searchResultChartDataset = find(searchResultChartDatas[config.name].datasets!, d => d.label === seriesName)
           if (searchResultChartDataset) {
-                        // found it in searchResultChartDatas, so just push the number to searchResultChartDatas
+            // found it in searchResultChartDatas, so just push the number to searchResultChartDatas
             (searchResultChartDataset.data as number[]).push(count)
           } else {
-                        // can not find it, create a new series, and push:0,0,0,0...,0,0,count
+            // can not find it, create a new series, and push:0,0,0,0...,0,0,count
             const length = searchResultChartDatas[config.name].labels!.length - 1
             const data: number[] = []
             for (let j = 0; j < length; j++) {

@@ -6,7 +6,7 @@ import * as stream from 'stream'
 
 const elasticVersion = '5.5.2';
 
-(async () => {
+(async() => {
   const res = await fetch(`https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticVersion}.zip`)
   const contentLength = +res.headers.get('content-length')!
   let size = 0

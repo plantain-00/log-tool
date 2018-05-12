@@ -3,7 +3,7 @@ import * as config from './config'
 import * as types from './types'
 import * as sqlite from './sqlite'
 
-export function start () {
+export function start() {
   if (!config.elastic.enabled) {
     return
   }
@@ -20,7 +20,7 @@ export function start () {
   })
 }
 
-export async function search (parameters: types.SearchLogs, requestId: number): Promise<types.SearchLogsResult> {
+export async function search(parameters: types.SearchLogs, requestId: number): Promise<types.SearchLogsResult> {
   const response = await libs.fetch(`${config.elastic.url}/_search`, {
     method: 'POST',
     body: JSON.stringify({
@@ -48,7 +48,7 @@ export async function search (parameters: types.SearchLogs, requestId: number): 
   }
 }
 
-export async function resaveFailedLogs (requestId: number): Promise<types.ResaveFailedLogsResult> {
+export async function resaveFailedLogs(requestId: number): Promise<types.ResaveFailedLogsResult> {
   const rows = await sqlite.queryAllElasticLogs()
   let count = 0
   for (const row of rows) {

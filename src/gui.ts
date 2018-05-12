@@ -8,7 +8,7 @@ import * as sqlite from './sqlite'
 const historySamples: types.SampleFrame[] = []
 const maxHistorySampleCount = 300
 
-export function start () {
+export function start() {
   if (!config.gui.enabled) {
     return
   }

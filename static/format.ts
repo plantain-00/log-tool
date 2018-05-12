@@ -13,11 +13,11 @@ const ajv = new Ajv()
 const validateRequestProtocol = ajv.compile(requestProtocolJson)
 const validateResponseProtocol = ajv.compile(responseProtocolJson)
 
-export function printInConsole (message: any) {
+export function printInConsole(message: any) {
   console.log(message)
 }
 
-export function encodeRequest (protocol: types.RequestProtocol): string | Uint8Array | undefined {
+export function encodeRequest(protocol: types.RequestProtocol): string | Uint8Array | undefined {
   if (defaultConfig.protobuf.enabled) {
     return RequestProtocolType.encode(protocol).finish()
   }
@@ -30,15 +30,7 @@ export function encodeRequest (protocol: types.RequestProtocol): string | Uint8A
   }
 }
 
-// function blobToUInt8Array(blob: Blob, next: (uint8Array: Uint8Array) => void) {
-//     const fileReader = new FileReader();
-//     fileReader.onload = () => {
-//         next(new Uint8Array(fileReader.result as ArrayBuffer));
-//     };
-//     fileReader.readAsArrayBuffer(blob);
-// }
-
-export function decodeResponse (data: string | ArrayBuffer, next: (protocol: types.ResponseProtocol) => void) {
+export function decodeResponse(data: string | ArrayBuffer, next: (protocol: types.ResponseProtocol) => void) {
   if (typeof data === 'string') {
     const result = JSON.parse(data)
     const isValidJson = validateResponseProtocol(result)

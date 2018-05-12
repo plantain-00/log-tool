@@ -1,7 +1,7 @@
 import { sleep } from 'clean-scripts'
 import WebSocket from 'ws'
 
-(async () => {
+(async() => {
   const ws = new WebSocket('http://localhost:8001/')
   ws.on('open', () => {
     ws.send(JSON.stringify({

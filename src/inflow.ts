@@ -3,7 +3,7 @@ import * as config from './config'
 import * as format from './format'
 import * as types from './types'
 
-export function start () {
+export function start() {
   if (!config.inflow.enabled) {
     return
   }
@@ -39,7 +39,7 @@ export function start () {
   server.listen(config.inflow.port, config.inflow.host)
 }
 
-function handleMessage (protocol: types.FlowProtocol) {
+function handleMessage(protocol: types.FlowProtocol) {
   for (const flow of protocol.flows) {
     if (flow.kind === types.FlowKind.log) {
       libs.logSubject.next(flow.log)

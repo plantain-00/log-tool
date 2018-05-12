@@ -1,12 +1,12 @@
 import * as libs from './libs'
 import * as config from './config'
 
-export function start () {
+export function start() {
   if (!config.folderSizeWatcher.enabled) {
     return
   }
 
-  setInterval(async () => {
+  setInterval(async() => {
     const values: { [name: string]: number } = {}
     for (const name in config.folderSizeWatcher.folders) {
       if (config.folderSizeWatcher.folders.hasOwnProperty(name)) {
@@ -21,7 +21,7 @@ export function start () {
   }, 1000)
 }
 
-async function getSize (path: string) {
+async function getSize(path: string) {
   const stats = await libs.statAsync(path)
   if (stats) {
     if (stats.isDirectory()) {

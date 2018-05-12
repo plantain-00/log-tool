@@ -4,15 +4,15 @@ import moment from 'moment'
 
 import Reconnector from 'reconnection/browser/browser'
 import WsRpc from 'rpc-on-ws/browser'
-import { Subject } from 'rxjs/Subject'
+import { Subject } from 'rxjs'
 import { Locale } from 'relative-time-vue-component'
 import {
-    appTemplateHtml, appTemplateHtmlStatic,
-    searchLogsTemplateHtml, searchLogsTemplateHtmlStatic,
-    realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic,
-    searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic,
-    realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic,
-    othersTemplateHtml, othersTemplateHtmlStatic
+  appTemplateHtml, appTemplateHtmlStatic,
+  searchLogsTemplateHtml, searchLogsTemplateHtmlStatic,
+  realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic,
+  searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic,
+  realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic,
+  othersTemplateHtml, othersTemplateHtmlStatic
 } from './variables'
 import { TabContainerData } from 'tab-container-vue-component'
 // tslint:disable-next-line:no-duplicate-imports
@@ -24,6 +24,8 @@ import { appendChartData, trimHistory, initializeCharts, updateCharts, showSearc
 import { defaultConfig } from './config'
 
 let locale: Locale | null = null
+
+const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
 let ws: WebSocket | undefined
 
@@ -69,7 +71,7 @@ protocolDataSubject.subscribe(protocol => {
 
     if (samples.length > 0) {
       appendChartData({
-        time: protocol.flows.serverTime!,
+        time: protocol.flows.serverTime,
         samples
       })
     }
@@ -86,7 +88,7 @@ protocolDataSubject.subscribe(protocol => {
   }
 })
 
-const wsRpc = new WsRpc(protocolDataSubject, message => {
+const wsRpc = new WsRpc<types.ResponseProtocol>(protocolDataSubject, message => {
   if (message.kind === types.ProtocolKind.searchLogsResult) {
     return message.searchLogsResult.requestId
   }
@@ -99,21 +101,21 @@ const wsRpc = new WsRpc(protocolDataSubject, message => {
   return undefined
 }, message => {
   if (message.kind === types.ProtocolKind.searchLogsResult
-        && message.searchLogsResult.kind === types.ResultKind.fail) {
+    && message.searchLogsResult.kind === types.ResultKind.fail) {
     return message.searchLogsResult.error
   }
   if (message.kind === types.ProtocolKind.searchSamplesResult
-        && message.searchSamplesResult.kind === types.ResultKind.fail) {
+    && message.searchSamplesResult.kind === types.ResultKind.fail) {
     return message.searchSamplesResult.error
   }
   if (message.kind === types.ProtocolKind.resaveFailedLogsResult
-        && message.resaveFailedLogsResult.kind === types.ResultKind.fail) {
+    && message.resaveFailedLogsResult.kind === types.ResultKind.fail) {
     return message.resaveFailedLogsResult.error
   }
   return ''
 })
 
-function visibilityButtonStyle (log: Log) {
+function visibilityButtonStyle(log: Log) {
   return {
     position: 'absolute',
     bottom: (log.visible ? (10 + log.visibilityButtonExtraBottom!) : 0) + 'px',
@@ -121,11 +123,11 @@ function visibilityButtonStyle (log: Log) {
   }
 }
 
-function handleButtonVisibility (element: HTMLElement | null, log: Log, innerHeight: number) {
+function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeight: number) {
   if (element) {
     const rect = element.getBoundingClientRect()
     log.visibilityButtonExtraBottom = (rect.top < innerHeight - 40 && rect.top + rect.height > innerHeight)
-            ? (rect.top + rect.height - innerHeight) : 0
+      ? (rect.top + rect.height - innerHeight) : 0
   }
 }
 
@@ -147,11 +149,11 @@ export class SearchLogs extends Vue {
   private from = 0
   private size = 10
 
-  get leftCount () {
+  get leftCount() {
     return this.logsSearchResultCount - this.from - this.size
   }
 
-  beforeMount () {
+  beforeMount() {
     scrollSubject.subscribe(innerHeight => {
       for (let i = 0; i < this.logsSearchResult.length; i++) {
         const log = this.logsSearchResult[i]
@@ -161,15 +163,16 @@ export class SearchLogs extends Vue {
     })
   }
 
-  beforeDestroy () {
+  beforeDestroy() {
     scrollSubject.unsubscribe()
   }
 
-  visibilityButtonStyle (log: Log) {
+  visibilityButtonStyle(log: Log) {
     return visibilityButtonStyle(log)
   }
 
-  search (freshStart: boolean) {
+  // tslint:disable-next-line:cognitive-complexity
+  search(freshStart: boolean) {
     if (freshStart) {
       this.from = 0
       this.logsSearchResult = []
@@ -195,9 +198,9 @@ export class SearchLogs extends Vue {
         }
       }).then(protocol => {
         if (protocol.kind === types.ProtocolKind.searchLogsResult
-                    && protocol.searchLogsResult
-                    && protocol.searchLogsResult.kind === types.ResultKind.success
-                    && protocol.searchLogsResult.logs) {
+          && protocol.searchLogsResult
+          && protocol.searchLogsResult.kind === types.ResultKind.success
+          && protocol.searchLogsResult.logs) {
           for (const h of protocol.searchLogsResult.logs) {
             const log: Log = h
             log.timeValue = moment(log.time).valueOf()
@@ -221,28 +224,19 @@ export class SearchLogs extends Vue {
           this.logsSearchResult = []
           this.logsSearchResultCount = 0
         }
-      }, (error: Error) => {
-        logsPushSubject.next({
-          time: moment().format('YYYY-MM-DD HH:mm:ss'),
-          content: error.message,
-          hostname: '',
-          filepath: '',
-          timeValue: Date.now()
-        })
-        updateNewLogsCountSubject.next()
-      })
+      }, logsPushError)
     }
   }
 
-  clearLogsSearchResult () {
+  clearLogsSearchResult() {
     this.logsSearchResult = []
   }
 
-  logSearchResultId (index: number) {
+  logSearchResultId(index: number) {
     return `log-search-result-${index}`
   }
 
-  toggleVisibility (log: Log) {
+  toggleVisibility(log: Log) {
     log.visible = !log.visible
   }
 }
@@ -260,7 +254,7 @@ export class RealtimeLogs extends Vue {
   showFormattedLogPush = true
   locale = locale
 
-  beforeMount () {
+  beforeMount() {
     logsPushSubject.subscribe(log => {
       this.logsPush.unshift(log)
     })
@@ -276,25 +270,25 @@ export class RealtimeLogs extends Vue {
     })
   }
 
-  beforeDestroy () {
+  beforeDestroy() {
     logsPushSubject.unsubscribe()
     scrollSubject.unsubscribe()
     trimHistorySubject.unsubscribe()
   }
 
-  visibilityButtonStyle (log: Log) {
+  visibilityButtonStyle(log: Log) {
     return visibilityButtonStyle(log)
   }
 
-  clearLogsPush () {
+  clearLogsPush() {
     this.logsPush = []
   }
 
-  logPushId (index: number) {
+  logPushId(index: number) {
     return `log-push-${index}`
   }
 
-  toggleVisibility (log: Log) {
+  toggleVisibility(log: Log) {
     log.visible = !log.visible
   }
 }
@@ -307,26 +301,27 @@ Vue.component('realtime-logs', RealtimeLogs)
   props: ['data']
 })
 export class SearchSamples extends Vue {
-  searchFrom = moment().clone().add(-1, 'minute').format('YYYY-MM-DD HH:mm:ss')
-  searchTo = moment().format('YYYY-MM-DD HH:mm:ss')
+  searchFrom = moment().clone().add(-1, 'minute').format(dateFormat)
+  searchTo = moment().format(dateFormat)
   chartConfigs = defaultConfig.chart
   chartWidth = 0
 
-  beforeMount () {
+  beforeMount() {
     updateChartWidthSubject.subscribe(chartWidth => {
       this.chartWidth = chartWidth
     })
   }
 
-  beforeDestroy () {
+  beforeDestroy() {
     updateChartWidthSubject.unsubscribe()
   }
 
-  searchSamples () {
+  // tslint:disable-next-line:cognitive-complexity
+  searchSamples() {
     if (ws) {
       if (!moment(this.searchFrom).isValid()) {
         logsPushSubject.next({
-          time: moment().format('YYYY-MM-DD HH:mm:ss'),
+          time: moment().format(dateFormat),
           content: `search from is invalid: ${this.searchFrom}`,
           hostname: '',
           filepath: '',
@@ -337,7 +332,7 @@ export class SearchSamples extends Vue {
       }
       if (!moment(this.searchTo).isValid()) {
         logsPushSubject.next({
-          time: moment().format('YYYY-MM-DD HH:mm:ss'),
+          time: moment().format(dateFormat),
           content: `search to is invalid: ${this.searchTo}`,
           hostname: '',
           filepath: '',
@@ -365,7 +360,7 @@ export class SearchSamples extends Vue {
             }
           } else {
             logsPushSubject.next({
-              time: moment().format('YYYY-MM-DD HH:mm:ss'),
+              time: moment().format(dateFormat),
               content: protocol.searchSamplesResult.error,
               hostname: '',
               filepath: '',
@@ -374,21 +369,23 @@ export class SearchSamples extends Vue {
             updateNewLogsCountSubject.next()
           }
         }
-      }, (error: Error) => {
-        logsPushSubject.next({
-          time: moment().format('YYYY-MM-DD HH:mm:ss'),
-          content: error.message,
-          hostname: '',
-          filepath: '',
-          timeValue: Date.now()
-        })
-        updateNewLogsCountSubject.next()
-      })
+      }, logsPushError)
     }
   }
 }
 
 Vue.component('search-samples', SearchSamples)
+
+function logsPushError(error: Error) {
+  logsPushSubject.next({
+    time: moment().format(dateFormat),
+    content: error.message,
+    hostname: '',
+    filepath: '',
+    timeValue: Date.now()
+  })
+  updateNewLogsCountSubject.next()
+}
 
 @Component({
   render: realtimeSamplesTemplateHtml,
@@ -399,17 +396,18 @@ export class RealtimeSamples extends Vue {
   chartConfigs = defaultConfig.chart
   chartWidth = 0
 
-  beforeMount () {
+  // tslint:disable-next-line:no-identical-functions
+  beforeMount() {
     updateChartWidthSubject.subscribe(chartWidth => {
       this.chartWidth = chartWidth
     })
   }
 
-  beforeDestroy () {
+  beforeDestroy() {
     updateChartWidthSubject.unsubscribe()
   }
 
-  scrollBy (id: string) {
+  scrollBy(id: string) {
     const element = document.getElementById(`current-${id}`)
     if (element) {
       const rect = element.getBoundingClientRect()
@@ -426,7 +424,7 @@ Vue.component('realtime-samples', RealtimeSamples)
   props: ['data']
 })
 export class Others extends Vue {
-  resaveFailedLogs () {
+  resaveFailedLogs() {
     if (ws) {
       wsRpc.send(requestId => {
         ws!.send(format.encodeRequest({
@@ -437,7 +435,7 @@ export class Others extends Vue {
         if (protocol.kind === types.ProtocolKind.resaveFailedLogsResult) {
           if (protocol.resaveFailedLogsResult.kind === types.ResultKind.success) {
             logsPushSubject.next({
-              time: moment().format('YYYY-MM-DD HH:mm:ss'),
+              time: moment().format(dateFormat),
               content: `handled ${protocol.resaveFailedLogsResult.savedCount} / ${protocol.resaveFailedLogsResult.totalCount} logs.`,
               hostname: '',
               filepath: '',
@@ -445,7 +443,7 @@ export class Others extends Vue {
             })
           } else {
             logsPushSubject.next({
-              time: moment().format('YYYY-MM-DD HH:mm:ss'),
+              time: moment().format(dateFormat),
               content: protocol.resaveFailedLogsResult.error,
               hostname: '',
               filepath: '',
@@ -454,16 +452,7 @@ export class Others extends Vue {
           }
           updateNewLogsCountSubject.next()
         }
-      }, (error: Error) => {
-        logsPushSubject.next({
-          time: moment().format('YYYY-MM-DD HH:mm:ss'),
-          content: error.message,
-          hostname: '',
-          filepath: '',
-          timeValue: Date.now()
-        })
-        updateNewLogsCountSubject.next()
-      })
+      }, logsPushError)
     }
   }
 }
@@ -471,7 +460,7 @@ export class Others extends Vue {
 Vue.component('others', Others)
 
 Vue.component('realtime-logs-title', {
-  render (this: { data: number }, createElement) {
+  render(this: { data: number }, createElement) {
     const children: any[] = ['Realtime Logs']
     if (this.data > 0) {
       children.push(createElement('span', { attrs: { class: 'badge' } }, [
@@ -522,24 +511,24 @@ export class App extends Vue {
     }
   ]
 
-  beforeMount () {
+  beforeMount() {
     updateNewLogsCountSubject.subscribe(chartWidth => {
       this.data[1].titleData++
     })
   }
 
-  beforeDestroy () {
+  beforeDestroy() {
     updateNewLogsCountSubject.unsubscribe()
   }
 
-  switching (index: number) {
+  switching(index: number) {
     if (index === 1) {
       this.data[1].titleData = 0
     }
   }
 }
 
-function start () {
+function start() {
   // tslint:disable-next-line:no-unused-expression
   new App({ el: '#body' })
 }

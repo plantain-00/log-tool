@@ -14,7 +14,7 @@ type Config = {
   };
 }
 
-declare function loadConfig (config: Config): void
+declare function loadConfig(config: Config): void
 
 export const defaultConfig: Config = {
   chart: [

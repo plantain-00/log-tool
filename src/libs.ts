@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { Subject, Observable } from 'rxjs'
+import { Subject, Observable, merge } from 'rxjs'
+import { bufferTime, filter, map } from 'rxjs/operators'
 import WebSocket from 'ws'
 import * as os from 'os'
 import express from 'express'
@@ -24,7 +25,7 @@ export const validateRequestProtocol = ajv.compile(requestProtocolJsonSchema)
 import flowProtocolJsonSchema = require('../static/flow-protocol.json')
 export const validateFlowProtocol = ajv.compile(flowProtocolJsonSchema)
 
-export function printInConsole (message: any) {
+export function printInConsole(message: any) {
   console.log(message)
 }
 
@@ -33,12 +34,13 @@ export const hostname = os.hostname()
 export const logSubject = new Subject<types.Log>()
 export const sampleSubject = new Subject<types.Sample>()
 
-export const bufferedLogSubject = logSubject.bufferTime(1000)
+export const bufferedLogSubject = logSubject.pipe(bufferTime(1000))
 
 export const bufferedSampleSubject = sampleSubject
-    .bufferTime(1000)
-    .filter(s => s.length > 0)
-    .map(samples => {
+  .pipe(
+    bufferTime(1000),
+    filter(s => s.length > 0),
+    map(samples => {
       const result: types.Sample[] = []
       for (const sample of samples) {
         const resultSample = result.find(r => r.hostname === sample.hostname && r.port === sample.port)
@@ -50,32 +52,38 @@ export const bufferedSampleSubject = sampleSubject
       }
       return result
     })
+  )
 
-export const bufferedFlowObservable = Observable.merge(
+export const bufferedFlowObservable =
+  merge<types.Flow>(
     bufferedLogSubject
-        .filter(logs => logs.length > 0)
-        .map(logs => logs.map(log => ({
-            kind: types.FlowKind.log as types.FlowKind.log,
-            log
-        }))
-    ),
+      .pipe(
+        filter(logs => logs.length > 0),
+        map(logs => logs.map(log => ({
+          kind: types.FlowKind.log,
+          log
+        })))
+      ),
     bufferedSampleSubject
-        .map(samples => samples.map(sample => ({
-            kind: types.FlowKind.sample as types.FlowKind.sample,
-            sample
-        }))
-    ))
-    .bufferTime(1000)
-    .filter(s => s.length > 0)
-    .map(logsOrSamplesArray => {
+      .pipe(
+        map(samples => samples.map(sample => ({
+          kind: types.FlowKind.sample,
+          sample
+        })))
+      )
+  ).pipe(
+    bufferTime(1000),
+    filter(s => s.length > 0),
+    map(logsOrSamplesArray => {
       let result: types.Flow[] = []
       for (const logsOrSamples of logsOrSamplesArray) {
         result = result.concat(logsOrSamples)
       }
       return result
     })
+  )
 
-export function publishError (error: Error) {
+export function publishError(error: Error) {
   logSubject.next({
     time: getNow(),
     hostname,
@@ -84,7 +92,7 @@ export function publishError (error: Error) {
   })
 }
 
-export function publishErrorMessage (message: string) {
+export function publishErrorMessage(message: string) {
   logSubject.next({
     time: getNow(),
     hostname,
@@ -93,11 +101,11 @@ export function publishErrorMessage (message: string) {
   })
 }
 
-export function getNow () {
+export function getNow() {
   return moment().format('YYYY-MM-DD HH:mm:ss')
 }
 
-export function statAsync (pathname: string) {
+export function statAsync(pathname: string) {
   return new Promise<fs.Stats | undefined>((resolve, reject) => {
     fs.access(pathname, err => {
       if (err) {
@@ -114,7 +122,7 @@ export function statAsync (pathname: string) {
   })
 }
 
-export function readFileAsync (filepath: string) {
+export function readFileAsync(filepath: string) {
   return new Promise<string | undefined>((resolve, reject) => {
     fs.access(filepath, err => {
       if (err) {
@@ -131,7 +139,7 @@ export function readFileAsync (filepath: string) {
   })
 }
 
-export function readDirAsync (filepath: string) {
+export function readDirAsync(filepath: string) {
   return new Promise<string[] | undefined>((resolve, reject) => {
     fs.access(filepath, err => {
       if (err) {
@@ -150,8 +158,9 @@ export function readDirAsync (filepath: string) {
 
 export class Sender {
   private timeout = 3000
-  constructor (private ws: WebSocket) { }
-  send (message: string | Uint8Array, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: (isSuccess: boolean) => void) {
+  constructor(private ws: WebSocket) { }
+  // tslint:disable-next-line:cognitive-complexity
+  send(message: string | Uint8Array, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: (isSuccess: boolean) => void) {
     this.ws.send(message, options, error1 => {
       if (error1) {
         publishError(error1)

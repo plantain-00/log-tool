@@ -1,7 +1,7 @@
 import * as libs from './libs'
 import * as config from './config'
 
-export function start () {
+export function start() {
   if (!config.countLogs.enabled) {
     return
   }

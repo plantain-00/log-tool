@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-(async () => {
+(async() => {
   const response = await fetch('http://localhost:8001/logs', {
     method: 'POST',
     headers: {

@@ -3,12 +3,12 @@ import * as config from './config'
 
 let positions: { [filepath: string]: number } = {}
 
-export async function start () {
+export async function start() {
   if (!config.watcher.enabled) {
     return
   }
 
-    // restore positions from file
+  // restore positions from file
   const filePositionData = await libs.readFileAsync(config.watcher.filePositionsDataPath)
   if (filePositionData) {
     try {
@@ -18,7 +18,7 @@ export async function start () {
     }
   }
 
-    // watch all paths
+  // watch all paths
   for (const pathname of config.watcher.paths) {
     const stats = await libs.statAsync(pathname)
     if (stats) {
@@ -35,7 +35,7 @@ export async function start () {
     }
   }
 
-    // save postions every 1 seconds
+  // save postions every 1 seconds
   setInterval(() => {
     libs.fs.writeFile(config.watcher.filePositionsDataPath, JSON.stringify(positions, null, '  '), writeFileError => {
       if (writeFileError) {
@@ -45,8 +45,8 @@ export async function start () {
   }, 1000)
 }
 
-async function initialize (pathname: string, stats: libs.fs.Stats) {
-    // for every file, if no position in positions, read all file
+async function initialize(pathname: string, stats: libs.fs.Stats) {
+  // for every file, if no position in positions, read all file
   if (stats.isDirectory()) {
     const files = await libs.readDirAsync(pathname)
     if (files) {
@@ -63,20 +63,21 @@ async function initialize (pathname: string, stats: libs.fs.Stats) {
   }
 }
 
-function fileOrDirectoryChanged (pathname: string) {
+function fileOrDirectoryChanged(pathname: string) {
   libs.statAsync(pathname).then(stats => {
     if (stats && stats.isFile()) {
-            // the file is updated or a new file
+      // the file is updated or a new file
       readNewlyAddedLogsThenPublish(pathname, stats.size)
     }
   }, statError => {
-        // the file or directory is deleted
+    // the file or directory is deleted
     libs.publishError(statError)
     delete positions[pathname]
   })
 }
 
-function readNewlyAddedLogsThenPublish (filepath: string, end: number) {
+// tslint:disable-next-line:cognitive-complexity
+function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
   const position = positions[filepath]
   const startPosition = position === undefined ? 0 : position
   if (end > startPosition) {
