@@ -14,7 +14,7 @@ export function start() {
   }
 
   const server = libs.http.createServer()
-  const wss = new libs.WebSocketServer({ server })
+  const wss = new libs.WebSocket.Server({ server })
   const app = libs.express()
 
   app.use(libs.express.static(libs.path.resolve(__dirname, '../static')))
@@ -43,7 +43,7 @@ export function start() {
       subscription.unsubscribe()
     })
     if (config.elastic.enabled) {
-      ws.on('message', (data: string, flag) => {
+      ws.on('message', (data: string) => {
         try {
           const protocol = format.decodeRequest(data)
           if (protocol.kind === types.RequestProtocolKind.searchLogs) {

@@ -10,14 +10,13 @@ import fetch from 'node-fetch'
 import * as types from './types'
 import Reconnector from 'reconnection/nodejs/nodejs'
 import moment from 'moment'
-import { Server as WebSocketServer } from 'uws'
 import * as protobuf from 'protobufjs'
 import * as sqlite3 from 'sqlite3'
 import * as bodyParser from 'body-parser'
 import Ajv from 'ajv'
 import * as _ from 'lodash'
 
-export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, WebSocketServer, Observable, protobuf, sqlite3, bodyParser, _, os }
+export { fs, path, Subject, WebSocket, express, http, fetch, Reconnector, moment, Observable, protobuf, sqlite3, bodyParser, _, os }
 
 const ajv = new Ajv()
 import requestProtocolJsonSchema = require('../static/request-protocol.json')

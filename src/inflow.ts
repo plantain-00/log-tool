@@ -9,7 +9,7 @@ export function start() {
   }
 
   const server = libs.http.createServer()
-  const wss = new libs.WebSocketServer({ server })
+  const wss = new libs.WebSocket.Server({ server })
   const app = libs.express()
 
   app.use(libs.bodyParser.json())
