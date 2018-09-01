@@ -54,7 +54,7 @@ export const bufferedSampleSubject = sampleSubject
   )
 
 export const bufferedFlowObservable =
-  merge<types.Flow>(
+  merge<types.Flow, types.Flow>(
     bufferedLogSubject
       .pipe(
         filter(logs => logs.length > 0),
