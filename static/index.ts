@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import moment from 'moment'
 
-import Reconnector from 'reconnection/browser/browser'
-import WsRpc from 'rpc-on-ws/browser'
+import Reconnector from 'reconnection'
+import WsRpc from 'rpc-on-ws'
 import { Subject } from 'rxjs'
 import { Locale } from 'relative-time-vue-component'
 import {

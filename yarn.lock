@@ -5360,9 +5360,9 @@ readdirp@^2.0.0:
     readable-stream "^2.0.2"
     set-immediate-shim "^1.0.1"
 
-reconnection@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/reconnection/-/reconnection-2.0.1.tgz#651eaa19ddd7a07f160ddb8061d372c9caadf867"
+reconnection@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/reconnection/-/reconnection-2.0.3.tgz#ba37ed2f822eeab0031412b942c54f0c61dfc0fa"
   dependencies:
     tslib "1"
 
@@ -5608,9 +5608,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rpc-on-ws@5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/rpc-on-ws/-/rpc-on-ws-5.0.2.tgz#4602ab089d993a07892830a70fb3b787528134b5"
+rpc-on-ws@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/rpc-on-ws/-/rpc-on-ws-5.1.0.tgz#8c79d994b560432f2aac3ae62da0267be2b2e2d6"
   dependencies:
     rxjs "6"
 
