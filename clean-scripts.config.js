@@ -89,7 +89,6 @@ module.exports = {
     sql: `${sqlCommand} --watch`,
     back: `${tscSrcCommand} --watch`,
     template: `${templateCommand} --watch`,
-    front: `${tscStaticCommand} --watch`,
     webpack: `${webpackCommand} --watch`,
     less: () => watch(['static/**/*.less'], [], () => executeScriptAsync(cssCommand)),
     rev: `${revStaticCommand} --watch`
