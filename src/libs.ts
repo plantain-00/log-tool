@@ -159,7 +159,7 @@ export class Sender {
   private timeout = 3000
   constructor(private ws: WebSocket) { }
   // tslint:disable-next-line:cognitive-complexity
-  send(message: string | Uint8Array, options: { mask?: boolean | undefined; binary?: boolean | undefined; }, next: (isSuccess: boolean) => void) {
+  send(message: string | Uint8Array, options: { mask?: boolean; binary?: boolean; }, next: (isSuccess: boolean) => void) {
     this.ws.send(message, options, error1 => {
       if (error1) {
         publishError(error1)
