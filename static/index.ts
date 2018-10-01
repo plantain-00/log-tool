@@ -534,7 +534,7 @@ function start() {
 }
 
 window.onscroll = () => {
-  const innerHeight = (window.innerHeight || document.documentElement.clientHeight)
+  const innerHeight = (window.innerHeight || document.documentElement!.clientHeight)
   scrollSubject.next(innerHeight)
 }
 
