@@ -261,11 +261,11 @@ export const protocolProto = {
     }
 }
 // @ts-ignore
-export function realtimeLogsTemplateHtml(this: RealtimeLogs) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('div',[_c('button',{staticClass:"btn btn-default btn-sm",attrs:{"disabled":_vm.logsPush.length === 0},on:{"click":function($event){_vm.clearLogsPush()}}},[_vm._v("clear")]),_vm._v(" "),_c('label',[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.showRawLogPush),expression:"showRawLogPush"}],attrs:{"type":"checkbox"},domProps:{"checked":Array.isArray(_vm.showRawLogPush)?_vm._i(_vm.showRawLogPush,null)>-1:(_vm.showRawLogPush)},on:{"change":function($event){var $$a=_vm.showRawLogPush,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v=null,$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.showRawLogPush=$$a.concat([$$v]))}else{$$i>-1&&(_vm.showRawLogPush=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.showRawLogPush=$$c}}}}),_vm._v(" show raw data\n        ")]),_vm._v(" "),_c('label',[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.showFormattedLogPush),expression:"showFormattedLogPush"}],attrs:{"type":"checkbox"},domProps:{"checked":Array.isArray(_vm.showFormattedLogPush)?_vm._i(_vm.showFormattedLogPush,null)>-1:(_vm.showFormattedLogPush)},on:{"change":function($event){var $$a=_vm.showFormattedLogPush,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v=null,$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.showFormattedLogPush=$$a.concat([$$v]))}else{$$i>-1&&(_vm.showFormattedLogPush=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.showFormattedLogPush=$$c}}}}),_vm._v(" show formatted data\n        ")])]),_vm._v(" "),_c('ul',_vm._l((_vm.logsPush),function(log,index){return _c('li',{key:index,staticClass:"hide-button-container li-result-item"},[_c('span',{staticClass:"label label-primary"},[_c('relative-time',{attrs:{"time":log.timeValue,"locale":_vm.locale}})],1),_vm._v(" "),_c('span',{staticClass:"label label-default"},[_vm._v(_vm._s(log.hostname))]),_vm._v(" "),_c('span',{staticClass:"label label-default"},[_vm._v(_vm._s(log.filepath))]),_vm._v(" "),(log.content && _vm.showRawLogPush)?_c('pre',[_vm._v(_vm._s(log.content))]):_vm._e(),_vm._v(" "),(log.formattedContent && _vm.showFormattedLogPush && log.visible)?_c('pre',{attrs:{"id":_vm.logPushId(index)}},[_vm._v(_vm._s(log.formattedContent))]):_vm._e(),_vm._v(" "),(log.formattedContent && _vm.showFormattedLogPush)?_c('button',{staticClass:"btn btn-default btn-sm",style:(_vm.visibilityButtonStyle(log)),on:{"click":function($event){_vm.toggleVisibility(log)}}},[_vm._v(_vm._s(log.visible ? "hide formatted" : "show formatted"))]):_vm._e()])}))])}
+export function realtimeLogsTemplateHtml(this: RealtimeLogs) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('div',[_c('button',{staticClass:"btn btn-default btn-sm",attrs:{"disabled":_vm.logsPush.length === 0},on:{"click":function($event){_vm.clearLogsPush()}}},[_vm._v("clear")]),_vm._v(" "),_c('label',[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.showRawLogPush),expression:"showRawLogPush"}],attrs:{"type":"checkbox"},domProps:{"checked":Array.isArray(_vm.showRawLogPush)?_vm._i(_vm.showRawLogPush,null)>-1:(_vm.showRawLogPush)},on:{"change":function($event){var $$a=_vm.showRawLogPush,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v=null,$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.showRawLogPush=$$a.concat([$$v]))}else{$$i>-1&&(_vm.showRawLogPush=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.showRawLogPush=$$c}}}}),_vm._v(" show raw data\n        ")]),_vm._v(" "),_c('label',[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.showFormattedLogPush),expression:"showFormattedLogPush"}],attrs:{"type":"checkbox"},domProps:{"checked":Array.isArray(_vm.showFormattedLogPush)?_vm._i(_vm.showFormattedLogPush,null)>-1:(_vm.showFormattedLogPush)},on:{"change":function($event){var $$a=_vm.showFormattedLogPush,$$el=$event.target,$$c=$$el.checked?(true):(false);if(Array.isArray($$a)){var $$v=null,$$i=_vm._i($$a,$$v);if($$el.checked){$$i<0&&(_vm.showFormattedLogPush=$$a.concat([$$v]))}else{$$i>-1&&(_vm.showFormattedLogPush=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}}else{_vm.showFormattedLogPush=$$c}}}}),_vm._v(" show formatted data\n        ")])]),_vm._v(" "),_c('ul',_vm._l((_vm.logsPush),function(log,index){return _c('li',{key:index,staticClass:"hide-button-container li-result-item"},[_c('span',{staticClass:"label label-primary"},[_c('relative-time',{attrs:{"time":log.timeValue,"locale":_vm.locale}})],1),_vm._v(" "),_c('span',{staticClass:"label label-default"},[_vm._v(_vm._s(log.hostname))]),_vm._v(" "),_c('span',{staticClass:"label label-default"},[_vm._v(_vm._s(log.filepath))]),_vm._v(" "),(log.content && _vm.showRawLogPush)?_c('pre',[_vm._v(_vm._s(log.content))]):_vm._e(),_vm._v(" "),(log.formattedContent && _vm.showFormattedLogPush && log.visible)?_c('pre',{attrs:{"id":_vm.logPushId(index)}},[_vm._v(_vm._s(log.formattedContent))]):_vm._e(),_vm._v(" "),(log.formattedContent && _vm.showFormattedLogPush)?_c('button',{staticClass:"btn btn-default btn-sm",style:(_vm.visibilityButtonStyle(log)),on:{"click":function($event){_vm.toggleVisibility(log)}}},[_vm._v(_vm._s(log.visible ? "hide formatted" : "show formatted"))]):_vm._e()])}),0)])}
 // @ts-ignore
 export var realtimeLogsTemplateHtmlStatic = [  ]
 // @ts-ignore
-export function realtimeSamplesTemplateHtml(this: RealtimeSamples) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('ul',{staticClass:"menu"},_vm._l((_vm.chartConfigs),function(config,index){return _c('li',{key:config.name},[_c('a',{attrs:{"href":"javascript:void(0)"},on:{"click":function($event){_vm.scrollBy(config.name)}}},[_vm._v(_vm._s(config.description))])])})),_vm._v(" "),_vm._l((_vm.chartConfigs),function(config,index){return _c('div',{key:config.name},[_c('h4',{staticStyle:{"padding-top":"10px"}},[_vm._v("\n            "+_vm._s(config.description)+"\n            "+_vm._s(config.unit !== undefined ? ("(" + config.unit + ")") : "")+"\n            "+_vm._s(config.sum !== undefined ? (" " + config.sum) : "")+"\n        ")]),_vm._v(" "),_c('canvas',{staticClass:"graph",attrs:{"id":'current-' + config.name,"width":_vm.chartWidth,"height":"300"}})])})],2)}
+export function realtimeSamplesTemplateHtml(this: RealtimeSamples) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('ul',{staticClass:"menu"},_vm._l((_vm.chartConfigs),function(config,index){return _c('li',{key:config.name},[_c('a',{attrs:{"href":"javascript:void(0)"},on:{"click":function($event){_vm.scrollBy(config.name)}}},[_vm._v(_vm._s(config.description))])])}),0),_vm._v(" "),_vm._l((_vm.chartConfigs),function(config,index){return _c('div',{key:config.name},[_c('h4',{staticStyle:{"padding-top":"10px"}},[_vm._v("\n            "+_vm._s(config.description)+"\n            "+_vm._s(config.unit !== undefined ? ("(" + config.unit + ")") : "")+"\n            "+_vm._s(config.sum !== undefined ? (" " + config.sum) : "")+"\n        ")]),_vm._v(" "),_c('canvas',{staticClass:"graph",attrs:{"id":'current-' + config.name,"width":_vm.chartWidth,"height":"300"}})])})],2)}
 // @ts-ignore
 export var realtimeSamplesTemplateHtmlStatic = [  ]
 export const requestProtocolJson = {
@@ -280,6 +280,7 @@ export const requestProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "search logs",
                         "search samples",
@@ -357,6 +358,7 @@ export const responseProtocolJson = {
             "type": "object",
             "properties": {
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "flows",
                         "history samples",
@@ -413,6 +415,7 @@ export const responseProtocolJson = {
             "type": "object",
             "properties": {
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "log",
                         "sample"
@@ -509,6 +512,7 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
@@ -546,6 +550,7 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
@@ -577,6 +582,7 @@ export const responseProtocolJson = {
                     "maximum": 4294967295
                 },
                 "kind": {
+                    "type": "string",
                     "enum": [
                         "success",
                         "fail"
@@ -611,7 +617,7 @@ export function searchLogsTemplateHtml(this: SearchLogs) {var _vm=this;var _h=_v
 // @ts-ignore
 export var searchLogsTemplateHtmlStatic = [  ]
 // @ts-ignore
-export function searchSamplesTemplateHtml(this: SearchSamples) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('div',{staticClass:"flex-center"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchFrom),expression:"searchFrom"}],staticClass:"form-control",staticStyle:{"width":"30%"},domProps:{"value":(_vm.searchFrom)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchFrom=$event.target.value}}}),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchTo),expression:"searchTo"}],staticClass:"form-control",staticStyle:{"width":"30%"},domProps:{"value":(_vm.searchTo)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchTo=$event.target.value}}}),_vm._v(" "),_c('button',{staticClass:"btn btn-primary btn-lg primary-button",attrs:{"disabled":!_vm.searchFrom || !_vm.searchTo},on:{"click":function($event){_vm.searchSamples()}}},[_vm._v("search")])]),_vm._v(" "),_c('ul',{staticClass:"menu list-unstyled"},_vm._l((_vm.chartConfigs),function(config,index){return _c('li',{key:config.name},[_c('a',{attrs:{"href":'#' + config.name}},[_vm._v(_vm._s(config.description))])])})),_vm._v(" "),_vm._l((_vm.chartConfigs),function(config,index){return _c('div',{key:config.name},[_c('h4',{staticStyle:{"padding-top":"10px"},attrs:{"id":config.name}},[_vm._v("\n            "+_vm._s(config.description)+"\n            "+_vm._s(config.unit !== undefined ? ("(" + config.unit + ")") : "")+"\n        ")]),_vm._v(" "),_c('canvas',{staticClass:"graph",attrs:{"id":'history-' + config.name,"width":_vm.chartWidth,"height":"300"}})])})],2)}
+export function searchSamplesTemplateHtml(this: SearchSamples) {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"panel"},[_c('div',{staticClass:"flex-center"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchFrom),expression:"searchFrom"}],staticClass:"form-control",staticStyle:{"width":"30%"},domProps:{"value":(_vm.searchFrom)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchFrom=$event.target.value}}}),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchTo),expression:"searchTo"}],staticClass:"form-control",staticStyle:{"width":"30%"},domProps:{"value":(_vm.searchTo)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchTo=$event.target.value}}}),_vm._v(" "),_c('button',{staticClass:"btn btn-primary btn-lg primary-button",attrs:{"disabled":!_vm.searchFrom || !_vm.searchTo},on:{"click":function($event){_vm.searchSamples()}}},[_vm._v("search")])]),_vm._v(" "),_c('ul',{staticClass:"menu list-unstyled"},_vm._l((_vm.chartConfigs),function(config,index){return _c('li',{key:config.name},[_c('a',{attrs:{"href":'#' + config.name}},[_vm._v(_vm._s(config.description))])])}),0),_vm._v(" "),_vm._l((_vm.chartConfigs),function(config,index){return _c('div',{key:config.name},[_c('h4',{staticStyle:{"padding-top":"10px"},attrs:{"id":config.name}},[_vm._v("\n            "+_vm._s(config.description)+"\n            "+_vm._s(config.unit !== undefined ? ("(" + config.unit + ")") : "")+"\n        ")]),_vm._v(" "),_c('canvas',{staticClass:"graph",attrs:{"id":'history-' + config.name,"width":_vm.chartWidth,"height":"300"}})])})],2)}
 // @ts-ignore
 export var searchSamplesTemplateHtmlStatic = [  ]
 // tslint:enable
