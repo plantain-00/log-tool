@@ -11,8 +11,8 @@ module.exports = {
   resolve: {
     extensions: isDev ? ['.ts', '.tsx', '.js'] : undefined,
     alias: {
-      'moment': 'moment/min/moment.min.js',
-      'protobufjs': 'protobufjs/dist/protobuf.min.js'
+      moment: 'moment/min/moment.min.js',
+      protobufjs: 'protobufjs/dist/protobuf.min.js'
     }
   },
   module: isDev ? {

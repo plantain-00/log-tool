@@ -3,6 +3,7 @@
  * It is not mean to be edited by hand
  */
 // tslint:disable
+/* eslint-disable */
 
 export const createTableElasticLogsSql = `CREATE TABLE elastic_logs (value)`
 export const createTableOutflowLogsSql = `CREATE TABLE outflow_logs (value)`
@@ -18,4 +19,5 @@ export const queryTableSamplesExistsSql = `SELECT COUNT(*) as count FROM sqlite_
 export const saveElasticLogsSql = `INSERT INTO elastic_logs (value) values (?)`
 export const saveOutflowLogsSql = `INSERT INTO outflow_logs (value) values (?)`
 export const saveSampleSql = `INSERT INTO samples (time, value) VALUES (?, ?);`
+/* eslint-enable */
 // tslint:enable
