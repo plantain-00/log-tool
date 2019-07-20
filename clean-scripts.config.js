@@ -1,4 +1,4 @@
-const { sleep, Service, executeScriptAsync, Program } = require('clean-scripts')
+const { sleep, Service, executeScriptAsync } = require('clean-scripts')
 const { watch } = require('watch-then-execute')
 
 const elasticVersion = '5.5.2'
@@ -63,7 +63,7 @@ module.exports = {
       'tsc -p static_spec',
       'karma start static_spec/karma.config.js'
     ],
-    start: new Program('clean-release --config clean-run.config.js', 30000),
+    // start: new Program('clean-release --config clean-run.config.js', 30000),
     check: [
       'mkdirp vendors',
       `tsc -p test`,
