@@ -1,4 +1,4 @@
-export type ChartConfig = {
+export interface ChartConfig {
   enabled: boolean;
   name: string;
   description: string;
@@ -7,7 +7,7 @@ export type ChartConfig = {
   unitScale?: number; // eg: { unit: "KB", unitScale: 1024 }, 10240 B -> 10 KB
 }
 
-type Config = {
+interface Config {
   chart: ChartConfig[];
   protobuf: {
     enabled: boolean;

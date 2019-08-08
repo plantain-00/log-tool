@@ -76,7 +76,6 @@ function fileOrDirectoryChanged(pathname: string) {
   })
 }
 
-// tslint:disable-next-line:cognitive-complexity
 function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
   const position = positions[filepath]
   const startPosition = position === undefined ? 0 : position

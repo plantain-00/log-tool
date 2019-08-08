@@ -21,7 +21,6 @@ export function start() {
   }
 }
 
-// tslint:disable-next-line:cognitive-complexity
 function createTablesIfNotExists() {
   // this table is used to store sample
   db.get(sql.queryTableSamplesExistsSql, [], (error, row) => {

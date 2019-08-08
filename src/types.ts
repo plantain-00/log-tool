@@ -23,7 +23,7 @@ export const enum RequestProtocolKind {
   resaveFailedLogs = 'resave failed logs'
 }
 
-export type SearchLogs = {
+export interface SearchLogs {
   content: string;
   time: string;
   hostname: string;
@@ -31,7 +31,7 @@ export type SearchLogs = {
   size: uint32;
 }
 
-type SearchSamples = {
+interface SearchSamples {
   from: string;
   to: string;
 }
@@ -65,7 +65,7 @@ export const enum ProtocolKind {
   resaveFailedLogsResult = 'resave failed logs result'
 }
 
-type Flows = {
+interface Flows {
   serverTime: string;
   flows: Flow[];
 }
@@ -113,7 +113,7 @@ export const enum ResultKind {
   fail = 'fail'
 }
 
-export type SampleFrame = {
+export interface SampleFrame {
   time: string;
   samples?: Sample[];
 }
@@ -121,7 +121,7 @@ export type SampleFrame = {
 /**
  * @entry flow-protocol.json
  */
-export type FlowProtocol = {
+export interface FlowProtocol {
   flows: Flow[];
 }
 
@@ -139,14 +139,14 @@ export const enum FlowKind {
   sample = 'sample'
 }
 
-export type Log = {
+export interface Log {
   time: string;
   content: string;
   filepath: string;
   hostname: string;
 }
 
-export type Sample = {
+export interface Sample {
   hostname: string;
   port?: uint32;
   values: { [name: string]: uint32 };

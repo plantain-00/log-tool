@@ -3,7 +3,6 @@ import * as config from './config'
 import * as format from './format'
 import * as sqlite from './sqlite'
 
-// tslint:disable-next-line:cognitive-complexity
 export function start() {
   if (!config.outflow.enabled) {
     return
