@@ -54,7 +54,6 @@ function getValue(config: ChartConfig, sample: types.Sample) {
   return config.unitScale === undefined ? count : Math.round(count / config.unitScale)
 }
 
-// tslint:disable-next-line:cognitive-complexity
 export function appendChartData(sampleFrame: types.SampleFrame) {
   const time = sampleFrame.time // .split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
@@ -113,7 +112,6 @@ function isElementInViewport(element: HTMLElement) {
   return false
 }
 
-// tslint:disable-next-line:cognitive-complexity
 export function updateCharts() {
   for (const config of defaultConfig.chart) {
     const isInViewport = isElementInViewport(allChartElements[config.name])
@@ -239,7 +237,6 @@ export function initializeCharts() {
   }
 }
 
-// tslint:disable-next-line:cognitive-complexity
 export function showSearchResult(sampleFrames: types.SampleFrame[]) {
   for (const config of defaultConfig.chart) {
     searchResultChartDatas[config.name].labels = []

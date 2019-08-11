@@ -15,7 +15,6 @@ import {
   othersTemplateHtml, othersTemplateHtmlStatic
 } from './variables'
 import { TabContainerData } from 'tab-container-vue-component'
-// tslint:disable-next-line:no-duplicate-imports
 import 'tab-container-vue-component'
 
 import * as types from '../src/types'
@@ -171,7 +170,6 @@ export class SearchLogs extends Vue {
     return visibilityButtonStyle(log)
   }
 
-  // tslint:disable-next-line:cognitive-complexity
   search(freshStart: boolean) {
     if (freshStart) {
       this.from = 0
@@ -316,7 +314,6 @@ export class SearchSamples extends Vue {
     updateChartWidthSubject.unsubscribe()
   }
 
-  // tslint:disable-next-line:cognitive-complexity
   searchSamples() {
     if (ws) {
       if (!moment(this.searchFrom).isValid()) {
@@ -396,7 +393,6 @@ export class RealtimeSamples extends Vue {
   chartConfigs = defaultConfig.chart
   chartWidth = 0
 
-  // tslint:disable-next-line:no-identical-functions
   beforeMount() {
     updateChartWidthSubject.subscribe(chartWidth => {
       this.chartWidth = chartWidth
@@ -529,7 +525,6 @@ export class App extends Vue {
 }
 
 function start() {
-  // tslint:disable-next-line:no-unused-expression
   new App({ el: '#body' })
 }
 
