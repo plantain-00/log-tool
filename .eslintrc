@@ -7,7 +7,7 @@
     "prettier/@typescript-eslint"
   ],
   "parserOptions": {
-    "project": "./tsconfig.base.json"
+    "project": "./tsconfig.eslint.json"
   },
   "plugins": [
     "plantain"
@@ -20,6 +20,7 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/no-object-literal-type-assertion": "off",
+    "@typescript-eslint/no-var-requires": "off",
     "no-case-declarations": "off",
     "no-console": "off",
     "no-prototype-builtins": "off",
