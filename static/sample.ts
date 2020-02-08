@@ -1,4 +1,4 @@
-import Chart from 'chart.js'
+import Chart, { ChartDataSets } from 'chart.js'
 
 import { getColor } from './color'
 import * as types from '../src/types'
@@ -30,7 +30,7 @@ for (const config of defaultConfig.chart) {
   }
 }
 
-function find<T>(array: T[], condition: (element: T) => boolean): T | undefined {
+function find<T>(array: readonly T[], condition: (element: T) => boolean): T | undefined {
   for (const element of array) {
     if (condition(element)) {
       return element
@@ -58,7 +58,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
   const time = sampleFrame.time // .split(" ")[1]; // "YYYY-MM-DD HH:mm:ss" -> "HH:mm:ss"
 
   for (const config of defaultConfig.chart) {
-    tempChartDatas[config.name].labels!.push(time)
+    (tempChartDatas[config.name].labels as string[]).push(time)
 
     if (sampleFrame.samples) {
       for (const sample of sampleFrame.samples) {
@@ -77,8 +77,8 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
             data.push(0)
           }
           data.push(count)
-          const color = getColor(seriesName)
-          tempChartDatas[config.name].datasets!.push({
+          const color = getColor(seriesName);
+          (tempChartDatas[config.name].datasets as ChartDataSets[]).push({
             label: seriesName,
             data,
             borderColor: color,
@@ -94,7 +94,7 @@ export function appendChartData(sampleFrame: types.SampleFrame) {
       }
     }
 
-    trimHistory(tempChartDatas[config.name].labels!)
+    trimHistory(tempChartDatas[config.name].labels as string[])
     for (const dataset of tempChartDatas[config.name].datasets!) {
       trimHistory(dataset.data as number[])
     }
@@ -118,13 +118,13 @@ export function updateCharts() {
     if (isInViewport && mouseOverChartName !== config.name) {
       const hasNewData = tempChartDatas[config.name].labels!.length > 0
       if (hasNewData) {
-        chartDatas[config.name].labels!.push(...tempChartDatas[config.name].labels!)
+        (chartDatas[config.name].labels as string[]).push(...tempChartDatas[config.name].labels as string[])
         tempChartDatas[config.name].labels = []
 
         const tempChartDatasets = tempChartDatas[config.name].datasets!
         for (let index = 0; index < tempChartDatasets.length; index++) {
           if (index >= chartDatas[config.name].datasets!.length) {
-            chartDatas[config.name].datasets!.push(JSON.parse(JSON.stringify(tempChartDatasets[index])))
+            (chartDatas[config.name].datasets as ChartDataSets[]).push(JSON.parse(JSON.stringify(tempChartDatasets[index])))
           } else {
             (chartDatas[config.name].datasets![index].data as number[]).push(...(tempChartDatasets[index].data as number[]))
           }
@@ -132,7 +132,7 @@ export function updateCharts() {
         }
       }
 
-      trimHistory(chartDatas[config.name].labels!)
+      trimHistory(chartDatas[config.name].labels as string[])
       for (const dataset of chartDatas[config.name].datasets!) {
         trimHistory(dataset.data as number[])
       }
@@ -245,7 +245,7 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
 
   for (const sampleFrame of sampleFrames) {
     for (const config of defaultConfig.chart) {
-      searchResultChartDatas[config.name].labels!.push(sampleFrame.time)
+      (searchResultChartDatas[config.name].labels as string[]).push(sampleFrame.time)
 
       if (sampleFrame.samples) {
         for (const sample of sampleFrame.samples) {
@@ -264,8 +264,8 @@ export function showSearchResult(sampleFrames: types.SampleFrame[]) {
               data.push(0)
             }
             data.push(count)
-            const color = getColor(seriesName)
-            searchResultChartDatas[config.name].datasets!.push({
+            const color = getColor(seriesName);
+            (searchResultChartDatas[config.name].datasets as ChartDataSets[]).push({
               label: seriesName,
               data,
               borderColor: color,
