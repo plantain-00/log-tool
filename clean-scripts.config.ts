@@ -1,26 +1,25 @@
-const { sleep, Service, executeScriptAsync } = require('clean-scripts')
-const { watch } = require('watch-then-execute')
+import { sleep, Service, executeScriptAsync } from 'clean-scripts'
+import { watch } from 'watch-then-execute'
 
 const elasticVersion = '5.5.2'
 
-const tsFiles = `"src/**/*.ts" "spec/**/*.ts" "static/**/*.ts" "static_spec/**/*.ts" "test/**/*.ts" "screenshots/**/*.ts" "prerender/**/*.ts"`
-const jsFiles = `"*.config.js" "static/**/*.config.js" "static_spec/**/*.config.js"`
+const tsFiles = `"src/**/*.ts" "static/**/*.ts" "test/**/*.ts"`
+const jsFiles = `"*.config.js" "static/**/*.config.js"`
 const lessFiles = `"static/**/*.less"`
 
 const schemaCommand = `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`
 const sqlCommand = `file2variable-cli src/sql/*.sql -o src/variables.ts --base src/sql`
 const tscSrcCommand = `tsc -p src`
-const templateCommand = `file2variable-cli --config static/file2variable.config.js`
-const tscStaticCommand = `tsc -p static`
-const webpackCommand = `webpack --config static/webpack.config.js`
-const revStaticCommand = `rev-static --config static/rev-static.config.js`
+const templateCommand = `file2variable-cli --config static/file2variable.config.ts`
+const webpackCommand = `webpack --config static/webpack.config.ts`
+const revStaticCommand = `rev-static --config static/rev-static.config.ts`
 const cssCommand = [
   `lessc ./static/index.less > ./static/index.css`,
   `postcss ./static/index.css -o ./static/index.postcss.css`,
   `cleancss ./static/index.postcss.css -o ./static/index.bundle.css`
 ]
 
-module.exports = {
+export default {
   build: [
     schemaCommand,
     {
@@ -32,7 +31,6 @@ module.exports = {
       front: {
         js: [
           templateCommand,
-          tscStaticCommand,
           webpackCommand
         ],
         css: {
@@ -54,30 +52,21 @@ module.exports = {
     typeCoverageStatic: 'type-coverage -p static --strict'
   },
   test: {
-    jasmine: [
-      'tsc -p spec',
-      'jasmine'
-    ],
-    karma: [
-      'tsc -p static_spec',
-      'karma start static_spec/karma.config.js'
-    ],
-    // start: new Program('clean-release --config clean-run.config.js', 30000),
+    // start: new Program('clean-release --config clean-run.config.ts', 30000),
     check: [
       'mkdirp vendors',
-      `tsc -p test`,
-      `node test/vendor.js`,
+      `ts-node test/vendor.ts`,
       new Service(process.platform === 'win32'
         ? `.\\vendors\\elasticsearch-${elasticVersion}\\bin\\elasticsearch.bat`
         : `./vendors/elasticsearch-${elasticVersion}/bin/elasticsearch`),
       () => sleep(60000),
       new Service(`node ./dist/index.js`),
       () => sleep(10000),
-      `node test/initialize.js`,
+      `ts-node test/initialize.ts`,
       () => sleep(5000),
-      `node test/save-log-by-http.js`,
+      `ts-node test/save-log-by-http.ts`,
       () => sleep(5000),
-      `node test/save-log-by-ws.js`
+      `ts-node test/save-log-by-ws.ts`
     ]
   },
   fix: {
@@ -92,16 +81,5 @@ module.exports = {
     webpack: `${webpackCommand} --watch`,
     less: () => watch(['static/**/*.less'], [], () => executeScriptAsync(cssCommand)),
     rev: `${revStaticCommand} --watch`
-  },
-  screenshot: [
-    new Service(`node ./dist/index.js`),
-    `tsc -p screenshots`,
-    `node screenshots/index.js`
-  ],
-  prerender: [
-    new Service(`node ./dist/index.js`),
-    `tsc -p prerender`,
-    `node prerender/index.js`,
-    revStaticCommand
-  ]
+  }
 }

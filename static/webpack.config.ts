@@ -1,6 +1,6 @@
-const isDev = process.env.NODE_ENV === 'development'
+import * as webpack from 'webpack'
 
-module.exports = {
+export default {
   entry: {
     index: './static/index'
   },
@@ -9,17 +9,17 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   resolve: {
-    extensions: isDev ? ['.ts', '.tsx', '.js'] : undefined,
+    extensions: ['.ts', '.tsx', '.js'],
     alias: {
       moment: 'moment/min/moment.min.js',
       protobufjs: 'protobufjs/dist/protobuf.min.js'
     }
   },
-  module: isDev ? {
+  module: {
     rules: [
       { test: /\.tsx?$/, loader: 'ts-loader' }
     ]
-  } : undefined,
+  },
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -31,4 +31,4 @@ module.exports = {
       }
     }
   }
-}
+} as webpack.Configuration

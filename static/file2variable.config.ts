@@ -1,4 +1,6 @@
-module.exports = {
+import { ConfigData } from 'file2variable-cli'
+
+export default {
   base: 'static',
   files: [
     'static/*.template.html',
@@ -6,9 +8,6 @@ module.exports = {
     'static/request-protocol.json',
     'static/response-protocol.json'
   ],
-  /**
-   * @argument {string} file
-   */
   handler: file => {
     if (file.endsWith('app.template.html')) {
       return { type: 'vue', name: 'App', path: './index' }
@@ -37,4 +36,4 @@ module.exports = {
     return { type: 'text' }
   },
   out: 'static/variables.ts'
-}
+} as ConfigData
