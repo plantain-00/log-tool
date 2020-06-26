@@ -46,10 +46,9 @@ export default {
     ts: `eslint --ext .js,.ts,.tsx ${tsFiles} ${jsFiles}`,
     less: `stylelint ${lessFiles}`,
     export: `no-unused-export ${tsFiles} ${lessFiles}`,
-    commit: `commitlint --from=HEAD~1`,
     markdown: `markdownlint README.md`,
-    typeCoverage: 'type-coverage -p src --strict',
-    typeCoverageStatic: 'type-coverage -p static --strict'
+    typeCoverage: 'type-coverage -p src --strict --ingore-catch',
+    typeCoverageStatic: 'type-coverage -p static --strict --ingore-catch --ignore-files "static/variables.ts"'
   },
   test: {
     // start: new Program('clean-release --config clean-run.config.ts', 30000),
