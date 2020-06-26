@@ -4,7 +4,6 @@ import { watch } from 'watch-then-execute'
 const elasticVersion = '5.5.2'
 
 const tsFiles = `"src/**/*.ts" "static/**/*.ts" "test/**/*.ts"`
-const jsFiles = `"*.config.js" "static/**/*.config.js"`
 const lessFiles = `"static/**/*.less"`
 
 const schemaCommand = `types-as-schema src/types.ts --json static/ --protobuf static/protocol.proto`
@@ -43,7 +42,7 @@ export default {
     revStaticCommand
   ],
   lint: {
-    ts: `eslint --ext .js,.ts,.tsx ${tsFiles} ${jsFiles}`,
+    ts: `eslint --ext .js,.ts,.tsx ${tsFiles}`,
     less: `stylelint ${lessFiles}`,
     export: `no-unused-export ${tsFiles} ${lessFiles}`,
     markdown: `markdownlint README.md`,
@@ -69,7 +68,7 @@ export default {
     ]
   },
   fix: {
-    ts: `eslint --ext .js,.ts,.tsx ${tsFiles} ${jsFiles} --fix`,
+    ts: `eslint --ext .js,.ts,.tsx ${tsFiles} --fix`,
     less: `stylelint --fix ${lessFiles}`
   },
   watch: {
