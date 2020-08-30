@@ -13,7 +13,7 @@ export function start() {
       method: 'POST',
       body: JSON.stringify(log),
       headers: { 'Content-Type': 'application/json' }
-    }).catch(error => {
+    }).catch((error: Error) => {
       libs.publishError(error)
       sqlite.saveElasticLog(log)
     })

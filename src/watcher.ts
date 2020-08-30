@@ -13,7 +13,7 @@ export async function start() {
   if (filePositionData) {
     try {
       positions = JSON.parse(filePositionData)
-    } catch (error) {
+    } catch (error: unknown) {
       libs.publishError(error)
     }
   }
@@ -98,7 +98,7 @@ function readNewlyAddedLogsThenPublish(filepath: string, end: number) {
                 hostname: libs.hostname
               })
             }
-          } catch (error) {
+          } catch (error: unknown) {
             libs.publishError(error)
             libs.logSubject.next({
               time: libs.getNow(),

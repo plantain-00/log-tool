@@ -46,8 +46,8 @@ export default {
     less: `stylelint ${lessFiles}`,
     export: `no-unused-export ${tsFiles} ${lessFiles}`,
     markdown: `markdownlint README.md`,
-    typeCoverage: 'type-coverage -p src --strict --ingore-catch',
-    typeCoverageStatic: 'type-coverage -p static --strict --ingore-catch --ignore-files "static/variables.ts"'
+    typeCoverage: 'type-coverage -p src --strict',
+    typeCoverageStatic: 'type-coverage -p static --strict --ignore-files "static/variables.ts"'
   },
   test: {
     // start: new Program('clean-release --config clean-run.config.ts', 30000),

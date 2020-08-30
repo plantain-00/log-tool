@@ -29,7 +29,7 @@ export function start() {
       try {
         const protocol = format.decodeFlow(inflowString)
         handleMessage(protocol)
-      } catch (error) {
+      } catch (error: unknown) {
         libs.publishError(error)
       }
     })

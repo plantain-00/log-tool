@@ -57,7 +57,7 @@ protocolDataSubject.subscribe(protocol => {
           log.visibilityButtonExtraBottom = 0
           try {
             log.formattedContent = JSON.stringify(JSON.parse(log.content), null, '  ')
-          } catch (error) {
+          } catch (error: unknown) {
             format.printInConsole(error)
           }
           logsPushSubject.next(log)
@@ -206,7 +206,7 @@ export class SearchLogs extends Vue {
             log.visibilityButtonExtraBottom = 0
             try {
               log.formattedContent = JSON.stringify(JSON.parse(h.content), null, '  ')
-            } catch (error) {
+            } catch (error: unknown) {
               format.printInConsole(error)
             }
             if (this.content && this.content !== '*') {

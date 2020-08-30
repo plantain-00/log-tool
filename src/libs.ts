@@ -82,12 +82,12 @@ export const bufferedFlowObservable =
     })
   )
 
-export function publishError(error: Error) {
+export function publishError(error: unknown) {
   logSubject.next({
     time: getNow(),
     hostname,
     filepath: '',
-    content: error.stack || error.message
+    content: error instanceof Error ? error.stack || error.message : String(error)
   })
 }
 

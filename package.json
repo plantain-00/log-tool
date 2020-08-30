@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/plantain-00/log-tool#readme",
   "typeCoverage": {
-    "atLeast": 96.42
+    "atLeast": 96.88
   },
   "devDependencies": {
     "@types/body-parser": "1.19.0",

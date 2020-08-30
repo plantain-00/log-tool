@@ -101,7 +101,7 @@ export function start() {
               }), { binary: config.protobuf.enabled })
             })
           }
-        } catch (error) {
+        } catch (error: unknown) {
           libs.publishError(error)
         }
       })
