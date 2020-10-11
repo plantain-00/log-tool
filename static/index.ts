@@ -1,21 +1,19 @@
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import { createApp, defineComponent, h, VNode } from 'vue'
 import moment from 'moment'
 
 import Reconnector from 'reconnection'
 import WsRpc from 'rpc-on-ws'
 import { Subject } from 'rxjs'
-import { Locale } from 'relative-time-vue-component'
+import { Locale, RelativeTime } from 'relative-time-vue-component'
 import {
-  appTemplateHtml, appTemplateHtmlStatic,
-  searchLogsTemplateHtml, searchLogsTemplateHtmlStatic,
-  realtimeLogsTemplateHtml, realtimeLogsTemplateHtmlStatic,
-  searchSamplesTemplateHtml, searchSamplesTemplateHtmlStatic,
-  realtimeSamplesTemplateHtml, realtimeSamplesTemplateHtmlStatic,
-  othersTemplateHtml, othersTemplateHtmlStatic
+  appTemplateHtml,
+  searchLogsTemplateHtml,
+  realtimeLogsTemplateHtml,
+  searchSamplesTemplateHtml,
+  realtimeSamplesTemplateHtml,
+  othersTemplateHtml,
 } from './variables'
-import { TabContainerData } from 'tab-container-vue-component'
-import 'tab-container-vue-component'
+import { TabContainerData, TabContainer } from 'tab-container-vue-component'
 
 import * as types from '../src/types'
 import * as format from './format'
@@ -130,28 +128,27 @@ function handleButtonVisibility(element: HTMLElement | null, log: Log, innerHeig
   }
 }
 
-@Component({
+const SearchLogs = defineComponent({
   render: searchLogsTemplateHtml,
-  staticRenderFns: searchLogsTemplateHtmlStatic,
-  props: ['data']
-})
-export class SearchLogs extends Vue {
-  logsSearchResult: Log[] = []
-  content = initialContent
-  time = initialTime
-  hostname = initialHostname
-  showRawLogResult = false
-  showFormattedLogResult = true
-  locale = locale
-  private logsSearchResultCount = 0
-
-  private from = 0
-  private size = 10
-
-  get leftCount() {
-    return this.logsSearchResultCount - this.from - this.size
-  }
-
+  data: () => {
+    return {
+      logsSearchResult: [] as Log[],
+      content: initialContent,
+      time: initialTime,
+      hostname: initialHostname,
+      showRawLogResult: false,
+      showFormattedLogResult: true,
+      locale,
+      logsSearchResultCount: 0,
+      from: 0,
+      size: 10,
+    }
+  },
+  computed: {
+    leftCount(): number {
+      return this.logsSearchResultCount - this.from - this.size
+    }
+  },
   beforeMount() {
     scrollSubject.subscribe(innerHeight => {
       for (let i = 0; i < this.logsSearchResult.length; i++) {
@@ -160,98 +157,91 @@ export class SearchLogs extends Vue {
         handleButtonVisibility(element, log, innerHeight)
       }
     })
-  }
-
+  },
   beforeDestroy() {
     scrollSubject.unsubscribe()
-  }
-
-  visibilityButtonStyle(log: Log) {
-    return visibilityButtonStyle(log)
-  }
-
-  search(freshStart: boolean) {
-    if (freshStart) {
-      this.from = 0
-      this.logsSearchResult = []
-      this.logsSearchResultCount = 0
-    } else {
-      this.from += this.size
-    }
-    if (ws) {
-      wsRpc.send(requestId => {
-        const data = format.encodeRequest({
-          kind: types.RequestProtocolKind.searchLogs,
-          requestId,
-          searchLogs: {
-            content: this.content,
-            time: this.time,
-            hostname: this.hostname,
-            from: this.from,
-            size: this.size
-          }
-        })
-        if (data) {
-          ws!.send(data)
-        }
-      }).then(protocol => {
-        if (protocol.kind === types.ProtocolKind.searchLogsResult
-          && protocol.searchLogsResult
-          && protocol.searchLogsResult.kind === types.ResultKind.success
-          && protocol.searchLogsResult.logs) {
-          for (const h of protocol.searchLogsResult.logs) {
-            const log: Log = h
-            log.timeValue = moment(log.time).valueOf()
-            log.visible = true
-            log.visibilityButtonExtraBottom = 0
-            try {
-              log.formattedContent = JSON.stringify(JSON.parse(h.content), null, '  ')
-            } catch (error: unknown) {
-              format.printInConsole(error)
+  },
+  methods: {
+    visibilityButtonStyle(log: Log) {
+      return visibilityButtonStyle(log)
+    },
+    search(freshStart: boolean) {
+      if (freshStart) {
+        this.from = 0
+        this.logsSearchResult = []
+        this.logsSearchResultCount = 0
+      } else {
+        this.from += this.size
+      }
+      if (ws) {
+        wsRpc.send(requestId => {
+          const data = format.encodeRequest({
+            kind: types.RequestProtocolKind.searchLogs,
+            requestId,
+            searchLogs: {
+              content: this.content,
+              time: this.time,
+              hostname: this.hostname,
+              from: this.from,
+              size: this.size
             }
-            if (this.content && this.content !== '*') {
-              log.content = log.content.split(this.content).join(`<span class="highlighted">${this.content}</span>`)
-              if (log.formattedContent) {
-                log.formattedContent = log.formattedContent.split(this.content).join(`<span class="highlighted">${this.content}</span>`)
+          })
+          if (data) {
+            ws!.send(data)
+          }
+        }).then(protocol => {
+          if (protocol.kind === types.ProtocolKind.searchLogsResult
+            && protocol.searchLogsResult
+            && protocol.searchLogsResult.kind === types.ResultKind.success
+            && protocol.searchLogsResult.logs) {
+            for (const h of protocol.searchLogsResult.logs) {
+              const log: Log = h
+              log.timeValue = moment(log.time).valueOf()
+              log.visible = true
+              log.visibilityButtonExtraBottom = 0
+              try {
+                log.formattedContent = JSON.stringify(JSON.parse(h.content), null, '  ')
+              } catch (error: unknown) {
+                format.printInConsole(error)
               }
+              if (this.content && this.content !== '*') {
+                log.content = log.content.split(this.content).join(`<span class="highlighted">${this.content}</span>`)
+                if (log.formattedContent) {
+                  log.formattedContent = log.formattedContent.split(this.content).join(`<span class="highlighted">${this.content}</span>`)
+                }
+              }
+              this.logsSearchResult.push(log)
             }
-            this.logsSearchResult.push(log)
+            this.logsSearchResultCount = protocol.searchLogsResult.total
+          } else {
+            this.logsSearchResult = []
+            this.logsSearchResultCount = 0
           }
-          this.logsSearchResultCount = protocol.searchLogsResult.total
-        } else {
-          this.logsSearchResult = []
-          this.logsSearchResultCount = 0
-        }
-      }, logsPushError)
+        }, logsPushError)
+      }
+    },
+    clearLogsSearchResult() {
+      this.logsSearchResult = []
+    },
+    logSearchResultId(index: number) {
+      return `log-search-result-${index}`
+    },
+    toggleVisibility(log: Log) {
+      log.visible = !log.visible
     }
   }
-
-  clearLogsSearchResult() {
-    this.logsSearchResult = []
-  }
-
-  logSearchResultId(index: number) {
-    return `log-search-result-${index}`
-  }
-
-  toggleVisibility(log: Log) {
-    log.visible = !log.visible
-  }
-}
-
-Vue.component('search-logs', SearchLogs)
-
-@Component({
-  render: realtimeLogsTemplateHtml,
-  staticRenderFns: realtimeLogsTemplateHtmlStatic,
-  props: ['data']
 })
-export class RealtimeLogs extends Vue {
-  logsPush: Log[] = []
-  showRawLogPush = false
-  showFormattedLogPush = true
-  locale = locale
 
+const RealtimeLogs = defineComponent({
+  render: realtimeLogsTemplateHtml,
+  data: () => {
+    return {
+      logsPush: [] as Log[],
+      showRawLogPush: false,
+      showFormattedLogPush: true,
+      locale,
+    }
+  },
   beforeMount() {
     logsPushSubject.subscribe(log => {
       this.logsPush.unshift(log)
@@ -266,112 +256,104 @@ export class RealtimeLogs extends Vue {
     trimHistorySubject.subscribe(() => {
       trimHistory(this.logsPush)
     })
-  }
-
+  },
   beforeDestroy() {
     logsPushSubject.unsubscribe()
     scrollSubject.unsubscribe()
     trimHistorySubject.unsubscribe()
+  },
+  methods: {
+    visibilityButtonStyle(log: Log) {
+      return visibilityButtonStyle(log)
+    },
+    clearLogsPush() {
+      this.logsPush = []
+    },
+    logPushId(index: number) {
+      return `log-push-${index}`
+    },
+    toggleVisibility(log: Log) {
+      log.visible = !log.visible
+    }
   }
-
-  visibilityButtonStyle(log: Log) {
-    return visibilityButtonStyle(log)
-  }
-
-  clearLogsPush() {
-    this.logsPush = []
-  }
-
-  logPushId(index: number) {
-    return `log-push-${index}`
-  }
-
-  toggleVisibility(log: Log) {
-    log.visible = !log.visible
-  }
-}
-
-Vue.component('realtime-logs', RealtimeLogs)
-
-@Component({
-  render: searchSamplesTemplateHtml,
-  staticRenderFns: searchSamplesTemplateHtmlStatic,
-  props: ['data']
 })
-export class SearchSamples extends Vue {
-  searchFrom = moment().clone().add(-1, 'minute').format(dateFormat)
-  searchTo = moment().format(dateFormat)
-  chartConfigs = defaultConfig.chart
-  chartWidth = 0
 
+const SearchSamples = defineComponent({
+  render: searchSamplesTemplateHtml,
+  data: () => {
+    return {
+      searchFrom: moment().clone().add(-1, 'minute').format(dateFormat),
+      searchTo: moment().format(dateFormat),
+      chartConfigs: defaultConfig.chart,
+      chartWidth: 0,
+    }
+  },
   beforeMount() {
     updateChartWidthSubject.subscribe(chartWidth => {
       this.chartWidth = chartWidth
     })
-  }
-
+  },
   beforeDestroy() {
     updateChartWidthSubject.unsubscribe()
-  }
-
-  searchSamples() {
-    if (ws) {
-      if (!moment(this.searchFrom).isValid()) {
-        logsPushSubject.next({
-          time: moment().format(dateFormat),
-          content: `search from is invalid: ${this.searchFrom}`,
-          hostname: '',
-          filepath: '',
-          timeValue: Date.now()
-        })
-        updateNewLogsCountSubject.next()
-        return
-      }
-      if (!moment(this.searchTo).isValid()) {
-        logsPushSubject.next({
-          time: moment().format(dateFormat),
-          content: `search to is invalid: ${this.searchTo}`,
-          hostname: '',
-          filepath: '',
-          timeValue: Date.now()
-        })
-        updateNewLogsCountSubject.next()
-        return
-      }
-      wsRpc.send(requestId => {
-        ws!.send(format.encodeRequest({
-          kind: types.RequestProtocolKind.searchSamples,
-          requestId,
-          searchSamples: {
-            from: this.searchFrom,
-            to: this.searchTo
-          }
-        }) as any)
-      }).then(protocol => {
-        if (protocol.kind === types.ProtocolKind.searchSamplesResult) {
-          if (protocol.searchSamplesResult.kind === types.ResultKind.success) {
-            if (protocol.searchSamplesResult.searchSampleResult) {
-              showSearchResult(protocol.searchSamplesResult.searchSampleResult)
-            } else {
-              showSearchResult([])
-            }
-          } else {
-            logsPushSubject.next({
-              time: moment().format(dateFormat),
-              content: protocol.searchSamplesResult.error,
-              hostname: '',
-              filepath: '',
-              timeValue: Date.now()
-            })
-            updateNewLogsCountSubject.next()
-          }
+  },
+  methods: {
+    searchSamples() {
+      if (ws) {
+        if (!moment(this.searchFrom).isValid()) {
+          logsPushSubject.next({
+            time: moment().format(dateFormat),
+            content: `search from is invalid: ${this.searchFrom}`,
+            hostname: '',
+            filepath: '',
+            timeValue: Date.now()
+          })
+          updateNewLogsCountSubject.next()
+          return
         }
-      }, logsPushError)
+        if (!moment(this.searchTo).isValid()) {
+          logsPushSubject.next({
+            time: moment().format(dateFormat),
+            content: `search to is invalid: ${this.searchTo}`,
+            hostname: '',
+            filepath: '',
+            timeValue: Date.now()
+          })
+          updateNewLogsCountSubject.next()
+          return
+        }
+        wsRpc.send(requestId => {
+          ws!.send(format.encodeRequest({
+            kind: types.RequestProtocolKind.searchSamples,
+            requestId,
+            searchSamples: {
+              from: this.searchFrom,
+              to: this.searchTo
+            }
+          }) as any)
+        }).then(protocol => {
+          if (protocol.kind === types.ProtocolKind.searchSamplesResult) {
+            if (protocol.searchSamplesResult.kind === types.ResultKind.success) {
+              if (protocol.searchSamplesResult.searchSampleResult) {
+                showSearchResult(protocol.searchSamplesResult.searchSampleResult)
+              } else {
+                showSearchResult([])
+              }
+            } else {
+              logsPushSubject.next({
+                time: moment().format(dateFormat),
+                content: protocol.searchSamplesResult.error,
+                hostname: '',
+                filepath: '',
+                timeValue: Date.now()
+              })
+              updateNewLogsCountSubject.next()
+            }
+          }
+        }, logsPushError)
+      }
     }
   }
-}
-
-Vue.component('search-samples', SearchSamples)
+})
 
 function logsPushError(error: Error) {
   logsPushSubject.next({
@@ -384,148 +366,150 @@ function logsPushError(error: Error) {
   updateNewLogsCountSubject.next()
 }
 
-@Component({
+const RealtimeSamples = defineComponent({
   render: realtimeSamplesTemplateHtml,
-  staticRenderFns: realtimeSamplesTemplateHtmlStatic,
-  props: ['data']
-})
-export class RealtimeSamples extends Vue {
-  chartConfigs = defaultConfig.chart
-  chartWidth = 0
-
+  data: () => {
+    return {
+      chartConfigs: defaultConfig.chart,
+      chartWidth: 0
+    }
+  },
   beforeMount() {
     updateChartWidthSubject.subscribe(chartWidth => {
       this.chartWidth = chartWidth
     })
-  }
-
+  },
   beforeDestroy() {
     updateChartWidthSubject.unsubscribe()
-  }
-
-  scrollBy(id: string) {
-    const element = document.getElementById(`current-${id}`)
-    if (element) {
-      const rect = element.getBoundingClientRect()
-      scrollBy(0, rect.top - 20)
+  },
+  methods: {
+    scrollBy(id: string) {
+      const element = document.getElementById(`current-${id}`)
+      if (element) {
+        const rect = element.getBoundingClientRect()
+        scrollBy(0, rect.top - 20)
+      }
     }
   }
-}
-
-Vue.component('realtime-samples', RealtimeSamples)
-
-@Component({
-  render: othersTemplateHtml,
-  staticRenderFns: othersTemplateHtmlStatic,
-  props: ['data']
 })
-export class Others extends Vue {
-  resaveFailedLogs() {
-    if (ws) {
-      wsRpc.send(requestId => {
-        ws!.send(format.encodeRequest({
-          kind: types.RequestProtocolKind.resaveFailedLogs,
-          requestId
-        }) as any)
-      }).then(protocol => {
-        if (protocol.kind === types.ProtocolKind.resaveFailedLogsResult) {
-          if (protocol.resaveFailedLogsResult.kind === types.ResultKind.success) {
-            logsPushSubject.next({
-              time: moment().format(dateFormat),
-              content: `handled ${protocol.resaveFailedLogsResult.savedCount} / ${protocol.resaveFailedLogsResult.totalCount} logs.`,
-              hostname: '',
-              filepath: '',
-              timeValue: Date.now()
-            })
-          } else {
-            logsPushSubject.next({
-              time: moment().format(dateFormat),
-              content: protocol.resaveFailedLogsResult.error,
-              hostname: '',
-              filepath: '',
-              timeValue: Date.now()
-            })
+
+const Others = defineComponent({
+  render: othersTemplateHtml,
+  methods: {
+    resaveFailedLogs() {
+      if (ws) {
+        wsRpc.send(requestId => {
+          ws!.send(format.encodeRequest({
+            kind: types.RequestProtocolKind.resaveFailedLogs,
+            requestId
+          }) as any)
+        }).then(protocol => {
+          if (protocol.kind === types.ProtocolKind.resaveFailedLogsResult) {
+            if (protocol.resaveFailedLogsResult.kind === types.ResultKind.success) {
+              logsPushSubject.next({
+                time: moment().format(dateFormat),
+                content: `handled ${protocol.resaveFailedLogsResult.savedCount} / ${protocol.resaveFailedLogsResult.totalCount} logs.`,
+                hostname: '',
+                filepath: '',
+                timeValue: Date.now()
+              })
+            } else {
+              logsPushSubject.next({
+                time: moment().format(dateFormat),
+                content: protocol.resaveFailedLogsResult.error,
+                hostname: '',
+                filepath: '',
+                timeValue: Date.now()
+              })
+            }
+            updateNewLogsCountSubject.next()
           }
-          updateNewLogsCountSubject.next()
-        }
-      }, logsPushError)
+        }, logsPushError)
+      }
     }
   }
-}
+})
 
-Vue.component('others', Others)
-
-Vue.component('realtime-logs-title', {
-  render(this: { data: number }, createElement) {
-    const children: any[] = ['Realtime Logs']
+const realtimeLogsTitle = defineComponent({
+  render() {
+    const children: (VNode | string)[] = ['Realtime Logs']
     if (this.data > 0) {
-      children.push(createElement('span', { attrs: { class: 'badge' } }, [
+      children.push(h('span', { class: 'badge' }, [
         this.data.toString()
       ]))
     }
-    return createElement('a', children)
+    return h('a', children)
   },
   props: ['data']
 })
 
-@Component({
+const App = defineComponent({
   render: appTemplateHtml,
-  staticRenderFns: appTemplateHtmlStatic
-})
-export class App extends Vue {
-  data: TabContainerData[] = [
-    {
-      isActive: true,
-      title: 'Search Logs',
-      component: 'search-logs',
-      data: ''
-    },
-    {
-      isActive: false,
-      titleComponent: 'realtime-logs-title',
-      titleData: 0,
-      component: 'realtime-logs',
-      data: ''
-    },
-    {
-      isActive: false,
-      title: 'Search Samples',
-      component: 'search-samples',
-      data: ''
-    },
-    {
-      isActive: false,
-      title: 'Realtime Samples',
-      component: 'realtime-samples',
-      data: ''
-    },
-    {
-      isActive: false,
-      title: 'Others',
-      component: 'others',
-      data: ''
+  data: () => {
+    return {
+      data: [
+        {
+          isActive: true,
+          title: 'Search Logs',
+          component: 'search-logs',
+          data: ''
+        },
+        {
+          isActive: false,
+          titleComponent: 'realtime-logs-title',
+          titleData: 0,
+          component: 'realtime-logs',
+          data: ''
+        },
+        {
+          isActive: false,
+          title: 'Search Samples',
+          component: 'search-samples',
+          data: ''
+        },
+        {
+          isActive: false,
+          title: 'Realtime Samples',
+          component: 'realtime-samples',
+          data: ''
+        },
+        {
+          isActive: false,
+          title: 'Others',
+          component: 'others',
+          data: ''
+        }
+      ] as TabContainerData[]
     }
-  ]
-
+  },
   beforeMount() {
-    updateNewLogsCountSubject.subscribe(chartWidth => {
+    updateNewLogsCountSubject.subscribe(() => {
       this.data[1].titleData++
     })
-  }
-
+  },
   beforeDestroy() {
     updateNewLogsCountSubject.unsubscribe()
-  }
-
-  switching(index: number) {
-    if (index === 1) {
-      this.data[1].titleData = 0
+  },
+  methods: {
+    switching(index: number) {
+      if (index === 1) {
+        this.data[1].titleData = 0
+      }
     }
   }
-}
+})
 
 function start() {
-  new App({ el: '#body' })
+  const app = createApp(App)
+  app.component('search-logs', SearchLogs)
+  app.component('realtime-logs', RealtimeLogs)
+  app.component('search-samples', SearchSamples)
+  app.component('realtime-samples', RealtimeSamples)
+  app.component('others', Others)
+  app.component('realtime-logs-title', realtimeLogsTitle)
+  app.component('relative-time', RelativeTime)
+  app.component('tab-container', TabContainer)
+  app.mount('#body')
 }
 
 window.onscroll = () => {

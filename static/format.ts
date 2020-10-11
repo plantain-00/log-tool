@@ -13,7 +13,7 @@ const ajv = new Ajv()
 const validateRequestProtocol = ajv.compile(requestProtocolJson)
 const validateResponseProtocol = ajv.compile(responseProtocolJson)
 
-export function printInConsole(message: any) {
+export function printInConsole(message: unknown) {
   console.log(message)
 }
 
